@@ -32,7 +32,7 @@ public class Block {
 			if(transaction_ok) {
 				if(!check) {System.out.println("[ブロック]トランザクションの認証に成功");}
 				BigInteger result=new BigInteger(Mining.hash(sum),16);
-				if(diff==null||result.compareTo(diff)==-1) {
+				if(!check||diff==null||result.compareTo(diff)==-1) {
 					if(!check) {System.out.println("[ブロック]ブロックの認証成功");}
 					this.he_tr=he_tr;
 					ok=true;
@@ -45,6 +45,7 @@ public class Block {
 				if(!check) {System.out.println("[ブロック]transactioncheck失敗");}
 			}
 		}catch(Exception e) {
+			System.out.println("error"+string);
 			e.printStackTrace();
 		}
 	}
@@ -53,6 +54,7 @@ public class Block {
 			System.out.print("=====↓エラー発生↓=====\r\nhe_tr : ");
 			System.out.println(he_tr);
 			BigInteger result=new BigInteger(Mining.hash(sum),16);
+			System.out.println(sum);
 			if(!check)System.out.println("  このブロック : "+result.toString(10)+"\r\n"+"現在の難易度 : "+min.toString(10));
 			System.out.print("=====↑エラー発生↑=====\r\nhe_tr : ");
 			throw new NullPointerException();

@@ -76,6 +76,7 @@ public class Wallet {
 		Wallet w=new Wallet();
 		Main.readHash();
 		long time=System.currentTimeMillis();
+		System.out.println(time);
 		System.out.println("秘密鍵："+new BigInteger(w.priv).toString(16));
 		System.out.println("公開鍵："+w.pub[0].toString(16));
 		BigInteger[] sign_=w.sign(Transaction.hash("aa").getBytes());
