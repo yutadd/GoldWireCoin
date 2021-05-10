@@ -46,7 +46,7 @@ public class Mining extends Thread{
 							before=before+","+s;
 						}
 						BigInteger result=new BigInteger(hash(before),16);
-						if(result.compareTo(Block.min)==-1) {
+						if(result.compareTo(Main.shoki)==-1) {
 
 							System.out.println(hash(before));
 							User.share("block~",before, Main.s);
@@ -73,7 +73,6 @@ public class Mining extends Thread{
 			}
 		};
 		th.start();
-
 	}
 	public void run(){
 

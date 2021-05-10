@@ -16,7 +16,7 @@ public class Block {
 	String[] he_tr;
 	long time;
 	BigInteger diff;
-	static BigInteger min=new BigInteger("66611349253966442813730644663330183884399686815584447189708332380985641",10);
+
 	//https://kasobu.com/blockchain-mining/#i
 	// previous_hash,miner_address,nans,block_number,time,transaction,transaction,...
 	public Block(String string,boolean check,BigInteger diff) {
@@ -38,7 +38,7 @@ public class Block {
 					ok=true;
 					this.diff=diff;
 				}else {
-					if(!check)System.out.println("このブロック : "+result.toString(10)+"\r\n"+"現在の難易度 : "+min.toString(10));
+					if(!check)System.out.println("このブロック : "+result.toString(10)+"\r\n"+"現在の難易度 : "+Main.shoki.toString(10));
 					if(!check) {System.out.println("[ブロック]認証失敗");}
 				}
 			}else {
@@ -55,7 +55,7 @@ public class Block {
 			System.out.println(he_tr);
 			BigInteger result=new BigInteger(Mining.hash(sum),16);
 			System.out.println(sum);
-			if(!check)System.out.println("  このブロック : "+result.toString(10)+"\r\n"+"現在の難易度 : "+min.toString(10));
+			if(!check)System.out.println("  このブロック : "+result.toString(10)+"\r\n"+"現在の難易度 : "+Main.shoki.toString(10));
 			System.out.print("=====↑エラー発生↑=====\r\nhe_tr : ");
 			throw new NullPointerException();
 			}

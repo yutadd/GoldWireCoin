@@ -62,6 +62,7 @@ public class Main {
 	static boolean mining=false;
 	static Mining m;
 	static int size=0;
+	static BigInteger min=new BigInteger("66611349253966442813730644663330183884399686815584447189708332380985641",10);
 	static BigInteger shoki=new BigInteger("66611349253966442813730644663330183884399686815584447189708332380985641",10);
 	public static void main(String[] args) {
 		System.out.println(System.getProperty("file.encoding"));
@@ -104,9 +105,9 @@ public class Main {
 					System.out.println("My wallet balance : "+utxo.get(w.pub[0].toString(16)));
 					System.out.println("mati"+mati);
 					System.out.println("blockSize : "+getBlockSize());
-					String now_10=Block.min.toString(10);
-					String def_10=Main.shoki.toString(10);
-					System.out.println("NOW : "+now_10+"\r\n"+" 初期 - 今: "+shoki.subtract(Block.min).toString(10)+"\r\n"+"DEF : "+def_10);
+					String now_10=min.toString(10);
+					String def_10=shoki.toString(10);
+					System.out.println("NOW : "+now_10+"\r\n"+" 初期 - 今: "+shoki.subtract(min).toString(10)+"\r\n"+"DEF : "+def_10);
 					gui_check();
 					int i=0;
 					for(;i<間隔.length;i++) {
@@ -159,7 +160,7 @@ public class Main {
 					try {
 						String line = bs.readLine();
 						if(line==null) {bs.close();System.out.println("EOF");break;}
-						Block b=new Block(line,false,Block.min);
+						Block b=new Block(line,false,min);
 						b.give_utxo(false);
 						for(Transaction t:b.ts) {
 							t.doTrade();
@@ -169,14 +170,14 @@ public class Main {
 					try{Thread.sleep(1);}catch(Exception e) {e.printStackTrace();}
 				}
 				size=i;
-				if(i>=3) {
+				if(i>=2) {
 					try {
 						Block b=getBlock(i);
 						time[0]=b.time;
 						time[1]=getBlock(b.number-1).time;
 					}catch(Exception e) {System.out.println("minの計算中にエラーが発生しました");time[0]=6000;time[1]=6000;}
 					size=i;
-					Block.min=getMin(true);
+					min=getMin(true);
 				}
 			}else {
 				System.out.println("ファイルがもう見当たりません.");
@@ -216,7 +217,7 @@ public class Main {
 		}
 	}
 	static void addBlock(String block) {
-		Block blo=new Block(block,true,Block.min);
+		Block blo=new Block(block,true,min);
 		int numb=blo.number;
 		System.out.println("thisblocks number="+numb);
 		System.out.println("saved block number="+getBlockSize());
@@ -255,7 +256,7 @@ public class Main {
 		return -1;
 	}
 	private static void saveBlock(String arg) {
-		Block b=new Block(arg,false,Block.min);
+		Block b=new Block(arg,false,min);
 		if(b.ok) {
 			File file=new File("Blocks"+File.separator+"Block-"+b.number);
 			try {
@@ -281,7 +282,7 @@ public class Main {
 				time[0]=b.time;
 				time[1]=getBlock(b.number-1).time;
 			}catch(Exception e) {System.out.println("minの計算中にエラーが発生しました");time[0]=6000;time[1]=6000;}
-			Block.min=getMin(true);
+			min=getMin(true);
 		}
 
 	}
@@ -303,7 +304,7 @@ public class Main {
 						try {
 							String line = bs.readLine();
 							if(line==null) {bs.close();System.out.println("EOF");break;}
-							Block b=new Block(line,true,Block.min);
+							Block b=new Block(line,true,min);
 							for(Transaction t:b.ts) {
 								pool.add(t.transaction_sum);
 								utxo.put(t.from.split("0x0a")[0],utxo.get(t.from.split("0x0a")[0]).add(t.amount));
@@ -323,7 +324,7 @@ public class Main {
 			time[0]=getBlock(from-1).time;
 			time[1]=getBlock(from-2).time;
 		}catch(Exception e) {System.out.println("minの計算中にエラーが発生しました");time[0]=6000;time[1]=6000;}
-		Block.min=getMin(false);
+		min=getMin(false);
 	}
 	static BigInteger getMin(boolean show){
 		read_time();
@@ -343,8 +344,8 @@ public class Main {
 					System.arraycopy(難易度, 0, temp_d, 0, 難易度.length);
 					難易度=temp_d;
 				}
-				BigInteger i=new BigInteger(String.valueOf(result)).multiply(new BigInteger("870000000000000000000000000000000000000000000000000000000000000000",10));
-				return shoki.add(i);
+				BigInteger i=new BigInteger("870000000000000000000000000000000000000000000000000000000000000000",10);
+				return min.add(i);
 			}else {
 				//６０秒以下：もっと難しく:数値にマイナス
 				if(show) {
@@ -357,11 +358,11 @@ public class Main {
 					System.arraycopy(難易度, 0, temp_d, 0, 難易度.length);
 					難易度=temp_d;
 				}
-				BigInteger i=new BigInteger(String.valueOf(result)).multiply(new BigInteger("990000000000000000000000000000000000000000000000000000000000000000",10));
-				return shoki.add(i);
+				BigInteger i=new BigInteger("990000000000000000000000000000000000000000000000000000000000000000",10);
+				return min.add(i);
 			}
 		}else {
-			return new BigInteger("66611349253966442813730644663330183884399686815584447189708332380985641",10);
+			return shoki;
 		}
 	}
 }

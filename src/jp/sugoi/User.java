@@ -48,7 +48,7 @@ public class User extends Thread{
 							if(!Main.mati) {
 								System.out.println("ブロックを受信");
 								String blocks=line.split("~")[1];
-								Block b=new Block(blocks,false,Block.min);
+								Block b=new Block(blocks,false,Main.min);
 								if(b.previous_hash.equals(Main.getlatesthash())) {
 									if(b.ok) {
 										Main.addBlock(b.sum);
