@@ -344,7 +344,7 @@ public class Main {
 					System.arraycopy(難易度, 0, temp_d, 0, 難易度.length);
 					難易度=temp_d;
 				}
-				BigInteger i=new BigInteger("870000000000000000000000000000000000000000000000000000000000000000",10);
+				BigInteger i=new BigInteger("33910A562CF81F8A20CB31817F4350CA75ECF1CB59BED6E75AB6AEB1F4",16);
 				return min.add(i);
 			}else {
 				//６０秒以下：もっと難しく:数値にマイナス
@@ -358,7 +358,7 @@ public class Main {
 					System.arraycopy(難易度, 0, temp_d, 0, 難易度.length);
 					難易度=temp_d;
 				}
-				BigInteger i=new BigInteger("990000000000000000000000000000000000000000000000000000000000000000",10);
+				BigInteger i=new BigInteger("33910A562CF81F8A20CB31817F4350CA75ECF1CB59BED6E75AB6AEB1F4",16);
 				return min.add(i);
 			}
 		}else {
