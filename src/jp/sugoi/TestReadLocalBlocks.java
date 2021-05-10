@@ -1,8 +1,8 @@
 package jp.sugoi;
 
-public class CheckAverageMiningTime {
+public class TestReadLocalBlocks {
 
-	public CheckAverageMiningTime() {
+	public TestReadLocalBlocks() {
 		// TODO 自動生成されたコンストラクター・スタブ
 	}
 
