@@ -62,8 +62,8 @@ public class Main {
 	static boolean mining=false;
 	static Mining m;
 	static int size=0;
-	static BigInteger min=new BigInteger("66611349253966442813730644663330183884399686815584447189708332380985641",10);
-	static BigInteger shoki=new BigInteger("66611349253966442813730644663330183884399686815584447189708332380985641",10);
+	static BigInteger min=new BigInteger("26611349253966442813730644663330183884399686815584447189708332380985641",10);
+	static BigInteger shoki=new BigInteger("26611349253966442813730644663330183884399686815584447189708332380985641",10);
 	public static void main(String[] args) {
 		System.out.println(System.getProperty("file.encoding"));
 		gui=new GUI();
@@ -145,6 +145,7 @@ public class Main {
 	}
 	//データベースに格納するものだから一番最初に
 	static void readHash() {
+		int time_sum=0;
 		mati=true;
 		int i=0;
 		for(i=1;;i++) {
@@ -170,11 +171,13 @@ public class Main {
 					try{Thread.sleep(1);}catch(Exception e) {e.printStackTrace();}
 				}
 				size=i;
-				if(i>=2) {
+				if(i>=6) {
 					try {
 						Block b=getBlock(i);
 						time[0]=b.time;
 						time[1]=getBlock(b.number-1).time;
+						time_sum+=time[0]-time[1];
+						System.out.println("平均掘削時間:"+ ((time_sum/i-5))/1000);
 					}catch(Exception e) {System.out.println("minの計算中にエラーが発生しました");time[0]=6000;time[1]=6000;}
 					size=i;
 					min=getMin(true);
@@ -344,7 +347,7 @@ public class Main {
 					System.arraycopy(難易度, 0, temp_d, 0, 難易度.length);
 					難易度=temp_d;
 				}
-				BigInteger i=new BigInteger("33910A562CF81F8A20CB31817F4350CA75ECF1CB59BED6E75AB6AEB1F4",16);
+				BigInteger i=new BigInteger("2910A562CF81F8A20CB31817F4350CA75ECF1CB59BED6E75AB6AEB1F4",16);
 				return min.add(i);
 			}else {
 				//６０秒以下：もっと難しく:数値にマイナス
@@ -358,7 +361,7 @@ public class Main {
 					System.arraycopy(難易度, 0, temp_d, 0, 難易度.length);
 					難易度=temp_d;
 				}
-				BigInteger i=new BigInteger("33910A562CF81F8A20CB31817F4350CA75ECF1CB59BED6E75AB6AEB1F4",16);
+				BigInteger i=new BigInteger("2910A562CF81F8A20CB31817F4350CA75ECF1CB59BED6E75AB6AEB1F4",16);
 				return min.add(i);
 			}
 		}else {
