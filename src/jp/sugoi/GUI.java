@@ -149,7 +149,7 @@ public class GUI {
 		String[] s=Main.w.address_0x0a.split("0x0a");
 		BigInteger bi=new BigInteger(s[0],10);
 		BigInteger bi1=new BigInteger(s[1],10);
-		address.setText(bi.toString(16)+bi1.toString(16));
+		address.setText(bi.toString(16)+"0x0a"+bi1.toString(16));
 		desktop_label.add(address);
 
 		copy_address=new JLabel();
@@ -343,7 +343,6 @@ public class GUI {
 
 			int max=190;
 			for(int i = 0;i<=max;i++) {
-
 				sin.setText("Loaded    "+i+"  /  "+max);
 				l1.setLocation((int)(((l0.getWidth()/max)*i)), (int)(300));
 				l2.setLocation(((l0.getWidth()/max)*(max-i)), 370);
@@ -358,9 +357,6 @@ public class GUI {
 		}
 
 	}
-
-
-
 
 
 	void fill_ips_debug() {

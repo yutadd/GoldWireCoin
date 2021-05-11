@@ -43,8 +43,9 @@ public class Transaction {
 			BigDecimal fee=new BigDecimal(s.split("@")[2]);
 			long time=Long.parseLong(s.split("@")[3]);
 			String sign=s.split("@")[4];
-			String sum=from+output+fee+time;
+			String sum=from+""+output+""+fee+""+time;
 			String hash1=hash(sum);
+			System.out.printf("[sign]hash = %s\r\n",hash1);
 			BigInteger[] sig= toBigInteger(sign,"0x0a",16);
 			BigInteger[] pu= toBigInteger(from, "0x0a", 16);
 			if(Bouncycastle_Secp256k1.verify(hash1.getBytes(), sig, pu)) {

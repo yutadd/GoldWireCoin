@@ -43,7 +43,7 @@ public class Main {
 	static long[] 間隔=new long[1];
 	static long[] 難易度 = new long[1];
 	static User[] u=new User[8];
-	/**
+	/**]
 	 * (ServerSocket)サーバーソケットからIPフィールドを取得するためのもの
 	 */
 	//static HashMap<User,JTextField> ssock=new HashMap<>();
@@ -85,7 +85,6 @@ public class Main {
 			}
 		};
 		Dr_AI.start();
-		//read_time();
 		Mining m=new Mining();
 		m.mining();
 		//65261
