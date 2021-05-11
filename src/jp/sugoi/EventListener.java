@@ -127,8 +127,8 @@ public class EventListener implements MouseListener, MouseMotionListener, Action
 						if(d.compareTo(new BigDecimal(Main.gui.amount.getText()))>=0) {
 							long time=System.currentTimeMillis();
 							double fee=0.5;
-							BigInteger[] sign=Main.w.sign((Transaction.hash(Main.w.pub[0].toString(16)+"0x0a"+Main.w.pub[1].toString(16)+Main.gui.to.getText().split("0x0a")[0]+"0x0b"+ Main.gui.to.getText().split("0x0a")[1]+"0x0c"+Double.parseDouble(Main.gui.amount.getText())+   ""+fee    +""+time)).getBytes());
-							System.out.printf("[sign]hash = %s\r\n",Transaction.hash(Main.w.pub[0].toString(16)+"0x0a"+Main.w.pub[1].toString(16)+Main.gui.to.getText().split("0x0a")[0]+"0x0b"+ Main.gui.to.getText().split("0x0a")[1]+"0x0c"+Double.parseDouble(Main.gui.amount.getText())+   ""+fee    +""+time));
+							BigInteger[] sign=Main.w.sign((Transaction.hash(Main.w.pub[0].toString(16)+"0x0a"+Main.w.pub[1].toString(16)+Main.gui.to.getText().split("0x0a")[0]+"0x0b"+ Main.gui.to.getText().split("0x0a")[1]+"0x0c"+new BigDecimal(Main.gui.amount.getText())+   ""+fee    +""+time)).getBytes());
+							System.out.printf("[sign]hash = %s\r\n",Main.w.pub[0].toString(16)+"0x0a"+Main.w.pub[1].toString(16)+Main.gui.to.getText().split("0x0a")[0]+"0x0b"+ Main.gui.to.getText().split("0x0a")[1]+"0x0c"+new BigDecimal(Main.gui.amount.getText())+   ""+fee    +""+time);
 							Transaction t=new Transaction(Main.w.pub[0].toString(16)+"0x0a"+Main.w.pub[1].toString(16)+"@" +  Main.gui.to.getText().split("0x0a")[0]+"0x0b"+ Main.gui.to.getText().split("0x0a")[1]+"0x0c"+new BigDecimal(Main.gui.amount.getText())+"@" +   fee   +"@" +time   +"@" + sign[0].toString(16)+"0x0a"+sign[1].toString(16),new BigDecimal(0));
 							System.out.println("[イベントリスナー]トランザクションハッシュ : "+t.hash);
 							if(t.ok) {
