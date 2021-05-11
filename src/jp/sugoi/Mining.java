@@ -47,8 +47,7 @@ public class Mining extends Thread{
 						}
 						BigInteger result=new BigInteger(hash(before),16);
 						if(result.compareTo(Main.shoki)==-1) {
-
-							System.out.println(hash(before));
+							System.out.println("mining完了 Hash : "+hash(before));
 							User.share("block~",before, Main.s);
 							/*記述*/
 							Main.addBlock(before);

@@ -37,7 +37,7 @@ public class Transaction {
 	SIGN					1583043277586@af958f7a1796b1f1841587bebcf6cc05efec9d7483ead206a5fe053f9b5c05080x0a84ccdae0158f7995dfb1f0fb2f9768cfb7c75cd8cb8a62b82af9b27890ebbba0
 		 */
 		try {
-			System.out.println(s);
+			System.out.println("[トランザクション]@有り原文 : "+s);
 			from=s.split("@")[0];
 			String output=s.split("@")[1];
 			BigDecimal fee=new BigDecimal(s.split("@")[2]);
@@ -91,7 +91,7 @@ public class Transaction {
 	boolean checkoutput(Output[] out,String input,BigDecimal balance){
 		BigDecimal 総アウトプット=new BigDecimal(0.0);
 		for(Output element:out) {
-			System.out.println("[トランザクション]送金先と送金元\r\n\t"+element.address[0].toString(16)+"\r\n\t"+from.split("0x0a")[0]);
+			System.out.println("[トランザクション]送金先と送金元↓\r\n送金先→\t"+element.address[0].toString(16)+"\r\n送金元→\t"+from.split("0x0a")[0]);
 			if(element.address[0].toString(16).equals(from.split("0x0a")[0])) {System.out.println("[トランザクション]送金先と送金元が同じ");return false;}
 			Address_Amount.put(element.address[0].toString(16),element.amount);
 			総アウトプット=総アウトプット.add(element.amount);
