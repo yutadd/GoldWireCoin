@@ -31,7 +31,7 @@ public class Wallet {
 				}finally {try {fr.close();System.out.println("Close_File");} catch (IOException e) {System.out.println("Already Closed?");}
 				}
 			} catch (FileNotFoundException e) {
-				System.out.println("ウォレットの存在を確認できません。");
+				System.out.println("[ウォレット]ウォレットファイルの存在を確認できません。");
 			}
 			//読み込み処理
 		}else {
@@ -51,7 +51,7 @@ public class Wallet {
 					fw.close();
 				}
 			} catch (IOException e) {
-				System.out.println("ウォレットの作成に失敗しました。");
+				System.out.println("[ウォレット]ウォレットの作成に失敗しました。");
 			}
 		}
 		address_0x0a=pub[0]+"0x0a"+pub[1];
@@ -76,6 +76,7 @@ public class Wallet {
 		Wallet w=new Wallet();
 		Main.readHash();
 		long time=System.currentTimeMillis();
+		System.out.println("=========================↓ウォレット情報↓==========================");
 		System.out.println(time);
 		System.out.println("秘密鍵："+new BigInteger(w.priv).toString(16));
 		System.out.println("公開鍵："+w.pub[0].toString(16));
@@ -92,5 +93,6 @@ public class Wallet {
 		System.out.println("偽鍵で認証："+Bouncycastle_Secp256k1.verify(b,bi, w.pub));
 		/*偽造・テスト*/
 		System.out.println("認証結果："+Bouncycastle_Secp256k1.verify(Transaction.hash("aa").getBytes(), sign_, w.pub));
+		System.out.println("=========================↑ウォレット情報↑==========================");
 	}
 }

@@ -128,7 +128,7 @@ public class EventListener implements MouseListener, MouseMotionListener, Action
 							long time=System.currentTimeMillis();
 							double fee=0.5;
 							BigInteger[] sign=Main.w.sign((Transaction.hash(Main.w.pub[0].toString(16)+"0x0a"+Main.w.pub[1].toString(16)+Main.gui.to.getText().split("0x0a")[0]+"0x0b"+ Main.gui.to.getText().split("0x0a")[1]+"0x0c"+new BigDecimal(Main.gui.amount.getText())+   ""+fee    +""+time)).getBytes());
-							System.out.printf("[sign]hash = %s\r\n",Main.w.pub[0].toString(16)+"0x0a"+Main.w.pub[1].toString(16)+Main.gui.to.getText().split("0x0a")[0]+"0x0b"+ Main.gui.to.getText().split("0x0a")[1]+"0x0c"+new BigDecimal(Main.gui.amount.getText())+   ""+fee    +""+time);
+							System.out.printf("[イベントリスナー]サイン生成用原文 = %s\r\n",Main.w.pub[0].toString(16)+"0x0a"+Main.w.pub[1].toString(16)+Main.gui.to.getText().split("0x0a")[0]+"0x0b"+ Main.gui.to.getText().split("0x0a")[1]+"0x0c"+new BigDecimal(Main.gui.amount.getText())+   ""+fee    +""+time);
 							Transaction t=new Transaction(Main.w.pub[0].toString(16)+"0x0a"+Main.w.pub[1].toString(16)+"@" +  Main.gui.to.getText().split("0x0a")[0]+"0x0b"+ Main.gui.to.getText().split("0x0a")[1]+"0x0c"+new BigDecimal(Main.gui.amount.getText())+"@" +   fee   +"@" +time   +"@" + sign[0].toString(16)+"0x0a"+sign[1].toString(16),new BigDecimal(0));
 							System.out.println("[イベントリスナー]トランザクションハッシュ : "+t.hash);
 							if(t.ok) {
@@ -141,12 +141,12 @@ public class EventListener implements MouseListener, MouseMotionListener, Action
 								System.out.println("[イベントリスナー]トランザクションが拒否されました。");
 							}
 						}else {
-							System.out.println("足りねぇ : \r\n"+d);
+							System.out.println("[イベントリスナー]お金が足りねぇ: "+d);
 						}
 					}catch(Exception ee) {
 						System.out.println("==========error==========");
 						ee.printStackTrace();
-						System.out.println(Main.gui.to.getText().split("0x0a")[0]+"   "+"0x0b"+ Main.gui.to.getText().split("0x0a")[1]);
+						System.out.println("[イベントリスナー]宛先アドレス"+Main.gui.to.getText().split("0x0a")[0]+"0x0b"+ Main.gui.to.getText().split("0x0a")[1]);
 						
 						System.out.println("==========error==========");
 					}

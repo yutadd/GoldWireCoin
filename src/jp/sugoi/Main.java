@@ -159,7 +159,7 @@ public class Main {
 				while(true) {
 					try {
 						String line = bs.readLine();
-						if(line==null) {bs.close();System.out.println("EOF");break;}
+						if(line==null) {bs.close();System.out.println("[ブロック]EOF");break;}
 						Block b=new Block(line,false,min);
 						b.give_utxo(false);
 						for(Transaction t:b.ts) {
@@ -176,13 +176,13 @@ public class Main {
 						time[0]=b.time;
 						time[1]=getBlock(b.number-1).time;
 						time_sum+=time[0]-time[1];
-						System.out.println("平均掘削時間:"+ ((time_sum/i-5))/1000);
-					}catch(Exception e) {System.out.println("minの計算中にエラーが発生しました");time[0]=6000;time[1]=6000;}
+						System.out.println("[ブロック]平均掘削時間:"+ ((time_sum/i-5))/1000);
+					}catch(Exception e) {System.out.println("[ブロック]minの計算中にエラーが発生しました");time[0]=6000;time[1]=6000;}
 					size=i;
 					min=getMin(true);
 				}
 			}else {
-				System.out.println("ファイルがもう見当たりません.");
+				System.out.println("[ブロック]ファイルがもう見当たりません.");
 				break;
 			}
 		}
@@ -221,8 +221,8 @@ public class Main {
 	static void addBlock(String block) {
 		Block blo=new Block(block,true,min);
 		int numb=blo.number;
-		System.out.println("thisblocks number="+numb);
-		System.out.println("saved block number="+getBlockSize());
+		System.out.println("[メイン]このブロックのナンバー: "+numb);
+		System.out.println("[メイン]セーブされたブロックの数: "+getBlockSize());
 		if(numb>getBlockSize()) {
 			delfrom(numb);
 			saveBlock(block);
@@ -283,7 +283,7 @@ public class Main {
 			try {
 				time[0]=b.time;
 				time[1]=getBlock(b.number-1).time;
-			}catch(Exception e) {System.out.println("minの計算中にエラーが発生しました");time[0]=6000;time[1]=6000;}
+			}catch(Exception e) {System.out.println("[メイン]minの計算中にエラーが発生しました");time[0]=6000;time[1]=6000;}
 			min=getMin(true);
 		}
 
@@ -325,7 +325,7 @@ public class Main {
 		try {
 			time[0]=getBlock(from-1).time;
 			time[1]=getBlock(from-2).time;
-		}catch(Exception e) {System.out.println("minの計算中にエラーが発生しました");time[0]=6000;time[1]=6000;}
+		}catch(Exception e) {System.out.println("[メイン]minの計算中にエラーが発生しました");time[0]=6000;time[1]=6000;}
 		min=getMin(false);
 	}
 	static BigInteger getMin(boolean show){
