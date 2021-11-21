@@ -28,7 +28,7 @@ public class EventListener implements MouseListener, MouseMotionListener, Action
 					}
 					try {
 						c.put(e.getComponent().getName(), new Stats_GUI(Main.gui.debugs.get(Main.gui.debug[Integer.parseInt(e.getComponent().getName())]),e.getComponent().getName()));
-					}catch(Exception eer) {System.out.println(eer.getStackTrace()[0]);}
+					}catch(Exception eer) {System.out.println("[Event]範囲外をクリックした");}
 					timeout=false;
 					Thread th_time=new Thread() {
 						@Override

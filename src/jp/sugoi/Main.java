@@ -72,8 +72,9 @@ public class Main {
 
 		for(int i=0;i<30;i++) {
 			System.out.println();
-		}try {
-		Runtime.getRuntime().exec("cmd /c cls");
+		}
+		try {
+			//Runtime.getRuntime().exec("cmd /c cls");
 		}catch(Exception e) {e.printStackTrace();}
 		Thread Dr_AI=new Thread(){
 			@Override
