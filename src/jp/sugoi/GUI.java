@@ -47,7 +47,7 @@ public class GUI {
 	 *3_______6____7_______10<br>
 	 *____1______0_____2_____<br>
 	 */
-	JLabel[] debug=new JLabel[11];
+	JLabel[] debugLamp=new JLabel[11];
 	HashMap<JLabel,Image> debug_info=new HashMap<>();
 	JList<String> trans=new JList<>();
 	ImageIcon bigIconr;
@@ -125,7 +125,7 @@ public class GUI {
 			fill_ips_debug();
 
 
-			debug[0].setBounds((int)(940), (int)(290),(int)((error.getIconWidth()+1)),(int)((error.getIconHeight()+1)));
+			debugLamp[0].setBounds((int)(940), (int)(290),(int)((error.getIconWidth()+1)),(int)((error.getIconHeight()+1)));
 
 			debug_add();
 
@@ -375,14 +375,15 @@ public class GUI {
 		}
 		for(int i=0;i<11;i++) {
 			lab=new JLabel();
-			debug[i]=lab;
-			debug[i].setIcon(error);
-			debug[i].setName(i+"");
-			debug[i].addMouseListener(ev);
+			debugLamp[i]=lab;
+			debugLamp[i].setIcon(error);
+			debugLamp[i].setName(i+"");
+			debugLamp[i].addMouseListener(ev);
 		}
 	}
 
 	void ips_add() {
+		//-----左←
 		ips[0].setBounds((int)((105)), (int)((105)),(int)((202)),(int)((49)));
 		desktop_label.add(ips[0]);
 		ips[1].setBounds((int)((295)), (int)((60)),(int)((202)),(int)((49)));
@@ -391,35 +392,46 @@ public class GUI {
 		desktop_label.add(ips[2]);
 		ips[3].setBounds((int)((670)), (int)((105)),(int)((202)),(int)((49)));
 		desktop_label.add(ips[3]);
+		//-----右→
+		ips[4].setBounds((int)((1003)), (int)((105)),(int)((202)),(int)((49)));
+		desktop_label.add(ips[4]);
+		ips[5].setBounds((int)((1185)), (int)((60)),(int)((202)),(int)((49)));
+		desktop_label.add(ips[5]);
+		ips[6].setBounds((int)((1390)), (int)((60)),(int)((202)),(int)((49)));
+		desktop_label.add(ips[6]);
+		ips[7].setBounds((int)((1580)), (int)((105)),(int)((202)),(int)((49)));
+		desktop_label.add(ips[7]);
 	}
 
 
 	void debug_add(){
-		desktop_label.add(debug[0]);
-		debug[1].setBounds((int)(480), (int)(309), (int)(error.getIconWidth()),(int)(error.getIconHeight()));
-		desktop_label.add(debug[1]);
-		debug[3].setBounds((int)(184), (int)(160),(int)(error.getIconWidth()), (int)(error.getIconHeight()));
-		desktop_label.add(debug[3]);
-		debug[4].setBounds((int)(376), (int)(110), (int)(error.getIconWidth()),(int)( error.getIconHeight()));
-		desktop_label.add(debug[4]);
-		debug[5].setBounds((int)(584), (int)(110), (int)(error.getIconWidth()), (int)(error.getIconHeight()));
-		desktop_label.add(debug[5]);
-		debug[6].setBounds((int)(766), (int)(160), (int)(error.getIconWidth()), (int)(error.getIconHeight()));
-		desktop_label.add(debug[6]);
+		desktop_label.add(debugLamp[0]);
+		debugLamp[1].setBounds((int)(480), (int)(309), (int)(error.getIconWidth()),(int)(error.getIconHeight()));
+		desktop_label.add(debugLamp[1]);
+		debugLamp[2].setBounds((int)1400,(int)310, (int)(error.getIconWidth()),(int)(error.getIconHeight()));
+		desktop_label.add(debugLamp[2]);
+		debugLamp[3].setBounds((int)(184), (int)(160),(int)(error.getIconWidth()), (int)(error.getIconHeight()));
+		desktop_label.add(debugLamp[3]);
+		debugLamp[4].setBounds((int)(376), (int)(110), (int)(error.getIconWidth()),(int)( error.getIconHeight()));
+		desktop_label.add(debugLamp[4]);
+		debugLamp[5].setBounds((int)(584), (int)(110), (int)(error.getIconWidth()), (int)(error.getIconHeight()));
+		desktop_label.add(debugLamp[5]);
+		debugLamp[6].setBounds((int)(766), (int)(160), (int)(error.getIconWidth()), (int)(error.getIconHeight()));
+		desktop_label.add(debugLamp[6]);
 	}
 	EventListener ev=new EventListener();
 	HashMap<JLabel,Stats> debugs=new HashMap<>();
 	public void stat(int i,String name, boolean b,String[][] info) {
 		if(!b) {
-			debug[i].setIcon(error);
-			debug_info.put(debug[i],error.getImage());
-			debugs.put(debug[i],new Stats(info));
-			debug[i].repaint();
+			debugLamp[i].setIcon(error);
+			debug_info.put(debugLamp[i],error.getImage());
+			debugs.put(debugLamp[i],new Stats(info));
+			debugLamp[i].repaint();
 		}else {
-			debug[i].setIcon(ok);
-			debugs.put(debug[i],new Stats(info));
-			debug_info.put(debug[i],ok.getImage());
-			debug[i].repaint();
+			debugLamp[i].setIcon(ok);
+			debugs.put(debugLamp[i],new Stats(info));
+			debug_info.put(debugLamp[i],ok.getImage());
+			debugLamp[i].repaint();
 		}
 	}
 }

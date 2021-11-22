@@ -60,7 +60,7 @@ public class Server extends Main implements Runnable {
 			GUI gui=Main.gui;
 			for(int i=0;i<=3;i++) {
 				if(gui.ips[i].getText().equals("")) {
-					gui.ips[i].setText(so.getInetAddress().getHostAddress());
+					//gui.ips[i].setText(so.getInetAddress().getHostAddress());
 					u.ip_num=i;
 					String[][] message={
 							{"name","Node"},
