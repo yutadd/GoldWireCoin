@@ -11,7 +11,7 @@ public class DNS extends Main {
 		try {
 			System.out.println("すっごい.jp - timeout1024ms");
 			s=new Socket();
-			InetSocketAddress endpoint= new InetSocketAddress("すっごい.jp",  53);
+			InetSocketAddress endpoint= new InetSocketAddress("すっごい.jp",  25565);
 			s.connect(endpoint,1024);
 			System.out.println("connect complete");
 			String[][] message={
@@ -21,9 +21,9 @@ public class DNS extends Main {
 			gui.stat(0,"DNS",true,message);
 		} catch (Exception e) {
 			try {
-				System.out.println("192.168.159.1- timeout1024ms");
+				System.out.println("172.24.8.194- timeout1024ms");
 				s=new Socket();
-				InetSocketAddress endpoint= new InetSocketAddress("192.168.159.1",  53);
+				InetSocketAddress endpoint= new InetSocketAddress("172.24.8.194",  25565);
 				s.connect(endpoint,1024);
 				System.out.println("connect complete");
 				String[][] message={
@@ -35,7 +35,7 @@ public class DNS extends Main {
 				try {
 					System.out.println("localhost - timeout1024ms");
 					s=new Socket();
-					InetSocketAddress endpoint= new InetSocketAddress("localhost",  53);
+					InetSocketAddress endpoint= new InetSocketAddress("localhost",  25565);
 					s.connect(endpoint,1024);
 					System.out.println("connect complete");
 					String[][] message={
