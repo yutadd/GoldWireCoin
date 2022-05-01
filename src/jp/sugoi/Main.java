@@ -148,6 +148,8 @@ public class Main {
 		int time_sum=0;
 		mati=true;
 		int i=0;
+		utxo.clear();
+		min=shoki;
 		for(i=1;;i++) {
 			File file=new File("Blocks"+File.separator+"Block-"+i);
 			if(file.exists()) {
@@ -244,7 +246,7 @@ public class Main {
 		return null;
 	}
 	static int getNumber(String hash) {
-		for(int i=0;i<=getBlockSize();i++) {
+		for(int i=1;i<=getBlockSize();i++) {
 			File file=new File("Blocks"+File.separator+"Block-"+i);
 			String s;
 			try {
@@ -294,7 +296,7 @@ public class Main {
 	}
 	static void delfrom(int from) {
 		for(int i=size;from<=i;i--) {
-			File file=new File("Blocks"+File.separator+"Block-"+(i+1));
+			File file=new File("Blocks"+File.separator+"Block-"+(i));
 			if(file.exists()) {
 				try {
 					FileReader is=null;

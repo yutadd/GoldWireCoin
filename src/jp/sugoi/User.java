@@ -113,7 +113,7 @@ public class User extends Thread{
 										}
 										i++;
 									}
-									if(ok) {
+									if(ok&&blocks[0].previous_hash.equals(Mining.hash( Main.getBlock(blocks[0].number-1).sum))) {
 										if(blocks[blocks.length-1].number>Main.getBlockSize()) {
 											Main.mati=true;
 											Main.delfrom(blocks[0].number);
@@ -121,7 +121,10 @@ public class User extends Thread{
 												Main.addBlock(b.sum);
 											}
 											Main.mati=false;
+											Main.readHash();
 										}
+									}else {
+										System.out.println("[ユーザー]受け取ったブロック０番目のハッシュ値が持っているブロックと一致しない。");
 									}
 								}
 							}
