@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import priv.key.Bouncycastle_Secp256k1;
 
@@ -98,7 +99,15 @@ public class Transaction {
 		}
 		BigDecimal utxo=new BigDecimal(0.0);
 		if(Main.utxo.containsKey(input)) {
+			System.out.println("[トランザクション]UTXOが見つかった："+Main.utxo.get(input).doubleValue());
 			utxo=utxo.add(Main.utxo.get(input));
+		}else {
+			System.out.println("[トランザクション]UTXOが見つからなかった。");
+			System.out.println("支払元"+input+"\r\nutxo:");
+			for(Entry<String,BigDecimal> set:Main.utxo.entrySet()) {
+				double bd=set.getValue().doubleValue();
+				System.out.printf("\t%s : %f\r\n",set.getKey(),bd);
+			}
 		}
 		utxo=utxo.subtract(balance);
 

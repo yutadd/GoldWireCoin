@@ -65,7 +65,6 @@ public class User extends Thread{
 										System.out.println("記述し終えたブロックが送られてきた。");
 									}
 								}
-
 							}
 						}else if(line.startsWith("trans~")||line.startsWith("disc_transaction~")) {
 							String[] tr=line.split("~");
@@ -182,8 +181,10 @@ public class User extends Thread{
 						}
 
 					}
-				} catch (Exception e) {e.printStackTrace();}
-				System.out.println("User.java:180");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				System.out.println("不明なエラー");
 				remove();
 			}
 		};

@@ -12,6 +12,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -28,6 +29,7 @@ import java.util.Scanner;
 
  * @author spyk4
  */
+
 public class Main {
 	static boolean haikei_nashi=false;
 	static Map<String,BigDecimal> utxo=new HashMap<String,BigDecimal>();
@@ -120,6 +122,10 @@ public class Main {
 							}
 						}
 					}
+					for(Entry<String,BigDecimal> set:utxo.entrySet()) {
+						double bd=set.getValue().doubleValue();
+						System.out.printf("%s : %f \r\n",set.getKey(),bd);
+					}
 					System.out.println("==========↑Stats↑==========");
 				}
 			}
@@ -148,6 +154,9 @@ public class Main {
 		int time_sum=0;
 		mati=true;
 		int i=0;
+		間隔=new long[1];
+		難易度 = new long[1];
+		pool=new ArrayList<>();
 		utxo.clear();
 		min=shoki;
 		for(i=1;;i++) {
