@@ -1,30 +1,7 @@
 package jp.sugoi;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.math.BigInteger;
-import java.util.HashMap;
-
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
-import javax.swing.JList;
-import javax.swing.JTextField;
-import javax.swing.border.LineBorder;
-
-public class GUI {
-
-	static Color  default_color=new Color(0,0,0);
+class GUI {
+	/*static Color  default_color=new Color(0,0,0);
 	static Color blue_color =new Color(0,150,220);
 	//19201080
 	double golden_screen_rate=1;
@@ -36,17 +13,18 @@ public class GUI {
 	JLayeredPane l2=new JLayeredPane();
 	ImageIcon loading;
 	JLabel desktop_label=new JLabel();
-	/**
+	/*
 	 *___1_2__________5_6___<br>
 	 *0_______3____4_______7<br>
 	 *______________________<br>
 	 */
-	JTextField[] ips=new JTextField[8];
+	//JTextField[] ips=new JTextField[8];
 	/**
 	 *___4_5__________8_9___<br>
 	 *3_______6____7_______10<br>
 	 *____1______0_____2_____<br>
 	 */
+	/*
 	JLabel[] debugLamp=new JLabel[11];
 	HashMap<JLabel,Image> debug_info=new HashMap<>();
 	JList<String> trans=new JList<>();
@@ -70,7 +48,7 @@ public class GUI {
 	double y_rate=y/(double)1080;
 	public GUI() {
 		System.out.println("x_rate : "+x_rate+"\r\n+y_rate : "+y_rate);
-		/*画像の読み込み*/
+		//画像の読み込み
 		try {
 			ImageEditor ie=new ImageEditor();
 
@@ -265,10 +243,7 @@ public class GUI {
 	}
 	class Graph extends Thread{
 		int mode=1;
-		/**
-		 *
-		 * データを可視化するためのメソッド
-		 */
+
 		Graph(int mode){
 			this.mode=mode;
 		}
@@ -383,6 +358,7 @@ public class GUI {
 	}
 
 	void ips_add() {
+		
 		//-----左←
 		ips[0].setBounds((int)((105)), (int)((105)),(int)((202)),(int)((49)));
 		desktop_label.add(ips[0]);
@@ -402,7 +378,6 @@ public class GUI {
 		ips[7].setBounds((int)((1580)), (int)((105)),(int)((202)),(int)((49)));
 		desktop_label.add(ips[7]);
 	}
-
 
 	void debug_add(){
 		desktop_label.add(debugLamp[0]);
@@ -434,4 +409,5 @@ public class GUI {
 			debugLamp[i].repaint();
 		}
 	}
+	*/
 }

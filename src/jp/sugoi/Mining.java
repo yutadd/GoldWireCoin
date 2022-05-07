@@ -1,6 +1,5 @@
 package jp.sugoi;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -51,7 +50,7 @@ public class Mining extends Thread{
 							User.share("block~",before, Main.s);
 							/*記述*/
 							Main.addBlock(before);
-							for(User u:Main.u) {
+							/*for(User u:Main.u) {
 								if(u!=null) {
 									if(u.notice) {
 										try {
@@ -63,7 +62,7 @@ public class Mining extends Thread{
 										}
 									}
 								}
-							}
+							}*/
 						}
 					}else {
 						try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}

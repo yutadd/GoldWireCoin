@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import priv.key.Bouncycastle_Secp256k1;
@@ -24,7 +25,7 @@ public class Transaction {
 	BigDecimal fee;
 	boolean ok;
 	BigDecimal amount;
-	Transaction(String s,BigDecimal balance){
+	Transaction(String s,BigDecimal balance,Map<String,BigDecimal> temp_utxo){
 
 		//                             from        (output       amount)         fee                                 time_stamp                                  sign
 		//input :
@@ -56,7 +57,7 @@ public class Transaction {
 				hash=hash1;
 				input= from.split("0x0a")[0];
 				transaction_sum=from+"@"+output+"@"+fee+"@"+time+"@"+sign;
-				if(checkoutput(out, from.split("0x0a")[0],balance)) {
+				if(checkoutput(out, from.split("0x0a")[0],balance,temp_utxo)) {
 					ok=true;
 					System.out.println("[トランザクション]トランザクションの認証に成功-fee : "+fee);
 				}else {System.out.println("[トランザクション]checkoutputに失敗");}
@@ -89,7 +90,7 @@ public class Transaction {
 		return out;
 	}
 	//同じアドレスだからアウトプットが適正に計算されない
-	boolean checkoutput(Output[] out,String input,BigDecimal balance){
+	boolean checkoutput(Output[] out,String input,BigDecimal balance,Map<String,BigDecimal> temp_utxo){
 		BigDecimal 総アウトプット=new BigDecimal(0.0);
 		for(Output element:out) {
 			System.out.println("[トランザクション]送金先と送金元↓\r\n送金先→\t"+element.address[0].toString(16)+"\r\n送金元→\t"+from.split("0x0a")[0]);
@@ -98,13 +99,13 @@ public class Transaction {
 			総アウトプット=総アウトプット.add(element.amount);
 		}
 		BigDecimal utxo=new BigDecimal(0.0);
-		if(Main.utxo.containsKey(input)) {
-			System.out.println("[トランザクション]UTXOが見つかった："+Main.utxo.get(input).doubleValue());
-			utxo=utxo.add(Main.utxo.get(input));
+		if(temp_utxo.containsKey(input)) {
+			System.out.println("[トランザクション]UTXOが見つかった："+temp_utxo.get(input).doubleValue());
+			utxo=utxo.add(temp_utxo.get(input));
 		}else {
 			System.out.println("[トランザクション]UTXOが見つからなかった。");
 			System.out.println("支払元"+input+"\r\nutxo:");
-			for(Entry<String,BigDecimal> set:Main.utxo.entrySet()) {
+			for(Entry<String,BigDecimal> set:temp_utxo.entrySet()) {
 				double bd=set.getValue().doubleValue();
 				System.out.printf("\t%s : %f\r\n",set.getKey(),bd);
 			}

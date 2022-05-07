@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Block {
 
@@ -19,12 +20,12 @@ public class Block {
 
 	//https://kasobu.com/blockchain-mining/#i
 	// previous_hash,miner_address,nans,block_number,time,transaction,transaction,...
-	public Block(String string,boolean check,BigInteger diff) {
+	public Block(String string,boolean check,BigInteger diff,Map<String,BigDecimal> utxo) {
 		try {
 			if(!check) {System.out.println("\t\t=====[ブロック]=======\r\n"+string.replace(",", "\r\n")+"\r\n\t\t=======[ブロック]=====\r\n");}
 			sum=string;
 			String[] he_tr=string.split(",");
-			boolean transaction_ok=transcheck(he_tr,check);
+			boolean transaction_ok=transcheck(he_tr,check,utxo);
 			miner=he_tr[2];
 			number=Integer.parseInt(he_tr[3]);
 			time=Long.parseLong(he_tr[4]);
@@ -79,7 +80,7 @@ public class Block {
 		if(!check) {System.out.println("[ブロック]マイナーの残額 : "+Main.utxo.get(he_tr[1].split("0x0a")[0]));}
 		return true;
 	}
-	boolean transcheck(String[] he_tr,boolean check){
+	boolean transcheck(String[] he_tr,boolean check,Map<String,BigDecimal> temp_utxo){
 		boolean ok=true;
 		try {
 			HashMap<String,BigDecimal> list =new HashMap<>();
@@ -87,7 +88,7 @@ public class Block {
 				if(!check) {System.out.println("=======トランザクションのチェック======<<"+(i-4)+"/"+(he_tr.length-5)+">>======トランザクションのチェック=======");}
 				if(!check)System.out.println("原文"+i+": "+he_tr[i]);
 				BigDecimal d=(list.get(he_tr[i].split("@")[0].split("0x0a")[0])==null)?new BigDecimal(0.0):list.get(he_tr[i].split("@")[0].split("0x0a")[0]);
-				Transaction t=new Transaction(he_tr[i],d);
+				Transaction t=new Transaction(he_tr[i],d,temp_utxo);
 				if(!t.ok) {
 					if(!check) {System.out.println("[ブロック]トランザクション"+i+"の認証に失敗");}
 					ok=false;

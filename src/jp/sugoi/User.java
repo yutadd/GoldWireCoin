@@ -7,13 +7,15 @@ import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.Socket;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class User extends Thread{
 	Socket s;
 	int ip_num=0;
 	int debug_num=0;
 	boolean light=false;
-	boolean notice=false;
+	//boolean notice=false;
 	String transactions="";
 	int b;
 	@Override
@@ -48,7 +50,7 @@ public class User extends Thread{
 							if(!Main.mati) {
 								System.out.println("ブロックを受信");
 								String blocks=line.split("~")[1];
-								Block b=new Block(blocks,false,Main.min);
+								Block b=new Block(blocks,false,Main.min,Main.utxo);
 								if(b.previous_hash.equals(Main.getlatesthash())) {
 									if(b.ok) {
 										Main.addBlock(b.sum);
@@ -72,12 +74,12 @@ public class User extends Thread{
 							String from_shou=from.split("0x0a")[0];
 							BigDecimal amount=new BigDecimal(0.0);
 							for(String s:Main.pool) {
-								Transaction t=new Transaction(s,new BigDecimal(0));
+								Transaction t=new Transaction(s,new BigDecimal(0),Main.utxo);
 								if(t.input.equals(from_shou)) {
 									amount=amount.add(t.amount);
 								}
 							}
-							Transaction t=new Transaction((tr[0].equals("disc_transaction"))?tr[2]:tr[1],amount);
+							Transaction t=new Transaction((tr[0].equals("disc_transaction"))?tr[2]:tr[1],amount,Main.utxo);
 							if(t.ok) {
 								s.getOutputStream().write((t.hash+"~ok\r\n").getBytes());
 								transactions=transactions+((transactions.equals(""))?"":"0x0a")+t.hash;
@@ -85,7 +87,7 @@ public class User extends Thread{
 								User.share("trans~", t.transaction_sum,s);
 							}else {
 								s.getOutputStream().write((t.hash+"~denny\r\n").getBytes());
-								notice=false;
+								//notice=false;
 							}
 						}else if(line.startsWith("notfound")){
 							System.out.println("["+Main.getfrom+"][ユーザー]notfoundが送られてきた。");
@@ -99,12 +101,30 @@ public class User extends Thread{
 								int i=0;
 								boolean ok=true;
 								if(args[0]==null) {continue;}
-								Block bl=new Block(args[0],true,null);
+								Map<String,BigDecimal> temp_utxo=Main.utxo;
+								
+								Block bl=new Block(args[0],true,null,Main.utxo);
 								if(bl.ok) {
 									BigInteger temp_diff=Main.getBlock(bl.number-1).diff;
+									for(Transaction t:bl.ts) {
+										if(t.ok) {
+											temp_utxo.put(t.from, temp_utxo.get(t.from).subtract(t.amount.add(t.fee)));
+											for(Entry<String,BigDecimal> add:t.Address_Amount.entrySet()) {
+												temp_utxo.put(add.getKey(),temp_utxo.get(add.getKey()).add(add.getValue()));
+											}
+										}
+									}
 									for(String s:args) {
-										Block b=new Block(s,false,temp_diff);
+										Block b=new Block(s,false,temp_diff,temp_utxo);
 										if(b.ok) {
+											for(Transaction t:b.ts) {
+												if(t.ok) {
+													temp_utxo.put(t.from, temp_utxo.get(t.from).subtract(t.amount.add(t.fee)));
+													for(Entry<String,BigDecimal> add:t.Address_Amount.entrySet()) {
+														temp_utxo.put(add.getKey(),temp_utxo.get(add.getKey()).add(add.getValue()));
+													}
+												}
+											}
 											blocks[i]=b;
 										}else {
 											ok=false;
@@ -112,7 +132,8 @@ public class User extends Thread{
 										}
 										i++;
 									}
-									if(ok&&blocks[0].previous_hash.equals(Mining.hash( Main.getBlock(blocks[0].number-1).sum))) {
+									if(ok) {
+										if(blocks[0].previous_hash.equals(Mining.hash( Main.getBlock(blocks[0].number-1).sum))) {
 										if(blocks[blocks.length-1].number>Main.getBlockSize()) {
 											Main.mati=true;
 											Main.delfrom(blocks[0].number);
@@ -122,8 +143,11 @@ public class User extends Thread{
 											Main.mati=false;
 											Main.readHash();
 										}
+										}else {
+											System.out.println("[ユーザー]処理中断：受け取ったブロックが自分の持っているブロックとつながらない。");
+										}
 									}else {
-										System.out.println("[ユーザー]受け取ったブロック０番目のハッシュ値が持っているブロックと一致しない。");
+										System.out.println("[ユーザー]処理中断：not ok");
 									}
 								}
 							}
@@ -176,7 +200,7 @@ public class User extends Thread{
 						}else if(line.equals("light")) {
 							light=true;
 						}else if(line.equals("notice")) {
-							notice=true;
+							//notice=true;
 							System.out.println("noticeをテュルーにした！");
 						}
 
@@ -184,7 +208,7 @@ public class User extends Thread{
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				System.out.println("不明なエラー");
+				System.out.println("[ユーザー]IOストリームを開けませんでした");
 				remove();
 			}
 		};
@@ -195,7 +219,12 @@ public class User extends Thread{
 
 		System.out.println("ID"+b);
 		int i=0;
-		for(i=0;i<=8;i++) {
+		try {
+			if(!s.isClosed())s.close();
+			System.out.println("[ユーザー]自身を削除した : "+i+","+b);
+			Main.u.remove(this);
+			}catch(Exception e) {System.out.println("[User]削除ミス");}
+		/*for(i=0;i<=8;i++) {
 			if(Main.u[i]!=null) {
 				System.out.println("remove : "+i+","+Main.u[i].b);
 				if(Main.u[i].b==b) {
@@ -207,20 +236,15 @@ public class User extends Thread{
 						Main.gui.stat(Main.u[i].debug_num, "node", false,message);
 						Main.gui.ips[Main.u[i].ip_num].setText("");
 					}catch(Exception en) {en.printStackTrace();}
-					System.out.println("削除した : "+i+","+Main.u[i].b);
-					Main.u[i]=null;
-					break;
+					
 				}
 			}
-		}
-		System.out.println(i);
+		}*/
 	}
 
 	public static void share(String type,String st,Socket s) {
-		int su=0;
 		for(User u:Main.u) {
 			if(u==null) {continue;}
-			su++;
 			if(!(u.s.getInetAddress().getHostAddress().equals(s.getInetAddress().getHostAddress())&&u.s.getPort()==s.getPort())) {
 				try {
 					OutputStream os=u.s.getOutputStream();
@@ -231,8 +255,7 @@ public class User extends Thread{
 						os.flush();
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
-					System.out.println("User.java:228");
+					System.out.println("[ユーザー]"+e.getMessage());
 					u.remove();
 
 				}

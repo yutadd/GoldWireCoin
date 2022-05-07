@@ -1,17 +1,7 @@
 package jp.sugoi;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.HashMap;
-
-import javax.swing.JOptionPane;
-
-public class EventListener implements MouseListener, MouseMotionListener, ActionListener{
+public class EventListener /*implements MouseListener, MouseMotionListener, ActionListener*/{
+	/*
 	boolean timeout = true;
 	boolean waiting_agree=false;
 	public EventListener() {}
@@ -130,7 +120,7 @@ public class EventListener implements MouseListener, MouseMotionListener, Action
 							System.out.printf("[イベントリスナー]サイン生成用原文 = %s\r\n",Main.w.pub[0].toString(16)+"0x0a"+Main.w.pub[1].toString(16)+Main.gui.to.getText().split("0x0a")[0]+"0x0b"+ Main.gui.to.getText().split("0x0a")[1]+"0x0c"+new BigDecimal(Main.gui.amount.getText())+   ""+fee    +""+time);
 							BigInteger[] sign=Main.w.sign((Transaction.hash(Main.w.pub[0].toString(16)+"0x0a"+Main.w.pub[1].toString(16)+Main.gui.to.getText().split("0x0a")[0]+"0x0b"+ Main.gui.to.getText().split("0x0a")[1]+"0x0c"+new BigDecimal(Main.gui.amount.getText())+   ""+fee    +""+time)).getBytes());
 							System.out.printf("[イベントリスナー]サイン生成用原文 = %s\r\n",Main.w.pub[0].toString(16)+"0x0a"+Main.w.pub[1].toString(16)+Main.gui.to.getText().split("0x0a")[0]+"0x0b"+ Main.gui.to.getText().split("0x0a")[1]+"0x0c"+new BigDecimal(Main.gui.amount.getText())+   ""+fee    +""+time);
-							Transaction t=new Transaction(Main.w.pub[0].toString(16)+"0x0a"+Main.w.pub[1].toString(16)+"@" +  Main.gui.to.getText().split("0x0a")[0]+"0x0b"+ Main.gui.to.getText().split("0x0a")[1]+"0x0c"+new BigDecimal(Main.gui.amount.getText())+"@" +   fee   +"@" +time   +"@" + sign[0].toString(16)+"0x0a"+sign[1].toString(16),new BigDecimal(0));
+							Transaction t=new Transaction(Main.w.pub[0].toString(16)+"0x0a"+Main.w.pub[1].toString(16)+"@" +  Main.gui.to.getText().split("0x0a")[0]+"0x0b"+ Main.gui.to.getText().split("0x0a")[1]+"0x0c"+new BigDecimal(Main.gui.amount.getText())+"@" +   fee   +"@" +time   +"@" + sign[0].toString(16)+"0x0a"+sign[1].toString(16),new BigDecimal(0),Main.utxo);
 							System.out.println("[イベントリスナー]トランザクションハッシュ : "+t.hash);
 							if(t.ok) {
 								Main.pool.add(t.transaction_sum);
@@ -161,5 +151,5 @@ public class EventListener implements MouseListener, MouseMotionListener, Action
 		JOptionPane.showMessageDialog(Main.gui.l0,"送信しました。\r\n"+address+"\r\n"+amount+"  "+Main.name+"\r\n手数料"+fee+"  "+Main.name+"\r\n"+"残額  "+Main.utxo.get(Main.w.pub[0].toString(16)));
 		return true;
 	}
-
+*/
 }

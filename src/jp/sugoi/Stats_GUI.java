@@ -1,16 +1,9 @@
 package jp.sugoi;
 
-import java.awt.Color;
 import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTable;
 
 public class Stats_GUI extends WindowAdapter{
-	String name=null;
+	/*String name=null;
 	JFrame frame=null;
 	JLabel lab=null;
 	JTable tab=null;
@@ -77,6 +70,6 @@ public class Stats_GUI extends WindowAdapter{
 		frame.setVisible(false);
 		frame=null;
 		Main.gui.ev.c.remove(this.name);
-	}
+	}*/
 
 }

@@ -17,16 +17,19 @@ public class Server extends Main implements Runnable {
 		}
 		for(;;) {
 			Socket so = null;
-			try {
+			/*
 				String[][] message={
 						{"name","ServerSocket"},
 						{"Port","65261"},
 						{"状態","接続待ち中"}
 				};
 				gui.stat(1,"SERVER",true,message);
+				*/
 				//65261
+			try {
 				so=ss.accept();
 			}catch(IOException e){e.printStackTrace();}
+			/*
 			boolean aru=false;
 			for(int i=0;i<=3;i++) {
 				if(Main.u[i]==null) {
@@ -47,17 +50,18 @@ public class Server extends Main implements Runnable {
 				};
 				gui.stat(1, "SERVER", false, message);
 				continue;
-			}
+			}*/
 			System.out.println("connected from:"+so.getInetAddress().getHostAddress());
 			User u=new User(so,Main.BANGO);
 			Main.BANGO++;
-			for(int i=0;i<=3;i++) {
+			/*for(int i=0;i<=3;i++) {
 				if(Main.u[i]==null) {
 					Main.u[i]=u;
 					break;
 				}
-			}
-			GUI gui=Main.gui;
+			}*/
+			Main.u.add(u);
+			/*GUI gui=Main.gui;
 			for(int i=0;i<=3;i++) {
 				if(gui.ips[i].getText().equals("")) {
 					//gui.ips[i].setText(so.getInetAddress().getHostAddress());
@@ -71,7 +75,7 @@ public class Server extends Main implements Runnable {
 					u.debug_num=i+3;
 					break;
 				}
-			}
+			}*/
 			u.start();
 		}
 	}

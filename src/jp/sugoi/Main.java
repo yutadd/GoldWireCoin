@@ -16,18 +16,11 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Scanner;
 
-/**
- *
-	String input = ...;
-	byte[] compressed = LitheString.zip(input); // in the worst case, compressed is the plain UTF-8 encoding of input
-	String uncompressed = LitheString.unzip(compressed);
-	if (input.equals(uncompressed)){
-		System.out.println("It works!");
-	} else {
-		System.out.println("Please submit a bug for "+input);
-	}
 
- * @author spyk4
+//
+/**
+ *TODO:VPSで使うために、早急にCLIですべての操作ができるようにする。<br>
+ * @author yutadd
  */
 
 public class Main {
@@ -44,7 +37,8 @@ public class Main {
 	static Wallet w;
 	static long[] 間隔=new long[1];
 	static long[] 難易度 = new long[1];
-	static User[] u=new User[8];
+	static ArrayList<User> u=new ArrayList<User>();
+	
 	/**]
 	 * (ServerSocket)サーバーソケットからIPフィールドを取得するためのもの
 	 */
@@ -66,6 +60,7 @@ public class Main {
 	static int size=0;
 	static BigInteger min=new BigInteger("26611349253966442813730644663330183884399686815584447189708332380985641",10);
 	static BigInteger shoki=new BigInteger("26611349253966442813730644663330183884399686815584447189708332380985641",10);
+	
 	public static void main(String[] args) {
 		System.out.println(System.getProperty("file.encoding"));
 		gui=new GUI();
@@ -82,7 +77,7 @@ public class Main {
 			@Override
 			public void run() {
 				for(;;) {
-					gui_check();
+					//gui_check();
 					try {Thread.sleep(700);} catch (InterruptedException e) {e.printStackTrace();}
 				}
 			}
@@ -110,7 +105,7 @@ public class Main {
 					String now_10=min.toString(10);
 					String def_10=shoki.toString(10);
 					System.out.println("NOW : "+now_10+"\r\n"+" 初期 - 今: "+shoki.subtract(min).toString(10)+"\r\n"+"DEF : "+def_10);
-					gui_check();
+					//gui_check();
 					int i=0;
 					for(;i<間隔.length;i++) {
 						if(i<=3&&i>=間隔.length-3) {
@@ -133,7 +128,7 @@ public class Main {
 		th_.start();
 		new DNS();
 	}
-	static void gui_check() {
+	/*static void gui_check() {
 		for(User us:u) {
 			if(us!=null) {
 				gui.ips[us.ip_num].setText(us.s.getInetAddress().getHostAddress());
@@ -142,10 +137,10 @@ public class Main {
 						{"IP", us.s.getInetAddress().getHostAddress()},
 				};
 				Stats st=new Stats(message);
-				gui.stat(us.debug_num,"node", true, st.stats);
+				//gui.stat(us.debug_num,"node", true, st.stats);
 			}
 		}
-	}
+	}*/
 	static void read_time() {
 		return;
 	}
@@ -172,7 +167,7 @@ public class Main {
 					try {
 						String line = bs.readLine();
 						if(line==null) {bs.close();System.out.println("[ブロック]EOF");break;}
-						Block b=new Block(line,false,min);
+						Block b=new Block(line,false,min,utxo);
 						b.give_utxo(false);
 						for(Transaction t:b.ts) {
 							t.doTrade();
@@ -231,7 +226,7 @@ public class Main {
 		}
 	}
 	static void addBlock(String block) {
-		Block blo=new Block(block,true,min);
+		Block blo=new Block(block,true,min,utxo);
 		int numb=blo.number;
 		System.out.println("[メイン]このブロックのナンバー: "+numb);
 		System.out.println("[メイン]セーブされたブロックの数: "+getBlockSize());
@@ -249,7 +244,7 @@ public class Main {
 			s=br.readLine().trim();
 			br.close();
 			Block b=null;
-			b=new Block(s,true,null);
+			b=new Block(s,true,null,utxo);
 			return b;
 		}catch(Exception e) {e.printStackTrace();}
 		return null;
@@ -270,7 +265,7 @@ public class Main {
 		return -1;
 	}
 	private static void saveBlock(String arg) {
-		Block b=new Block(arg,false,min);
+		Block b=new Block(arg,false,min,utxo);
 		if(b.ok) {
 			File file=new File("Blocks"+File.separator+"Block-"+b.number);
 			try {
@@ -318,7 +313,7 @@ public class Main {
 						try {
 							String line = bs.readLine();
 							if(line==null) {bs.close();System.out.println("EOF");break;}
-							Block b=new Block(line,true,min);
+							Block b=new Block(line,true,min,utxo);
 							for(Transaction t:b.ts) {
 								pool.add(t.transaction_sum);
 								utxo.put(t.from.split("0x0a")[0],utxo.get(t.from.split("0x0a")[0]).add(t.amount));

@@ -85,7 +85,7 @@ public class Wallet {
 		//                                                                              from                                              input                            output
 		System.out.println("BYTE : "+w.pub[0].toString(16)+"0x0a"+w.pub[1].toString(16)+w.pub[0].toString(16)+w.pub[0].toString(16)+"0x0b"+w.pub[1].toString(16)+"0x0c"+49+""+1.0+""+time);
 		BigInteger[] bi=w.sign(b);
-		Transaction t=new Transaction(w.pub[0].toString(16)+"0x0a"+w.pub[1].toString(16)   +"@"+     w.pub[0].toString(16)+"0x0b"+w.pub[1].toString(16)+"0x0c"+49   +"@"+   1.0   +"@"+  time +"@"+bi[0].toString(16)+"0x0a"+bi[1].toString(16),new BigDecimal(0));
+		Transaction t=new Transaction(w.pub[0].toString(16)+"0x0a"+w.pub[1].toString(16)   +"@"+     w.pub[0].toString(16)+"0x0b"+w.pub[1].toString(16)+"0x0c"+49   +"@"+   1.0   +"@"+  time +"@"+bi[0].toString(16)+"0x0a"+bi[1].toString(16),new BigDecimal(0),null);
 		System.out.println(t.hash);
 		System.out.println("sig："+bi[0].toString(16)+"+"+bi[1].toString(16));
 		System.out.println("pu："+w.pub[0].toString(16)+"0x0a"+w.pub[1].toString(16));
