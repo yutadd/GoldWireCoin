@@ -50,19 +50,6 @@ public class Mining extends Thread{
 							User.share("block~",before, Main.s);
 							/*記述*/
 							Main.addBlock(before);
-							/*for(User u:Main.u) {
-								if(u!=null) {
-									if(u.notice) {
-										try {
-											u.notice=false;
-											u.s.getOutputStream().write((u.transactions+"~mined\r\n").getBytes());
-											u.transactions="";
-										} catch (IOException e) {
-											e.printStackTrace();
-										}
-									}
-								}
-							}*/
 						}
 					}else {
 						try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}

@@ -52,7 +52,6 @@ public class Main {
 	 * ソケットとそれに対応するIPTextFieldを記憶する。
 	 */
 	//static HashMap<User,Integer> debug_lab=new HashMap<>();
-	static GUI gui;
 	static Socket s = null;
 	static Block rsv_Block;
 	static boolean mining=false;
@@ -63,7 +62,6 @@ public class Main {
 	
 	public static void main(String[] args) {
 		System.out.println(System.getProperty("file.encoding"));
-		gui=new GUI();
 		w=new Wallet();
 		readHash();
 
@@ -128,19 +126,6 @@ public class Main {
 		th_.start();
 		new DNS();
 	}
-	/*static void gui_check() {
-		for(User us:u) {
-			if(us!=null) {
-				gui.ips[us.ip_num].setText(us.s.getInetAddress().getHostAddress());
-				String[][] message={
-						{"name","Node"},
-						{"IP", us.s.getInetAddress().getHostAddress()},
-				};
-				Stats st=new Stats(message);
-				//gui.stat(us.debug_num,"node", true, st.stats);
-			}
-		}
-	}*/
 	static void read_time() {
 		return;
 	}

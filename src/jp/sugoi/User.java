@@ -15,7 +15,6 @@ public class User extends Thread{
 	int ip_num=0;
 	int debug_num=0;
 	boolean light=false;
-	//boolean notice=false;
 	String transactions="";
 	int b;
 	@Override
@@ -224,22 +223,6 @@ public class User extends Thread{
 			System.out.println("[ユーザー]自身を削除した : "+i+","+b);
 			Main.u.remove(this);
 			}catch(Exception e) {System.out.println("[User]削除ミス");}
-		/*for(i=0;i<=8;i++) {
-			if(Main.u[i]!=null) {
-				System.out.println("remove : "+i+","+Main.u[i].b);
-				if(Main.u[i].b==b) {
-					try {
-						String[][] message={
-								{"name","Node"},
-								{"IP", "Null"},
-						};
-						Main.gui.stat(Main.u[i].debug_num, "node", false,message);
-						Main.gui.ips[Main.u[i].ip_num].setText("");
-					}catch(Exception en) {en.printStackTrace();}
-					
-				}
-			}
-		}*/
 	}
 
 	public static void share(String type,String st,Socket s) {
