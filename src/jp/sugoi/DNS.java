@@ -7,6 +7,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 
 public class DNS extends Main {
+	static Socket s;
 	DNS(){
 		try {
 			System.out.println("yutadd.com - timeout1024ms");
@@ -16,9 +17,9 @@ public class DNS extends Main {
 			System.out.println("connect complete");
 		} catch (Exception e) {
 			try {
-				System.out.println("164.70.91.152- timeout1024ms");
+				System.out.println("164.70.118.44- timeout1024ms");
 				s=new Socket();
-				InetSocketAddress endpoint= new InetSocketAddress("164.70.91.152",  25565);
+				InetSocketAddress endpoint= new InetSocketAddress("164.70.118.44",  25565);
 				s.connect(endpoint,1024);
 				System.out.println("connect complete");
 			}catch (IOException e1) {

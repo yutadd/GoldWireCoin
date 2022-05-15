@@ -8,7 +8,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,7 +51,7 @@ public class Main {
 	 * ソケットとそれに対応するIPTextFieldを記憶する。
 	 */
 	//static HashMap<User,Integer> debug_lab=new HashMap<>();
-	static Socket s = null;
+
 	static Block rsv_Block;
 	static boolean mining=false;
 	static Mining m;
@@ -92,10 +91,10 @@ public class Main {
 				Scanner sc=new Scanner(System.in);
 				for(;;) {
 					String s=sc.nextLine();
-					String add=s;
-					BigDecimal d=(Main.utxo.get(add.split("0x0a")[0])==null)?new BigDecimal(0.0):Main.utxo.get(add.split("0x0a")[0]);
-					System.out.println("this wallet is : "+d);
-					System.out.println("returned "+add+" , "+d);
+					String cmd=s.split(" ")[0];
+					if(cmd.equals("pay")) {
+						new Pay(s);
+					}
 					System.out.println("==========↓Stats↓==========");
 					System.out.println("My wallet balance : "+utxo.get(w.pub[0].toString(16)));
 					System.out.println("mati"+mati);
@@ -119,6 +118,7 @@ public class Main {
 						double bd=set.getValue().doubleValue();
 						System.out.printf("%s : %f \r\n",set.getKey(),bd);
 					}
+					System.out.println("YOUR ADDRESS : "+w.address_0x0a);
 					System.out.println("==========↑Stats↑==========");
 				}
 			}
@@ -152,7 +152,7 @@ public class Main {
 					try {
 						String line = bs.readLine();
 						if(line==null) {bs.close();System.out.println("[ブロック]EOF");break;}
-						Block b=new Block(line,false,min,utxo);
+						Block b=new Block(line,false,min,utxo,false);
 						b.give_utxo(false);
 						for(Transaction t:b.ts) {
 							t.doTrade();
@@ -211,7 +211,7 @@ public class Main {
 		}
 	}
 	static void addBlock(String block) {
-		Block blo=new Block(block,true,min,utxo);
+		Block blo=new Block(block,true,min,utxo,false);
 		int numb=blo.number;
 		System.out.println("[メイン]このブロックのナンバー: "+numb);
 		System.out.println("[メイン]セーブされたブロックの数: "+getBlockSize());
@@ -229,7 +229,7 @@ public class Main {
 			s=br.readLine().trim();
 			br.close();
 			Block b=null;
-			b=new Block(s,true,null,utxo);
+			b=new Block(s,true,null,utxo,false);
 			return b;
 		}catch(Exception e) {e.printStackTrace();}
 		return null;
@@ -250,7 +250,7 @@ public class Main {
 		return -1;
 	}
 	private static void saveBlock(String arg) {
-		Block b=new Block(arg,false,min,utxo);
+		Block b=new Block(arg,false,min,utxo,false);
 		if(b.ok) {
 			File file=new File("Blocks"+File.separator+"Block-"+b.number);
 			try {
@@ -298,7 +298,7 @@ public class Main {
 						try {
 							String line = bs.readLine();
 							if(line==null) {bs.close();System.out.println("EOF");break;}
-							Block b=new Block(line,true,min,utxo);
+							Block b=new Block(line,true,min,utxo,false);
 							for(Transaction t:b.ts) {
 								pool.add(t.transaction_sum);
 								utxo.put(t.from.split("0x0a")[0],utxo.get(t.from.split("0x0a")[0]).add(t.amount));

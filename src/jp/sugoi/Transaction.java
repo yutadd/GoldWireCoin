@@ -25,7 +25,7 @@ public class Transaction {
 	BigDecimal fee;
 	boolean ok;
 	BigDecimal amount;
-	Transaction(String s,BigDecimal balance,Map<String,BigDecimal> temp_utxo){
+	Transaction(String s,Map<String,BigDecimal> temp_utxo){
 
 		//                             from        (output       amount)         fee                                 time_stamp                                  sign
 		//input :
@@ -36,7 +36,8 @@ public class Transaction {
 	FROM				8c34d885b883597c17790d7e20def48ee700884eee1f72c0c245557750ee5ca60x0ae9f572f6f96b461c4a229f32fc71a24ea57e4872b21819321bb03d6305a02903@
 	TO_AMOUNT		1a17ac87a41ccf763f3c7b167e54580229be9f570776322c3b44ea6a652aacf80x0b526a25f24b9ff12f57989a765827e3f933a240d5498ee5e8a3ab936aa69a1cd20x0c50.0@
 	FEE					10.0@
-	SIGN					1583043277586@af958f7a1796b1f1841587bebcf6cc05efec9d7483ead206a5fe053f9b5c05080x0a84ccdae0158f7995dfb1f0fb2f9768cfb7c75cd8cb8a62b82af9b27890ebbba0
+	TIME					1583043277586@
+	SIGN				af958f7a1796b1f1841587bebcf6cc05efec9d7483ead206a5fe053f9b5c05080x0a84ccdae0158f7995dfb1f0fb2f9768cfb7c75cd8cb8a62b82af9b27890ebbba0
 		 */
 		try {
 			System.out.println("[トランザクション]@有り原文 : "+s);
@@ -57,7 +58,7 @@ public class Transaction {
 				hash=hash1;
 				input= from.split("0x0a")[0];
 				transaction_sum=from+"@"+output+"@"+fee+"@"+time+"@"+sign;
-				if(checkoutput(out, from.split("0x0a")[0],balance,temp_utxo)) {
+				if(checkoutput(out,temp_utxo)) {
 					ok=true;
 					System.out.println("[トランザクション]トランザクションの認証に成功-fee : "+fee);
 				}else {System.out.println("[トランザクション]checkoutputに失敗");}
@@ -90,7 +91,7 @@ public class Transaction {
 		return out;
 	}
 	//同じアドレスだからアウトプットが適正に計算されない
-	boolean checkoutput(Output[] out,String input,BigDecimal balance,Map<String,BigDecimal> temp_utxo){
+	boolean checkoutput(Output[] out,Map<String,BigDecimal> temp_utxo){
 		BigDecimal 総アウトプット=new BigDecimal(0.0);
 		for(Output element:out) {
 			System.out.println("[トランザクション]送金先と送金元↓\r\n送金先→\t"+element.address[0].toString(16)+"\r\n送金元→\t"+from.split("0x0a")[0]);
@@ -110,19 +111,17 @@ public class Transaction {
 				System.out.printf("\t%s : %f\r\n",set.getKey(),bd);
 			}
 		}
-		utxo=utxo.subtract(balance);
+
 
 		if(((総アウトプット.add(fee)).compareTo(utxo)<=0)&&総アウトプット.compareTo(new BigDecimal(0))>=0&&fee.compareTo(new BigDecimal(0))>0&&utxo.compareTo(new BigDecimal(0))>=0) {
 			BigDecimal amount =(utxo.subtract(総アウトプット.add(fee)));
 			System.out.println("[トランザクション]足りている : "+amount+" = "+utxo+"-"+総アウトプット+",fee : "+fee);
-			System.out.println(balance);
 			System.out.println(総アウトプット.add(fee));
 			Address_Amount.put(input,(総アウトプット.add(fee).multiply(new BigDecimal(-1))));
 			this.amount=総アウトプット.add(fee);
 		}else {
 			BigDecimal amount =(utxo.subtract(総アウトプット.add(fee)));
 			System.out.println("[トランザクション]足りていない :"+amount+" = "+utxo+"-"+総アウトプット+",fee : "+fee);
-			System.out.println(balance);
 			System.out.println(総アウトプット.add(fee));
 			return false;
 		}
@@ -135,7 +134,6 @@ public class Transaction {
 		BigInteger[] b= {new BigInteger(s.split(split)[0],redix),new BigInteger(s.split(split)[1],redix)};
 		return b;
 	}
-
 	public static String hash(String arg) {
 		MessageDigest md = null;
 		try {

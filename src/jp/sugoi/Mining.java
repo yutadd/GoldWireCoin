@@ -12,7 +12,6 @@ public class Mining extends Thread{
 	//min:66611349253966442813730644663330183884399686815584447189708332380985641
 	String block_sum = "";
 	boolean 中断=false;
-	String transaction="";
 	/*static String b="212885b2dc656b57bcf2397b0a14c3755365adc7b446879db1e2b1c3aa98f929,"
 			+ "8c34d885b883597c17790d7e20def48ee700884eee1f72c0c245557750ee5ca6,"
 			+ "nans,"
@@ -47,7 +46,7 @@ public class Mining extends Thread{
 						BigInteger result=new BigInteger(hash(before),16);
 						if(result.compareTo(Main.shoki)==-1) {
 							System.out.println("[マイニング]mining完了 Hash: "+hash(before));
-							User.share("block~",before, Main.s);
+							Network.share("block~",before, DNS.s);
 							/*記述*/
 							Main.addBlock(before);
 						}

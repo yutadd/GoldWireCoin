@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Random;
 
@@ -54,7 +53,7 @@ public class Wallet {
 				System.out.println("[ウォレット]ウォレットの作成に失敗しました。");
 			}
 		}
-		address_0x0a=pub[0]+"0x0a"+pub[1];
+		address_0x0a=pub[0].toString(16)+"0x0a"+pub[1].toString(16);
 	}
 
 
@@ -85,7 +84,7 @@ public class Wallet {
 		//                                                                              from                                              input                            output
 		System.out.println("BYTE : "+w.pub[0].toString(16)+"0x0a"+w.pub[1].toString(16)+w.pub[0].toString(16)+w.pub[0].toString(16)+"0x0b"+w.pub[1].toString(16)+"0x0c"+49+""+1.0+""+time);
 		BigInteger[] bi=w.sign(b);
-		Transaction t=new Transaction(w.pub[0].toString(16)+"0x0a"+w.pub[1].toString(16)   +"@"+     w.pub[0].toString(16)+"0x0b"+w.pub[1].toString(16)+"0x0c"+49   +"@"+   1.0   +"@"+  time +"@"+bi[0].toString(16)+"0x0a"+bi[1].toString(16),new BigDecimal(0),null);
+		Transaction t=new Transaction(w.pub[0].toString(16)+"0x0a"+w.pub[1].toString(16)   +"@"+     w.pub[0].toString(16)+"0x0b"+w.pub[1].toString(16)+"0x0c"+49   +"@"+   1.0   +"@"+  time +"@"+bi[0].toString(16)+"0x0a"+bi[1].toString(16),null);
 		System.out.println(t.hash);
 		System.out.println("sig："+bi[0].toString(16)+"+"+bi[1].toString(16));
 		System.out.println("pu："+w.pub[0].toString(16)+"0x0a"+w.pub[1].toString(16));
