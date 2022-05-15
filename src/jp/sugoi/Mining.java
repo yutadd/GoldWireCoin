@@ -40,8 +40,8 @@ public class Mining extends Thread{
 				for(;;) {
 					if(!中断) {
 						String before=(Main.getlatesthash()+","+Main.w.pub[0].toString(16)+","+ran.nextInt()+","+(Main.getBlockSize()+1)+","+System.currentTimeMillis());
-						for(String s:Main.pool) {
-							before=before+","+s;
+						for(Transaction t:Main.pool) {
+							before=before+","+t.transaction_sum;
 						}
 						BigInteger result=new BigInteger(hash(before),16);
 						if(result.compareTo(Main.shoki)==-1) {
@@ -49,6 +49,7 @@ public class Mining extends Thread{
 							Network.share("block~",before, DNS.s);
 							/*記述*/
 							Main.addBlock(before);
+							Main.pool.clear();
 						}
 					}else {
 						try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}

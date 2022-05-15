@@ -12,7 +12,7 @@ public class Network {
 					OutputStream os=u.s.getOutputStream();
 					if(!u.light) {
 						os.write((type+st).getBytes());
-						System.out.println("send\r\n"+st);
+						System.out.println("[ネットワーク]トランザクション送信："+st);
 						os.write("\r\n".getBytes());
 						os.flush();
 					}

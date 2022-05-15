@@ -12,6 +12,17 @@ import java.util.Map.Entry;
 import priv.key.Bouncycastle_Secp256k1;
 
 public class Transaction {
+	@Override
+	public boolean equals(Object obj) {
+		// TODO 自動生成されたメソッド・スタブ
+		if(obj instanceof Transaction) {
+			if(((Transaction)obj).transaction_sum==transaction_sum) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * 認証に成功した場合、ハッシュ値が格納される。
 	 * (sha-256)

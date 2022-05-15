@@ -19,6 +19,12 @@ public class Pay {
 							String sign=sign0[0].toString(16)+"0x0a"+sign0[1].toString(16);
 							Transaction tr=new Transaction(sum+"@"+sign, Main.utxo);
 							System.out.println("OK?:"+tr.ok);
+							tr.doTrade();
+							Main.pool.add(tr);
+							for(User u:Main.u) {
+								Network.share("trans~", tr.transaction_sum,u.s);
+							}
+							
 						}else {
 							System.out.println("[ペイ]残額が足りまへん");
 						}

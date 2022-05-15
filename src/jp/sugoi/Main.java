@@ -32,7 +32,7 @@ public class Main {
 	static String latestHash=null;
 	static long[] time= {6000,6000};
 	static String name="XGW";
-	static ArrayList<String> pool=new ArrayList<>();
+	static ArrayList<Transaction> pool=new ArrayList<Transaction>();
 	static Wallet w;
 	static long[] 間隔=new long[1];
 	static long[] 難易度 = new long[1];
@@ -300,7 +300,7 @@ public class Main {
 							if(line==null) {bs.close();System.out.println("EOF");break;}
 							Block b=new Block(line,true,min,utxo,false);
 							for(Transaction t:b.ts) {
-								pool.add(t.transaction_sum);
+								pool.add(t);
 								utxo.put(t.from.split("0x0a")[0],utxo.get(t.from.split("0x0a")[0]).add(t.amount));
 								for(String s: t.Address_Amount.keySet()) {
 									utxo.put(s,utxo.get(s).subtract(t.Address_Amount.get(s)));
