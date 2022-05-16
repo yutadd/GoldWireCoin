@@ -136,7 +136,7 @@ public class Main {
 		int i=0;
 		間隔=new long[1];
 		難易度 = new long[1];
-		pool=new ArrayList<>();
+		pool=new ArrayList<Transaction>();
 		utxo.clear();
 		min=shoki;
 		for(i=1;;i++) {
@@ -263,7 +263,7 @@ public class Main {
 					t.doTrade();//取引完了させる
 				}
 				for(Transaction t:b.ts) {
-					pool.remove(t.transaction_sum);
+					pool.remove(t);
 				}
 				b.give_utxo(false);
 			} catch (IOException e) {
