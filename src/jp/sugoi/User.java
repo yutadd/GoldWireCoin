@@ -7,8 +7,6 @@ import java.net.Socket;
 
 public class User extends Thread{
 	Socket s;
-	int ip_num=0;
-	int debug_num=0;
 	boolean light=false;
 	int b;
 

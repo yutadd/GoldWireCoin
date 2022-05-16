@@ -10,34 +10,34 @@ public class DNS extends Main {
 	static Socket s;
 	DNS(){
 		try {
-			System.out.println("yutadd.com - timeout1024ms");
+			console.put("DNS00","yutadd.com - timeout1024ms");
 			s=new Socket();
 			InetSocketAddress endpoint= new InetSocketAddress("yutadd.com",25565);
 			s.connect(endpoint,1024);
-			System.out.println("connect complete");
+			console.put("DNS01","connect complete");
 		} catch (Exception e) {
 			try {
-				System.out.println("164.70.118.44- timeout1024ms");
+				console.put("DNS00","164.70.118.44- timeout1024ms");
 				s=new Socket();
 				InetSocketAddress endpoint= new InetSocketAddress("164.70.118.44",  25565);
 				s.connect(endpoint,1024);
-				System.out.println("connect complete");
+				console.put("DNS01","connect complete");
 			}catch (IOException e1) {
 				try {
 					System.out.println("localhost - timeout1024ms");
 					s=new Socket();
 					InetSocketAddress endpoint= new InetSocketAddress("localhost",  25565);
 					s.connect(endpoint,1024);
-					System.out.println("connect complete");
+					console.put("DNS00","connect complete");
 				}catch(Exception ep) {
-					System.out.println("faild to connect");
+					console.put("DNS01","faild to connect");
 				}
 			}
 			if(s!=null){
 				try {
 					s.getOutputStream().write("get\r\n".getBytes());
 				} catch (IOException e1) {
-					System.out.print(e1.getMessage());
+					console.put("DNSE-3",e1.getMessage());
 				}
 				Thread th_in=new Thread(){
 					@Override
@@ -49,7 +49,7 @@ public class DNS extends Main {
 									String cmd=br.readLine();
 									System.out.println(cmd);
 									if(cmd.equals("no_users")) {
-										System.out.println("[DNS]返答："+"no users");
+										console.put("DNS02","[DNS]返答：no users");
 									}else {
 										boolean already=false;
 										for(User u:Main.u) {
@@ -58,7 +58,7 @@ public class DNS extends Main {
 											}
 										}
 										if(!already) {
-											System.out.println("[DNS]返答："+cmd);
+											console.put("DNS02","[DNS]返答："+cmd);
 											try {//65261
 												Socket s=new Socket(cmd,0xfeed);
 												System.out.println("connect"+s.getInetAddress().getHostName());
@@ -68,12 +68,12 @@ public class DNS extends Main {
 												user.start();
 											}catch(Exception e) {e.printStackTrace();}
 										}else {
-											System.out.println("[DNS]すでに登録済みであるため、スキップ");
+											console.put("DNS02","ALREADY CONNECTED");
 										}
 									}
 								}
 							} catch (Exception e) {
-								e.printStackTrace();
+								//e.printStackTrace();
 								try {
 									s.close();
 								} catch (IOException e1) {

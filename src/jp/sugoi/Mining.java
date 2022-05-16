@@ -35,7 +35,7 @@ public class Mining extends Thread{
 		Thread th=new Thread() {
 			@Override
 			public void run() {
-				System.out.println("mining_now!");
+				Main.console.put("MINING","I'm mining_now!");
 				Random ran=new Random();
 				for(;;) {
 					if(!中断) {
@@ -45,7 +45,7 @@ public class Mining extends Thread{
 						}
 						BigInteger result=new BigInteger(hash(before),16);
 						if(result.compareTo(Main.shoki)==-1) {
-							System.out.println("[マイニング]mining完了 Hash: "+hash(before));
+							Main.console.put("MINING","mining完了 Hash: "+hash(before));
 							Network.share("block~",before, DNS.s);
 							/*記述*/
 							Main.addBlock(before);
