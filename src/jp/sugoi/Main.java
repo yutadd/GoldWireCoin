@@ -71,8 +71,17 @@ public class Main {
 			@Override
 			public void run() {
 				while(true) {
-					try{if(console_mode.equals("live")) {console_clear();
-					for(Entry<String,String> e:console.entrySet())System.out.println("["+e.getKey()+"]"+e.getValue());}
+					try{if(console_mode.equals("live")) {
+						console_clear();
+						for(Entry<String,String> e:console.entrySet()) {
+							if(e.getKey().matches(".*E-.*")) {
+								System.out.println("\033[31m["+e.getKey()+"]"+e.getValue()+"\033[37m");
+							}else if(e.getKey().matches(".*")) {
+								System.out.println("[\033[32m"+e.getKey()+"\033[37m]"+e.getValue());
+							}
+						}
+					}
+
 					console.put("STATS01","My wallet balance : "+utxo.get(w.pub[0].toString(16)));
 					console.put("STATS02","blockSize : "+getBlockSize());
 					console.put("STATS03","YOUR ADDRESS : "+w.address_0x0a);
@@ -80,7 +89,7 @@ public class Main {
 					for(User us:u) {
 						console.put("NETWORK01",console.get("NETWORK1")+" "+us.s.getInetAddress().getAddress());
 					}
-					if(console_mode.equals("live"))System.out.println("モード：ライブモード\r\n\t(ENTERで切り替え)");
+					if(console_mode.equals("live"))System.out.println("モード：\033[42mライブモード\033[49m\r\n\t(ENTERで切り替え)");
 					for(int i=0;i<reflesh;i++) {
 						if(console_mode.equals("live")) {
 							System.out.print("\r"+((reflesh-i)/10.0)+"  ");
@@ -159,13 +168,19 @@ public class Main {
 							System.out.println(man);
 							System.out.println();
 						}
-						
+
 					}else {
 						console_mode="cmd";
 						console_clear();
-						for(Entry<String,String> e:console.entrySet())System.out.println("["+e.getKey()+"]"+e.getValue());
-						System.out.println("モード：コマンド入力モード\r\n\t(ENTERで切り替え)");
-						
+						for(Entry<String,String> e:console.entrySet()) {
+							if(e.getKey().matches(".*E-.*")) {
+								System.out.println("\033[31m["+e.getKey()+"]"+e.getValue()+"\033[37m");
+							}else if(e.getKey().matches(".*")) {
+								System.out.println("[\033[32m"+e.getKey()+"\033[37m]"+e.getValue());
+							}
+						}
+						System.out.println("モード：\033[44mコマンド入力モード\033[49m\r\n\t(ENTERで切り替え)");
+
 					}
 				}
 			}
@@ -175,6 +190,7 @@ public class Main {
 		new DNS();
 	}
 	public static void console_clear(){
+		//System.out.print("\033[2J");
 		//Clears Screen in java
 		try {
 			if (System.getProperty("os.name").contains("Windows"))
@@ -232,7 +248,7 @@ public class Main {
 			}
 		}
 		reflesh=2;
-		
+
 		mati=false;
 	}
 	static int getBockSizeFrom(int i){
@@ -404,7 +420,7 @@ public class Main {
 					難易度=temp_d;
 				}
 				BigInteger i=new BigInteger("2910A562CF81F8A20CB31817F4350CA75ECF1CB59BED6E75AB6AEB1F4",16);
-				return min.add(i);
+				return min.subtract(i);
 			}
 		}else {
 			return shoki;
@@ -428,11 +444,11 @@ public class Main {
 				console.put("MAINE-06", "コマンドリストファイルがありません。");
 			} catch (IOException e) {
 				console.put("MAINE-07","br.readLine()でエラーが起きた.");
-				
+
 			}finally {
 				try {br.close();} catch (IOException e) {e.printStackTrace();}
 			}
 		}
-		
+
 	}
 }
