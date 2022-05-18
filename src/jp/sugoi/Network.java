@@ -12,14 +12,13 @@ public class Network {
 					OutputStream os=u.s.getOutputStream();
 					if(!u.light) {
 						os.write((type+st).getBytes());
-						System.out.println("[ネットワーク]送信："+st);
+						Main.console.put("NETWORK00", "Last Output String:"+(st.length()<14?"NONE":st.substring(0, 14)));
 						os.write("\r\n".getBytes());
 						os.flush();
 					}
 				} catch (Exception e) {
-					System.out.println("[ユーザー]"+e.getMessage());
+					Main.console.put("NETWORKE-1", e.getMessage());
 					u.remove();
-
 				}
 			}
 		}

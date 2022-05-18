@@ -23,6 +23,7 @@ public class User extends Thread{
 					for(;;) {
 						String line=sock_br.readLine();
 						if(line==null) {System.out.println("nullを送られてきました。");break;}
+						Main.console.put("NETWORK(USER)01", "Last input String:"+(line.length()<14?"NONE":line.substring(0, 14)));
 						if(line.startsWith("block~")) {
 							ReceiveBlock.exec(line,s);
 						}else if(line.startsWith("trans~")||line.startsWith("disc_transaction~")) {
@@ -33,14 +34,13 @@ public class User extends Thread{
 						}else if(line.startsWith("blocks~")) {
 							ReceiveBlocks.exec(line);
 						}else if(line.startsWith("getfrom~")) {
-							SendBlock.exec(line,s);
+							SendBlocks.exec(line,s);
 						}
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					remove();
 				}
-				System.out.println("[ユーザー]IOストリームを開けませんでした");
-				remove();
+				
 			}
 		};
 		th.start();
@@ -48,13 +48,12 @@ public class User extends Thread{
 
 	synchronized public void remove() {
 
-		System.out.println("ID"+b);
+		Main.console.put("USER01", "LAST DELETED USER:"+s.getInetAddress().getHostAddress());
 		int i=0;
 		try {
 			if(!s.isClosed())s.close();
-			System.out.println("[ユーザー]ユーザーを削除した : "+i+","+b);
 			Main.u.remove(this);
-		}catch(Exception e) {System.out.println("[User]削除ミス");}
+		}catch(Exception e) {Main.console.put("USERE-02", "正常に削除されませんでした："+s.getInetAddress().getHostAddress());}
 	}
 
 	@Override
