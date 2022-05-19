@@ -62,6 +62,7 @@ public class Transaction {
 			BigInteger[] sig= toBigInteger(sign,"0x0a",16);
 			BigInteger[] pu= toBigInteger(from, "0x0a", 16);
 			if(Bouncycastle_Secp256k1.verify(hash1.getBytes(), sig, pu)) {
+				
 				Main.console.put("TRANSACTION0","認証完了");
 				Output[] out=getoutput(output.split("0x0a"));
 				this.fee=fee;

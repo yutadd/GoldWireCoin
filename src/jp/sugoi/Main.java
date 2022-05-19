@@ -64,6 +64,11 @@ public class Main {
 	static BigInteger shoki=new BigInteger("26611349253966442813730644663330183884399686815584447189708332380985641",10);
 	static String console_mode="live";
 	public static void main(String[] args) {
+		//BigInteger x=new BigInteger("f7723c38398cef511bc83c70dd8733efb401e60563245ca9969997e2e93c5db9",16);
+		//System.out.println(new BigInteger("37443777233090894268066866047209366710731662759769367399990945955501994572681872242754721414801382673755834059072708",10).toString(16));
+		//System.out.println(x.toString(10));
+		//BigInteger y=(x.pow(3).add(BigInteger.valueOf(7))).sqrt();
+		//System.out.println(y.toString(16));
 		System.out.println(System.getProperty("file.encoding"));
 		w=new Wallet();
 		addManuals();
