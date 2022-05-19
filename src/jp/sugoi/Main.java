@@ -63,12 +63,33 @@ public class Main {
 	static BigInteger min=new BigInteger("26611349253966442813730644663330183884399686815584447189708332380985641",10);
 	static BigInteger shoki=new BigInteger("26611349253966442813730644663330183884399686815584447189708332380985641",10);
 	static String console_mode="live";
+	static BigInteger pow(BigInteger a, int b, BigInteger c) {
+		return a.pow(b).mod(c);
+	}
 	public static void main(String[] args) {
 		//BigInteger x=new BigInteger("f7723c38398cef511bc83c70dd8733efb401e60563245ca9969997e2e93c5db9",16);
 		//System.out.println(new BigInteger("37443777233090894268066866047209366710731662759769367399990945955501994572681872242754721414801382673755834059072708",10).toString(16));
 		//System.out.println(x.toString(10));
 		//BigInteger y=(x.pow(3).add(BigInteger.valueOf(7))).sqrt();
 		//System.out.println(y.toString(16));
+		BigInteger x=new BigInteger("f7723c38398cef511bc83c70dd8733efb401e60563245ca9969997e2e93c5db9",16);
+		BigInteger y=new BigInteger("b90c7a7fcabdd98291b2df5d3488a930413f7d0399ab449dafd95e556f1ea0a3",16);
+		String pub_x;
+		if(Integer.parseInt(x.remainder(new BigInteger("2")).toString(10))==0) {
+			pub_x='3'+x.toString(16);
+		}else {
+			pub_x='2'+x.toString(16);
+		}
+		System.out.println(x.bitCount());
+		BigInteger p=new BigInteger("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F",16);
+		BigInteger alpha=(pow(x, 3, p).add(BigInteger.ZERO.multiply(x)).add(new BigInteger("7"))).remainder(p);
+		System.out.println(alpha.toString(16));
+		BigInteger beta=(alpha.sqrt().mod(p));
+		if(x.remainder(new BigInteger("2")).intValue()==0) {
+			System.out.println(p.subtract(beta).toString(16));
+		}else {
+			System.out.println(beta.toString(16));
+		}
 		System.out.println(System.getProperty("file.encoding"));
 		w=new Wallet();
 		addManuals();
