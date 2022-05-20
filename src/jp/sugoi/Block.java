@@ -37,10 +37,10 @@ public class Block {
 			time=Long.parseLong(he_tr[4]);
 			previous_hash=he_tr[0];
 			if(PassTransactionCheck||transaction_ok) {
-				Main.console.put("BLOCK7","トランザクションの認証に成功");
+				Main.console.put("BLOCK07","トランザクションの認証に成功");
 				BigInteger result=new BigInteger(Mining.hash(sum),16);
 				if(!check||diff==null||result.compareTo(diff)==-1) {
-					Main.console.put("BLOCK8","ブロックの認証成功");
+					Main.console.put("BLOCK08","ブロックの認証成功");
 					this.he_tr=he_tr;
 					ok=true;
 					this.diff=diff;

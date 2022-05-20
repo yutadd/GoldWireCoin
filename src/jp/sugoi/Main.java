@@ -78,7 +78,7 @@ public class Main {
 			pub_x='2'+x.toString(16);
 		}
 		BigInteger p=new BigInteger("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F",16);
-		BigInteger alpha=(x.pow(3).add(new BigInteger("7"))).mod(p);
+		System.out.println(x.pow(3).add(new BigInteger("7")).sqrt().toString(16));
 		//System.out.println(alpha.toString(16));
 		//BigInteger beta=(alpha.sqrt().mod(p));
 		System.out.println(y.pow(2).mod(p).toString(16));
@@ -107,12 +107,12 @@ public class Main {
 						}
 					}
 
-					console.put("STATS01","My wallet balance : "+utxo.get(w.pub[0].toString(16)));
-					console.put("STATS02","blockSize : "+getBlockSize());
-					console.put("STATS03","YOUR ADDRESS : "+w.address_0x0a);
-					console.put("NETWORK00","NODES : "+"localhost");
+					console.put("MAINI-01","My wallet balance : "+utxo.get(w.pub[0].toString(16)));
+					console.put("MAINI-02","blockSize : "+getBlockSize());
+					console.put("MAINI-03","YOUR ADDRESS : "+w.address_0x0a);
+					console.put("MAINI-04","NODES : "+"ME");
 					for(User us:u) {
-						console.put("NETWORK01",console.get("NETWORK1")+" "+us.s.getInetAddress().getAddress());
+						console.put("MAINI-04",console.get("MAINII-04")+" "+us.s.getInetAddress().getAddress());
 					}
 					if(console_mode.equals("live"))System.out.println("モード：\033[42mライブモード\033[49m\r\n\t(ENTERで切り替え)");
 					for(int i=0;i<reflesh;i++) {
@@ -200,8 +200,10 @@ public class Main {
 						for(Entry<String,String> e:console.entrySet()) {
 							if(e.getKey().matches(".*E-.*")) {
 								System.out.println("\033[31m["+e.getKey()+"]"+e.getValue()+"\033[37m");
-							}else if(e.getKey().matches(".*")) {
-								System.out.println("[\033[32m"+e.getKey()+"\033[37m]"+e.getValue());
+							}else if(e.getKey().matches(".*I-.*")) {
+								System.out.println("\033[34m["+e.getKey()+"\033[37m]"+e.getValue()+"\033[37m");
+							}else  if(e.getKey().matches(".*")) {
+								System.out.println("\033[32m["+e.getKey()+"\033[37m]"+e.getValue());
 							}
 						}
 						System.out.println("モード：\033[44mコマンド入力モード\033[49m\r\n\t(ENTERで切り替え)");
@@ -241,7 +243,7 @@ public class Main {
 				try {
 					is=new FileReader(file);
 					bs=new BufferedReader(is);
-				} catch (FileNotFoundException e) {console.put("ERROR-"+ERROR++,"File Not Found");}
+				} catch (FileNotFoundException e) {console.put("MAINE-00","File Not Found");}
 				while(true) {
 					try {
 						String line = bs.readLine();
@@ -263,12 +265,11 @@ public class Main {
 						time[1]=getBlock(b.number-1).time;
 						//time_sum+=time[0]-time[1];
 						//System.out.println("[ブロック]平均掘削時間:"+ ((time_sum/i-5))/1000);
-					}catch(Exception e) {console.put("ERROR-"+ERROR++,"[ブロック]minの計算中にエラーが発生しました");time[0]=6000;time[1]=6000;}
+					}catch(Exception e) {console.put("MAINE-01","[ブロック]minの計算中にエラーが発生しました");time[0]=6000;time[1]=6000;}
 					size=i;
 					min=getMin(true);
 				}
 			}else {
-				console.put("Main00","ファイルがもう見当たりません.");
 				break;
 			}
 		}
@@ -297,7 +298,7 @@ public class Main {
 			} catch (FileNotFoundException e) {
 				return "notexists";
 			} catch (IOException e) {
-				console.put("MAINE-1","br.readLine()でエラーが起きた.");
+				console.put("MAINE-02","br.readLine()でエラーが起きた.");
 				return "exception";
 			}finally {
 				try {br.close();} catch (IOException e) {e.printStackTrace();}
@@ -307,8 +308,8 @@ public class Main {
 	static void addBlock(String block) {
 		Block blo=new Block(block,true,min,utxo,false);
 		int numb=blo.number;
-		console.put("MAIN02","このブロックのナンバー: "+numb);
-		console.put("MAIN03","セーブされたブロックの数: "+getBlockSize());
+		console.put("MAIN03","このブロックのナンバー: "+numb);
+		console.put("MAIN04","セーブされたブロックの数: "+getBlockSize());
 		if(numb>getBlockSize()) {
 			delfrom(numb);
 			saveBlock(block);
@@ -368,7 +369,7 @@ public class Main {
 			try {
 				time[0]=b.time;
 				time[1]=getBlock(b.number-1).time;
-			}catch(Exception e) {console.put("MAINE-04","minの計算中にエラーが発生しました");time[0]=6000;time[1]=6000;}
+			}catch(Exception e) {console.put("MAINE-05","minの計算中にエラーが発生しました");time[0]=6000;time[1]=6000;}
 			min=getMin(true);
 		}
 
@@ -410,7 +411,7 @@ public class Main {
 		try {
 			time[0]=getBlock(from-1).time;
 			time[1]=getBlock(from-2).time;
-		}catch(Exception e) {console.put("MAINE-05","minの計算中にエラーが発生しました");time[0]=6000;time[1]=6000;}
+		}catch(Exception e) {console.put("MAINE-06","minの計算中にエラーが発生しました");time[0]=6000;time[1]=6000;}
 		min=getMin(false);
 	}
 	static BigInteger getMin(boolean show){
@@ -455,7 +456,7 @@ public class Main {
 		// TODO 自動生成されたメソッド・スタブ
 		File file=new File("Commands.txt");
 		if(!file.exists()) {
-			console.put("MAINE-06", "コマンドリストファイルがありません。");
+			console.put("MAINE-07", "コマンドリストファイルがありません。");
 		}else {
 			String s = "";
 			BufferedReader br = null;
@@ -466,9 +467,9 @@ public class Main {
 				br.close();
 				man=s;
 			} catch (FileNotFoundException e) {
-				console.put("MAINE-06", "コマンドリストファイルがありません。");
+				console.put("MAINE-08", "コマンドリストファイルがありません。");
 			} catch (IOException e) {
-				console.put("MAINE-07","br.readLine()でエラーが起きた.");
+				console.put("MAINE-09","br.readLine()でエラーが起きた.");
 
 			}finally {
 				try {br.close();} catch (IOException e) {e.printStackTrace();}
