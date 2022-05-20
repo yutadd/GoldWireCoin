@@ -100,9 +100,11 @@ public class Main {
 						console_clear();
 						for(Entry<String,String> e:console.entrySet()) {
 							if(e.getKey().matches(".*E-.*")) {
-								System.out.println("\033[31m["+e.getKey()+"]"+e.getValue()+"\033[37m");
-							}else if(e.getKey().matches(".*")) {
-								System.out.println("[\033[32m"+e.getKey()+"\033[37m]"+e.getValue());
+								System.out.println("\033[31m["+e.getKey()+"\033[37m]"+e.getValue()+"\033[37m");
+							}else if(e.getKey().matches(".*I-.*")) {
+								System.out.println("\033[34m["+e.getKey()+"\033[37m]"+e.getValue()+"\033[37m");
+							}else  if(e.getKey().matches(".*")) {
+								System.out.println("\033[32m["+e.getKey()+"\033[37m]"+e.getValue());
 							}
 						}
 					}
