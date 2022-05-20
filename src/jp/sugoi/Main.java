@@ -64,31 +64,34 @@ public class Main {
 	static BigInteger shoki=new BigInteger("26611349253966442813730644663330183884399686815584447189708332380985641",10);
 	static String console_mode="live";
 	public static void main(String[] args) {
-		//BigInteger x=new BigInteger("f7723c38398cef511bc83c70dd8733efb401e60563245ca9969997e2e93c5db9",16);
-		//System.out.println(new BigInteger("37443777233090894268066866047209366710731662759769367399990945955501994572681872242754721414801382673755834059072708",10).toString(16));
-		//System.out.println(x.toString(10));
-		//BigInteger y=(x.pow(3).add(BigInteger.valueOf(7))).sqrt();
-		//System.out.println(y.toString(16));
+		
+		
+		//以前生成した公開鍵x,yがあり、このxからyを同様に導き出したい。
 		BigInteger x=new BigInteger("f7723c38398cef511bc83c70dd8733efb401e60563245ca9969997e2e93c5db9",16);
 		BigInteger y=new BigInteger("b90c7a7fcabdd98291b2df5d3488a930413f7d0399ab449dafd95e556f1ea0a3",16);
-		String pub_x;
-		if(Integer.parseInt(x.remainder(new BigInteger("2")).toString(10))==0) {
-			pub_x='3'+x.toString(16);
-		}else {
-			pub_x='2'+x.toString(16);
-		}
-		BigInteger p=new BigInteger("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F",16);
-		System.out.println(x.pow(3).add(new BigInteger("7")).sqrt().toString(16));
-		//System.out.println(alpha.toString(16));
-		//BigInteger beta=(alpha.sqrt().mod(p));
-		System.out.println(y.pow(2).mod(p).toString(16));
-		System.out.println(x.pow(3).add(new BigInteger("7")).mod(p).toString(16));
 		
-		//if(x.remainder(new BigInteger("2")).intValue()==0) {
-		//	System.out.println(p.subtract(alpha).toString(16));
-		//}else {
-		//	System.out.println(alpha.toString(16));
-		//}
+		
+		//そもそも、https://qiita.com/ryo0301/items/0bc9ccfb3291cabd50d5 で紹介されている y^2=x^3+7 が以前生成した鍵のでは成り立たない。
+		System.out.println(x.pow(3).add(new BigInteger("7")).toString(16));
+		System.out.println(y.pow(2));
+		//x^3+7   e72fc307743260d1b4b184bb2968c3797bf9ccb026306004c9b83cc550afc27239274041a0ab935c0b27a356edd0b1ca0ca2b7fc4abaf3e93998f708a24eef9ca651b6ec9661e5d1ad9e16192bd6e2a795fcb41997c316667c29c8b2a94b83f0
+		//y^2     7005677379887140445805822117143064195372430554416381098174919741378312732591761318729693609592313066632967724110040127402969407546304486671992055318718409
+		//等式が成り立たない
+		
+		
+		//両辺をmod(p)すると等式が成り立つ。
+		BigInteger p=new BigInteger("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F",16);
+		System.out.println(x.pow(3).add(new BigInteger("7")).mod(p).toString(16));
+		System.out.println(y.pow(2).mod(p).toString(16));
+		//f0283dece25386b67bdcfd53ea48e4130d8bda1667aa70f433f85046f64371f9
+		//f0283dece25386b67bdcfd53ea48e4130d8bda1667aa70f433f85046f64371f9
+		
+		//ちなみに、y=sqrt(x^3+7)だと
+		System.out.println(x.pow(3).add(new BigInteger("7")).sqrt().toString(16));
+		//f346f1f8bf7282a7110365a58e3f355d7af24666b0c11aedc68700c334dd5dcd4b3258aef06b91365ae8f9c6224824c4
+
+		
+		
 		System.out.println(System.getProperty("file.encoding"));
 		w=new Wallet();
 		addManuals();
