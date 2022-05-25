@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -64,34 +65,34 @@ public class Main {
 	static BigInteger shoki=new BigInteger("26611349253966442813730644663330183884399686815584447189708332380985641",10);
 	static String console_mode="live";
 	public static void main(String[] args) {
-		
-		
+
+
 		//以前生成した公開鍵x,yがあり、このxからyを同様に導き出したい。
 		BigInteger x=new BigInteger("f7723c38398cef511bc83c70dd8733efb401e60563245ca9969997e2e93c5db9",16);
 		BigInteger y=new BigInteger("b90c7a7fcabdd98291b2df5d3488a930413f7d0399ab449dafd95e556f1ea0a3",16);
-		
-		
+
+
 		//そもそも、https://qiita.com/ryo0301/items/0bc9ccfb3291cabd50d5 で紹介されている y^2=x^3+7 が以前生成した鍵のでは成り立たない。
 		System.out.println(x.pow(3).add(new BigInteger("7")).toString(16));
 		System.out.println(y.pow(2));
 		//x^3+7   e72fc307743260d1b4b184bb2968c3797bf9ccb026306004c9b83cc550afc27239274041a0ab935c0b27a356edd0b1ca0ca2b7fc4abaf3e93998f708a24eef9ca651b6ec9661e5d1ad9e16192bd6e2a795fcb41997c316667c29c8b2a94b83f0
 		//y^2     7005677379887140445805822117143064195372430554416381098174919741378312732591761318729693609592313066632967724110040127402969407546304486671992055318718409
 		//等式が成り立たない
-		
-		
+
+
 		//両辺をmod(p)すると等式が成り立つ。
 		BigInteger p=new BigInteger("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F",16);
 		System.out.println(x.pow(3).add(new BigInteger("7")).remainder(p).toString(16));
 		System.out.println(y.pow(2).remainder(p).toString(16));
 		//f0283dece25386b67bdcfd53ea48e4130d8bda1667aa70f433f85046f64371f9
 		//f0283dece25386b67bdcfd53ea48e4130d8bda1667aa70f433f85046f64371f9
-		
+
 		//ちなみに、y=sqrt(x^3+7)だと
 		System.out.println(x.pow(3).add(new BigInteger("7")).sqrt().toString(16));
 		//f346f1f8bf7282a7110365a58e3f355d7af24666b0c11aedc68700c334dd5dcd4b3258aef06b91365ae8f9c6224824c4
 
-		
-		
+
+
 		System.out.println(System.getProperty("file.encoding"));
 		w=new Wallet();
 		addManuals();
@@ -197,8 +198,17 @@ public class Main {
 							System.out.println();
 							System.out.println(man);
 							System.out.println();
+						}else if(cmd.equals("clear")||cmd.equals("cls")){
+							console_clear();
+						}else {
+							System.out.println("execute→"+s);
+							try {
+								if (System.getProperty("os.name").contains("Windows")) {
+									new ProcessBuilder("cmd","/c",s).inheritIO().start().waitFor();
+								}else {
+									Runtime.getRuntime().exec(s);}
+							} catch (IOException | InterruptedException ex) {}
 						}
-
 					}else {
 						console_mode="cmd";
 						console_clear();
@@ -466,7 +476,7 @@ public class Main {
 			String s = "";
 			BufferedReader br = null;
 			try {
-				br = new BufferedReader(new FileReader(file));
+				br = new BufferedReader(new FileReader(file,Charset.forName("utf-8")));
 				char c = 0;
 				while((c=(char)br.read())!=(char)-1)s+=c;
 				br.close();
