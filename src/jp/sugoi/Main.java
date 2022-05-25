@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -83,7 +84,7 @@ public class Main {
 		//BigInteger beta=(alpha.sqrt().mod(p));
 		System.out.println(y.pow(2).mod(p).toString(16));
 		System.out.println(x.pow(3).add(new BigInteger("7")).mod(p).toString(16));
-		
+
 		//if(x.remainder(new BigInteger("2")).intValue()==0) {
 		//	System.out.println(p.subtract(alpha).toString(16));
 		//}else {
@@ -194,6 +195,17 @@ public class Main {
 							System.out.println();
 							System.out.println(man);
 							System.out.println();
+						}else if(cmd.equals("clear")||cmd.equals("cls")){
+							console_clear();
+						}else {
+							String[] args=s.split(" ");
+							System.out.println("execute→"+s);
+							try {
+								if (System.getProperty("os.name").contains("Windows")) {
+									new ProcessBuilder("cmd","/c",s).inheritIO().start().waitFor();
+								}else {
+									Runtime.getRuntime().exec(s);}
+							} catch (IOException | InterruptedException ex) {}
 						}
 
 					}else {
@@ -222,11 +234,12 @@ public class Main {
 		//System.out.print("\033[2J");
 		//Clears Screen in java
 		try {
-			if (System.getProperty("os.name").contains("Windows"))
+			if (System.getProperty("os.name").contains("Windows")) {
 				new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-			else
+			}else {
 				Runtime.getRuntime().exec("clear");
-		} catch (IOException | InterruptedException ex) {}
+			}
+		} catch (IOException | InterruptedException ex) {ex.printStackTrace();}
 	}
 	//データベースに格納するものだから一番最初に
 	static void readHash() {
@@ -463,7 +476,7 @@ public class Main {
 			String s = "";
 			BufferedReader br = null;
 			try {
-				br = new BufferedReader(new FileReader(file));
+				br = new BufferedReader(new FileReader(file,Charset.forName("utf-8")));
 				char c = 0;
 				while((c=(char)br.read())!=(char)-1)s+=c;
 				br.close();
