@@ -17,9 +17,9 @@ public class DNS extends Main {
 			console.put("DNS01","connect complete");
 		} catch (Exception e) {
 			try {
-				console.put("DNS00","164.70.118.44- timeout1024ms");
+				console.put("DNS00","164.70.64.125 - timeout1024ms");
 				s=new Socket();
-				InetSocketAddress endpoint= new InetSocketAddress("164.70.118.44",  25565);
+				InetSocketAddress endpoint= new InetSocketAddress("164.70.64.125",  25565);
 				s.connect(endpoint,1024);
 				console.put("DNS01","connect complete");
 			}catch (IOException e1) {

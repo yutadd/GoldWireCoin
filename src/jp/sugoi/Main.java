@@ -81,8 +81,8 @@ public class Main {
 		
 		//両辺をmod(p)すると等式が成り立つ。
 		BigInteger p=new BigInteger("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F",16);
-		System.out.println(x.pow(3).add(new BigInteger("7")).mod(p).toString(16));
-		System.out.println(y.pow(2).mod(p).toString(16));
+		System.out.println(x.pow(3).add(new BigInteger("7")).remainder(p).toString(16));
+		System.out.println(y.pow(2).remainder(p).toString(16));
 		//f0283dece25386b67bdcfd53ea48e4130d8bda1667aa70f433f85046f64371f9
 		//f0283dece25386b67bdcfd53ea48e4130d8bda1667aa70f433f85046f64371f9
 		
@@ -117,7 +117,7 @@ public class Main {
 					console.put("MAINI-03","YOUR ADDRESS : "+w.address_0x0a);
 					console.put("MAINI-04","NODES : "+"ME");
 					for(User us:u) {
-						console.put("MAINI-04",console.get("MAINII-04")+" "+us.s.getInetAddress().getAddress());
+						console.put("MAINI-04",console.get("MAINI-04")+" "+us.s.getInetAddress().getHostAddress());
 					}
 					if(console_mode.equals("live"))System.out.println("モード：\033[42mライブモード\033[49m\r\n\t(ENTERで切り替え)");
 					for(int i=0;i<reflesh;i++) {
