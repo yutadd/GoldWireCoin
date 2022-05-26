@@ -20,7 +20,6 @@ import java.util.TreeMap;
 
 //
 /**
- *TODO:VPSで使うために、早急にCLIですべての操作ができるようにする。<br>
  * @author yutadd
  */
 
@@ -43,6 +42,7 @@ public class Main {
 	static long[] 間隔=new long[1];
 	static long[] 難易度 = new long[1];
 	static ArrayList<User> u=new ArrayList<User>();
+	static String mining_block_sum="";
 
 	/**]
 	 * (ServerSocket)サーバーソケットからIPフィールドを取得するためのもの
@@ -146,8 +146,8 @@ public class Main {
 			}
 		};
 		Dr_AI.start();
-		Mining m=new Mining();
-		m.mining();
+		mining=true;
+		new Mining();
 		//65261
 		Thread th=new Thread(new Server());
 		th.start();
@@ -163,7 +163,12 @@ public class Main {
 						if(cmd.equals("pay")) {
 							new Pay(s);
 						}else if(cmd.equals("mining")) {
-
+							if(mining) {
+								mining=false;
+							}else {
+								mining=true;
+								new Mining();
+							}
 						}else if(cmd.equals("stats")){
 							System.out.println("==========↓Stats↓==========");
 							System.out.println("My wallet balance : "+utxo.get(w.pub[0].toString(16)));
@@ -173,20 +178,8 @@ public class Main {
 							String def_10=shoki.toString(10);
 							System.out.println("NOW : "+now_10+"\r\n"+" 初期 - 今: "+shoki.subtract(min).toString(10)+"\r\n"+"DEF : "+def_10);
 							//gui_check();
-							int i=0;
-							for(;i<間隔.length;i++) {
-								if(i<=3&&i>=間隔.length-3) {
-									System.out.print(i+" : ");
-									try {
-										System.out.println("間隔 : "+間隔[i]+" 難易度 : "+難易度[i]);
-									}catch(Exception e) {
-										//TODO Do Nothing
-									}
-								}
-							}
 							for(Entry<String,BigDecimal> set:utxo.entrySet()) {
-								double bd=set.getValue().doubleValue();
-								System.out.printf("%s : %f \r\n",set.getKey(),bd);
+								System.out.printf("%s : %f \r\n",set.getKey(),set.getValue().doubleValue());
 							}
 							System.out.println("YOUR ADDRESS : "+w.address_0x0a);
 							System.out.println("==========↑Stats↑==========");
