@@ -20,6 +20,8 @@ import java.util.TreeMap;
 
 //
 /**
+ * マイニングしているかどうかをメインに表示。(nonceも表示してみる)
+ * ステータスの表示に時間を加える。
  * @author yutadd
  */
 
@@ -225,6 +227,7 @@ public class Main {
 		new DNS();
 	}
 	public static void console_clear(){
+		
 		//System.out.print("\033[2J");
 		//Clears Screen in java
 		try {
