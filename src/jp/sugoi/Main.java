@@ -69,12 +69,13 @@ public class Main {
 	public static void main(String[] args) {
 
 
-		//以前生成した公開鍵x,yがあり、このxからyを同様に導き出したい。
+		//以前生成した公開鍵x,yがあり、このxから同じyを導き出したい。
 		BigInteger x=new BigInteger("f7723c38398cef511bc83c70dd8733efb401e60563245ca9969997e2e93c5db9",16);
 		BigInteger y=new BigInteger("b90c7a7fcabdd98291b2df5d3488a930413f7d0399ab449dafd95e556f1ea0a3",16);
 
 
 		//そもそも、https://qiita.com/ryo0301/items/0bc9ccfb3291cabd50d5 で紹介されている y^2=x^3+7 が以前生成した鍵のでは成り立たない。
+		//というか公開鍵って曲線上じゃないもしや？
 		System.out.println(x.pow(3).add(new BigInteger("7")).toString(16));
 		System.out.println(y.pow(2));
 		//x^3+7   e72fc307743260d1b4b184bb2968c3797bf9ccb026306004c9b83cc550afc27239274041a0ab935c0b27a356edd0b1ca0ca2b7fc4abaf3e93998f708a24eef9ca651b6ec9661e5d1ad9e16192bd6e2a795fcb41997c316667c29c8b2a94b83f0
@@ -95,6 +96,7 @@ public class Main {
 
 
 
+
 		System.out.println(System.getProperty("file.encoding"));
 		w=new Wallet();
 		addManuals();
@@ -102,7 +104,7 @@ public class Main {
 			@Override
 			public void run() {
 				while(true) {
-					try{if(console_mode.equals("live")) {
+						if(console_mode.equals("live")) {
 						console_clear();
 						for(Entry<String,String> e:console.entrySet()) {
 							if(e.getKey().matches(".*E-.*")) {
@@ -114,7 +116,6 @@ public class Main {
 							}
 						}
 					}
-
 					console.put("MAINI-01","My wallet balance : "+utxo.get(w.pub[0].toString(16)));
 					console.put("MAINI-02","blockSize : "+getBlockSize());
 					console.put("MAINI-03","YOUR ADDRESS : "+w.address_0x0a);
@@ -127,9 +128,11 @@ public class Main {
 						if(console_mode.equals("live")) {
 							System.out.print("\r"+((reflesh-i)/10.0)+"  ");
 						}
+						try{
 						Thread.sleep(100);
+						}catch(Exception e) {};
 					}
-					}catch(Exception e) {};
+					
 				}
 			}
 		};
@@ -167,9 +170,11 @@ public class Main {
 						}else if(cmd.equals("mining")) {
 							if(mining) {
 								mining=false;
+								System.out.println("\033[31mMINING STOPPED.");
 							}else {
 								mining=true;
 								new Mining();
+								System.out.println("\033[32mMINING STARTED.");
 							}
 						}else if(cmd.equals("stats")){
 							System.out.println("==========↓Stats↓==========");
@@ -227,7 +232,7 @@ public class Main {
 		new DNS();
 	}
 	public static void console_clear(){
-		
+
 		//System.out.print("\033[2J");
 		//Clears Screen in java
 		try {

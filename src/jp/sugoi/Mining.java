@@ -31,6 +31,7 @@ public class Mining extends Thread{
 		Thread th=new Thread() {
 			@Override
 			public void run() {
+				Main.console.remove("MININGE-00");
 				Main.console.put("MINING","Now, I started mining!");
 				Random ran=new Random();
 				String before;
@@ -48,6 +49,8 @@ public class Mining extends Thread{
 						Main.pool.clear();
 					}
 				}
+				Main.console.remove("MINING");
+				Main.console.put("MININGE-00","Now, I stopped mining!");
 			}
 		};
 		th.start();
