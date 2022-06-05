@@ -1,2 +1,3 @@
-java -jar target/GWC.jar
+cd target
+after.bat
 pause

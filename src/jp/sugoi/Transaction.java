@@ -74,7 +74,8 @@ public class Transaction {
 					Main.console.put("TRANSACTION1","トランザクションの認証に成功-fee : "+fee);
 				}else {Main.console.put("TRANSACTIONE-2","checkoutputに失敗");}
 			}else {Main.console.put("TRANSACTIONE-3",sum+"\r\n"+from+"@"+output+"@"+fee+"@"+time+"@"+sign+"\r\n署名の検証に失敗");}
-		}catch(Exception e) {Main.console.put("TRANSACTIONE-4",e.getMessage());e.printStackTrace();}
+		}catch(Exception e) {int i=0;for(StackTraceElement ste:e.getStackTrace())Main.console.put("TRANSACTIONE-4-"+i++,ste.toString());e.printStackTrace();}
+		
 	}
 	public boolean doTrade() {
 		for(String s:Address_Amount.keySet()) {

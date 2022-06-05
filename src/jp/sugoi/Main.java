@@ -69,7 +69,11 @@ public class Main {
 	public static void main(String[] args) {
 
 
-		//以前生成した公開鍵x,yがあり、このxから同じyを導き出したい。
+		/* 
+
+
+
+		以前生成した公開鍵x,yがあり、このxから同じyを導き出したい。
 		BigInteger x=new BigInteger("f7723c38398cef511bc83c70dd8733efb401e60563245ca9969997e2e93c5db9",16);
 		BigInteger y=new BigInteger("b90c7a7fcabdd98291b2df5d3488a930413f7d0399ab449dafd95e556f1ea0a3",16);
 
@@ -94,7 +98,7 @@ public class Main {
 		System.out.println(x.pow(3).add(new BigInteger("7")).sqrt().toString(16));
 		//f346f1f8bf7282a7110365a58e3f355d7af24666b0c11aedc68700c334dd5dcd4b3258aef06b91365ae8f9c6224824c4
 
-
+		 */
 
 
 		System.out.println(System.getProperty("file.encoding"));
@@ -104,7 +108,7 @@ public class Main {
 			@Override
 			public void run() {
 				while(true) {
-						if(console_mode.equals("live")) {
+					if(console_mode.equals("live")) {
 						console_clear();
 						for(Entry<String,String> e:console.entrySet()) {
 							if(e.getKey().matches(".*E-.*")) {
@@ -129,10 +133,10 @@ public class Main {
 							System.out.print("\r"+((reflesh-i)/10.0)+"  ");
 						}
 						try{
-						Thread.sleep(100);
+							Thread.sleep(100);
 						}catch(Exception e) {};
 					}
-					
+
 				}
 			}
 		};
@@ -245,52 +249,52 @@ public class Main {
 	//データベースに格納するものだから一番最初に
 	static void readHash() {
 		mati=true;
-		int i=0;
+		boolean shuryo=false;
 		間隔=new long[1];
 		難易度 = new long[1];
 		pool=new ArrayList<Transaction>();
 		utxo.clear();
 		min=shoki;
-		for(i=1;;i++) {
-			File file=new File("Blocks"+File.separator+"Block-"+i);
+		for(int a=1;!shuryo;a++) {
+			File file=new File("Blocks"+File.separator+"Block-"+a);
+			FileReader is=null;
+			BufferedReader bs=null;
+			try {
+				is=new FileReader(file);
+				bs=new BufferedReader(is);
+
+			} catch (FileNotFoundException e) {console.put("MAINE-00","File Not Found");}
 			if(file.exists()) {
-				FileReader is=null;
-				BufferedReader bs=null;
-				try {
-					is=new FileReader(file);
-					bs=new BufferedReader(is);
-				} catch (FileNotFoundException e) {console.put("MAINE-00","File Not Found");}
-				while(true) {
+				for(int i=1;i<=10000;i++) {
 					try {
 						String line = bs.readLine();
-						if(line==null) {bs.close();break;}
+						if(line==null) {bs.close();shuryo=true;break;}
 						Block b=new Block(line,false,min,utxo,false);
 						b.give_utxo(false);
 						for(Transaction t:b.ts) {
 							t.doTrade();
 						}
 						latestHash=Mining.hash(b.sum);
-					} catch (IOException e) {e.printStackTrace();break;}
-					try{Thread.sleep(1);}catch(Exception e) {e.printStackTrace();}
-				}
-				size=i;
-				if(i>=6) {
+					} catch (IOException e) {int r=0;for(StackTraceElement ste:e.getStackTrace())Main.console.put("MAINE-2-"+r++,ste.toString());break;}
+					size=i+(a-1)*10000;
+					//if(i>=6) {
 					try {
 						Block b=getBlock(i);
 						time[0]=b.time;
 						time[1]=getBlock(b.number-1).time;
 						//time_sum+=time[0]-time[1];
 						//System.out.println("[ブロック]平均掘削時間:"+ ((time_sum/i-5))/1000);
-					}catch(Exception e) {console.put("MAINE-01","[ブロック]minの計算中にエラーが発生しました");time[0]=6000;time[1]=6000;}
+					}catch(Exception e) {console.put("MAINE-02","[ブロック]minの計算中にエラーが発生しました");time[0]=6000;time[1]=6000;}
 					size=i;
 					min=getMin(true);
+					//}
+
 				}
 			}else {
 				break;
 			}
 		}
 		reflesh=2;
-
 		mati=false;
 	}
 	static int getBockSizeFrom(int i){
@@ -300,22 +304,27 @@ public class Main {
 		return size;
 	}
 	static String getHash(int number) {
-		File file=new File("Blocks"+File.separator+"Block-"+number);
+		File file=new File("Blocks"+File.separator+"Block-"+((number/10000)+1));
 		if(!file.exists()) {
-			return "notexists";
+			return null;
 		}else {
 			String s = null;
 			BufferedReader br = null;
 			try {
+				int count=1;
 				br = new BufferedReader(new FileReader(file));
-				s = br.readLine().trim();
-				br.close();
-				return Mining.hash(s);
+				while ((s = br.readLine()) != null) {
+					if (number%10000 == count++) {
+						br.close();
+						return Mining.hash(s);
+					}
+				}
+				return null;
 			} catch (FileNotFoundException e) {
-				return "notexists";
+				return null;
 			} catch (IOException e) {
-				console.put("MAINE-02","br.readLine()でエラーが起きた.");
-				return "exception";
+				console.put("MAINE-03","br.readLine()でエラーが起きた.");
+				return null;
 			}finally {
 				try {br.close();} catch (IOException e) {e.printStackTrace();}
 			}
@@ -324,27 +333,55 @@ public class Main {
 	static void addBlock(String block) {
 		Block blo=new Block(block,true,min,utxo,false);
 		int numb=blo.number;
-		console.put("MAIN03","このブロックのナンバー: "+numb);
-		console.put("MAIN04","セーブされたブロックの数: "+getBlockSize());
+		console.put("MAIN04","このブロックのナンバー: "+numb);
+		console.put("MAIN05","セーブされたブロックの数: "+getBlockSize());
 		if(numb>getBlockSize()) {
 			delfrom(numb);
 			saveBlock(block);
 		}
 	}
 	static Block getBlock(int numb) {
-		File file=new File("Blocks"+File.separator+"Block-"+numb);
+		File file=new File("Blocks"+File.separator+"Block-"+((numb/10000)+1));
 		String s;
+		int count=1;
+		Block b=null;
 		try {
 			BufferedReader br=new BufferedReader(new FileReader(file));
-			s=br.readLine().trim();
+			while ((s = br.readLine()) != null) {
+				if (numb%10000 == count++) {
+					br.close();
+					b=new Block(s,true,null,utxo,false);
+					return b;
+				}
+			}
+			Main.console.put("見つからない", "です"+numb);
 			br.close();
-			Block b=null;
-			b=new Block(s,true,null,utxo,false);
-			return b;
+			return null;
 		}catch(Exception e) {e.printStackTrace();}
 		return null;
 	}
 	static int getNumber(String hash) {
+		boolean syuryo=false;
+		for(int a=1;!syuryo;a++) {
+			File file=new File("Blocks"+File.separator+"Block-"+a);
+			FileReader is=null;
+			BufferedReader bs=null;
+			try {
+				is=new FileReader(file);
+				bs=new BufferedReader(is);
+			} catch (FileNotFoundException e) {console.put("MAINE-00","File Not Found");}
+			if(file.exists()) {
+				for(int i=1;i<=10000;i++) {
+					try {
+						String line = bs.readLine();
+						if(line==null) {bs.close();syuryo=true;break;}
+						if(Mining.hash(line).equals(hash))return i;
+					}catch(Exception e) {e.printStackTrace();}
+				}
+			}else {
+				return -1;
+			}
+		}
 		for(int i=1;i<=getBlockSize();i++) {
 			File file=new File("Blocks"+File.separator+"Block-"+i);
 			String s;
@@ -362,11 +399,11 @@ public class Main {
 	private static void saveBlock(String arg) {
 		Block b=new Block(arg,false,min,utxo,false);
 		if(b.ok) {
-			File file=new File("Blocks"+File.separator+"Block-"+b.number);
+			File file=new File("Blocks"+File.separator+"Block-"+((b.number/10000)+1));
 			try {
 				file.createNewFile();
-				FileWriter fw=new FileWriter(file);
-				fw.write(arg);
+				FileWriter fw=new FileWriter(file,true);
+				fw.write(arg+System.getProperty("line.separator"));
 				fw.flush();
 				fw.close();
 				for(Transaction t :b.ts) {
@@ -385,7 +422,7 @@ public class Main {
 			try {
 				time[0]=b.time;
 				time[1]=getBlock(b.number-1).time;
-			}catch(Exception e) {console.put("MAINE-05","minの計算中にエラーが発生しました");time[0]=6000;time[1]=6000;}
+			}catch(Exception e) {console.put("MAINE-06","minの計算中にエラーが発生しました");time[0]=6000;time[1]=6000;}
 			min=getMin(true);
 		}
 
@@ -394,41 +431,23 @@ public class Main {
 		return latestHash;
 	}
 	static void delfrom(int from) {
-		for(int i=size;from<=i;i--) {
-			File file=new File("Blocks"+File.separator+"Block-"+(i));
-			if(file.exists()) {
-				try {
-					FileReader is=null;
-					BufferedReader bs=null;
-					try {
-						is=new FileReader(file);
-						bs=new BufferedReader(is);
-					} catch (FileNotFoundException e) {console.put("DELFROM","File Not Found");}
-					while(true) {
-						try {
-							String line = bs.readLine();
-							if(line==null) {bs.close();break;}
-							Block b=new Block(line,true,min,utxo,false);
-							for(Transaction t:b.ts) {
-								pool.add(t);
-								utxo.put(t.from.split("0x0a")[0],utxo.get(t.from.split("0x0a")[0]).add(t.amount));
-								for(String s: t.Address_Amount.keySet()) {
-									utxo.put(s,utxo.get(s).subtract(t.Address_Amount.get(s)));
-								}
-							}
-						} catch (IOException e) {e.printStackTrace();break;}
-					}
-					file.delete();
-				}catch(Exception e) {System.out.println("maaiiya");}
-			}else {break;}
-		}
-		latestHash=getHash(from-1);
-		size=from-1;
 		try {
-			time[0]=getBlock(from-1).time;
-			time[1]=getBlock(from-2).time;
-		}catch(Exception e) {console.put("MAINE-06","minの計算中にエラーが発生しました");time[0]=6000;time[1]=6000;}
-		min=getMin(false);
+			File file=new File("Blocks"+File.separator+"Block-"+((from/10000)+1));
+			FileReader is=null;
+			BufferedReader bs=null;
+			is=new FileReader(file);
+			bs=new BufferedReader(is);
+			ArrayList<String> line=new ArrayList<String>();
+			for(int i=1;i<from;i++) {
+				line.add(bs.readLine());
+			}
+			bs.close();
+			FileWriter fw=new FileWriter(file);
+			for(String s:line) {
+				fw.append(s+System.getProperty("line.separator"));
+			}
+			fw.close();
+		}catch(Exception e) {int da=0;for(StackTraceElement ste:e.getStackTrace())Main.console.put("MainE-4-"+da++,ste.toString());}
 	}
 	static BigInteger getMin(boolean show){
 		Long sa=Main.time[0]-Main.time[1];
@@ -472,7 +491,7 @@ public class Main {
 		// TODO 自動生成されたメソッド・スタブ
 		File file=new File("Commands.txt");
 		if(!file.exists()) {
-			console.put("MAINE-07", "コマンドリストファイルがありません。");
+			console.put("MAINE-08", "コマンドリストファイルがありません。");
 		}else {
 			String s = "";
 			BufferedReader br = null;
@@ -483,9 +502,9 @@ public class Main {
 				br.close();
 				man=s;
 			} catch (FileNotFoundException e) {
-				console.put("MAINE-08", "コマンドリストファイルがありません。");
+				console.put("MAINE-09", "コマンドリストファイルがありません。");
 			} catch (IOException e) {
-				console.put("MAINE-09","br.readLine()でエラーが起きた.");
+				console.put("MAINE-10","br.readLine()でエラーが起きた.");
 
 			}finally {
 				try {br.close();} catch (IOException e) {e.printStackTrace();}

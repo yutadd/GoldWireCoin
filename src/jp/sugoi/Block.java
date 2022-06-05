@@ -44,6 +44,9 @@ public class Block {
 					this.he_tr=he_tr;
 					ok=true;
 					this.diff=diff;
+					for(int i=5;i<he_tr.length;i++) {
+						ts.add(new Transaction(he_tr[i],utxo));
+					}
 				}else {
 					Main.console.put("BLOCK09-E","このブロック : "+result.toString(10)+"\r\n"+"現在の難易度 : "+Main.shoki.toString(10));
 					Main.console.put("BLOCK10-E","認証失敗");
