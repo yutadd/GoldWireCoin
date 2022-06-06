@@ -9,7 +9,9 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -24,6 +26,15 @@ import java.util.TreeMap;
  * ステータスの表示に時間を加える。
  * @author yutadd
  */
+class TreeMap2<K,V> extends TreeMap<K,V>{
+	@SuppressWarnings("unchecked")
+	public V put(K key,V value){
+		if(key instanceof String&& value instanceof String) {
+			if(((String)key).contains("E-"))return super.put((K)((String)key+" "+new SimpleDateFormat("HH時mm分ss秒").format(new Date())),value);
+		}
+		return super.put(key,value);
+	}
+}
 
 public class Main {
 	static int ERROR=0;
@@ -40,7 +51,7 @@ public class Main {
 	static ArrayList<Transaction> pool=new ArrayList<Transaction>();
 	static Wallet w;
 	static String man="";
-	static TreeMap<String, String> console=new TreeMap<String,String>();
+	static TreeMap2<String, String> console=new TreeMap2<String,String>();
 	static long[] 間隔=new long[1];
 	static long[] 難易度 = new long[1];
 	static ArrayList<User> u=new ArrayList<User>();
@@ -67,7 +78,6 @@ public class Main {
 	static BigInteger shoki=new BigInteger("26611349253966442813730644663330183884399686815584447189708332380985641",10);
 	static String console_mode="live";
 	public static void main(String[] args) {
-
 
 		/* 
 
@@ -110,7 +120,10 @@ public class Main {
 				while(true) {
 					if(console_mode.equals("live")) {
 						console_clear();
-						for(Entry<String,String> e:console.entrySet()) {
+						System.out.println("現在時刻："+new SimpleDateFormat("HH時mm分ss秒").format(new Date())+"\033[37m");
+						TreeMap<String,String> ent=new TreeMap<String,String>();
+						ent.putAll(console);
+						for(Entry<String,String> e:ent.entrySet()) {
 							if(e.getKey().matches(".*E-.*")) {
 								System.out.println("[\033[31m"+e.getKey()+"\033[37m]"+e.getValue()+"\033[37m");
 							}else if(e.getKey().matches(".*I-.*")) {
