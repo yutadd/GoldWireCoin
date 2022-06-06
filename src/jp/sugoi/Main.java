@@ -256,7 +256,7 @@ public class Main {
 			if (System.getProperty("os.name").contains("Windows"))
 				new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
 			else
-				Runtime.getRuntime().exec("clear");
+				new ProcessBuilder("/bin/clear").inheritIO().start().waitFor();
 		} catch (IOException | InterruptedException ex) {}
 	}
 	//データベースに格納するものだから一番最初に
