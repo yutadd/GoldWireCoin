@@ -223,7 +223,8 @@ public class Main {
 								if (System.getProperty("os.name").contains("Windows")) {
 									new ProcessBuilder("cmd","/c",s).inheritIO().start().waitFor();
 								}else {
-									Runtime.getRuntime().exec(s);}
+									new ProcessBuilder(s.split(" ")).inheritIO().start().waitFor();
+									}
 							} catch (IOException | InterruptedException ex) {}
 						}
 					}else {
