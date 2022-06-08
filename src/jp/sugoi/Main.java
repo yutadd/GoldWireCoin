@@ -18,6 +18,7 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 //
@@ -26,7 +27,7 @@ import java.util.TreeMap;
  * ステータスの表示に時間を加える。
  * @author yutadd
  */
-class TreeMap2<K,V> extends TreeMap<K,V>{
+class TreeMap2<K,V> extends ConcurrentHashMap<K,V>{
 	@SuppressWarnings("unchecked")
 	public V put(K key,V value){
 		if(key instanceof String&& value instanceof String) {
@@ -519,7 +520,6 @@ public class Main {
 				console.put("MAINE-09", "コマンドリストファイルがありません。");
 			} catch (IOException e) {
 				console.put("MAINE-10","br.readLine()でエラーが起きた.");
-
 			}finally {
 				try {br.close();} catch (IOException e) {e.printStackTrace();}
 			}

@@ -15,23 +15,17 @@ public class Mining extends Thread{
 			+ "1,"//トランザクション引数、区切りは'@'で表す
 			+ "8c34d885b883597c17790d7e20def48ee700884eee1f72c0c245557750ee5ca60x0ae9f572f6f96b461c4a229f32fc71a24ea57e4872b21819321bb03d6305a02903@8c34d885b883597c17790d7e20def48ee700884eee1f72c0c245557750ee5ca6@8c34d885b883597c17790d7e20def48ee700884eee1f72c0c245557750ee5ca60x0be9f572f6f96b461c4a229f32fc71a24ea57e4872b21819321bb03d6305a029030x0c49@1.0@625a95956ce07dcc60531515e38feba358304b6bc035e905706513e67fa9392d0x0a5e1fdc6831b3d8c0ef2da2cb5543a994f0cf24adb440a2856637824df0f83ef7";
 	 */
-	public static void main(String[] args) {
-		/*Main.readHash();
-		String block=mining(b);
-		Block b=new Block(block);
-		if(b.ok) {
-			if(b.write()) {
-				System.out.println("完了");
-			}
-		}
-		//ブロックにはトランザクションのハッシュのみにし、サイズを小さくするように変更してから実装する。
-		 * */
-	}
 	Mining(){
 		Thread th=new Thread() {
 			@Override
 			public void run() {
-				Main.console.remove("MININGE-00");
+				String rem="";
+				for(String s:Main.console.keySet()) {
+					if(s.startsWith("MININGE-00")) {
+						rem=s;
+					}
+				}
+				Main.console.remove(rem);
 				Main.console.put("MINING","Now, I started mining!");
 				Random ran=new Random();
 				String before;
