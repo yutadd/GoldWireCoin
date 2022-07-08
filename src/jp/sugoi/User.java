@@ -35,7 +35,11 @@ public class User extends Thread{
 							ReceiveBlocks.exec(line);
 						}else if(line.startsWith("getfrom~")) {
 							SendBlocks.exec(line,s);
+						}else if(line.startsWith("balances~")){
+							SendBalances.exec(s);
 						}
+					
+					
 					}
 				} catch (Exception e) {
 					remove();
