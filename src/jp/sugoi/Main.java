@@ -225,7 +225,7 @@ public class Main {
 									new ProcessBuilder("cmd","/c",s).inheritIO().start().waitFor();
 								}else {
 									new ProcessBuilder(s.split(" ")).inheritIO().start().waitFor();
-									}
+								}
 							} catch (IOException | InterruptedException ex) {}
 						}
 					}else {
@@ -260,6 +260,48 @@ public class Main {
 			else
 				new ProcessBuilder("/bin/clear").inheritIO().start().waitFor();
 		} catch (IOException | InterruptedException ex) {}
+	}
+
+	static HashMap<String,BigDecimal> readhash(int leng){
+		boolean shuryo=false;
+		HashMap<String,BigDecimal> result=new HashMap<String,BigDecimal>();
+		for(int a=1;!shuryo;a++) {
+			File file=new File("Blocks"+File.separator+"Block-"+a);
+			FileReader is=null;
+			BufferedReader bs=null;
+			try {
+				is=new FileReader(file);
+				bs=new BufferedReader(is);
+			} catch (FileNotFoundException e) {console.put("MAINE-00","File Not Found");}
+			if(file.exists()) {
+				for(int i=1;i<=10000;i++) {
+					if(leng<i+(a-1)*10000) {
+						shuryo=true;
+						break;
+
+					}
+					try {
+						String line = bs.readLine();
+						if(line==null) {bs.close();shuryo=true;break;}
+						Block b=new Block(line,false,min,utxo,false);
+						for(Transaction t:b.ts) {
+							BigDecimal bal=result.get(t.input);
+							if(bal==null)bal=new BigDecimal(0);
+							result.put(t.input,bal.subtract(t.sum_minus));
+							for(Output o:t.out) {
+								BigDecimal bal2=result.get(o.address[0].toString(16));
+								if(bal2==null)bal2=new BigDecimal(0);
+								result.put(o.address[0].toString(16),bal2.add(o.amount));
+							}
+						}
+						BigDecimal m_balance=result.get(b.miner);
+						if(m_balance==null)m_balance=new BigDecimal(0);
+						result.put(b.miner,m_balance.add(new BigDecimal(50.0)));
+					}catch(Exception e) {return null;}
+				}
+			}
+		}
+		return result;
 	}
 	//データベースに格納するものだから一番最初に
 	static void readHash() {

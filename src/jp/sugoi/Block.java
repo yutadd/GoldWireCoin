@@ -31,7 +31,8 @@ public class Block {
 			Main.console.put("BLOCK06","\t\t============");
 			sum=string;
 			String[] he_tr=string.split(",");
-			boolean transaction_ok=TransactionCheck.exec(he_tr,check,utxo,ts);
+			
+			boolean transaction_ok=TransactionCheck.exec(he_tr,check,utxo);
 			miner=he_tr[2];
 			number=Integer.parseInt(he_tr[3]);
 			time=Long.parseLong(he_tr[4]);
@@ -45,7 +46,8 @@ public class Block {
 					ok=true;
 					this.diff=diff;
 					for(int i=5;i<he_tr.length;i++) {
-						ts.add(new Transaction(he_tr[i],utxo));
+						BigDecimal source_balance=utxo.get(he_tr[i].split("@")[0]);
+						ts.add(new Transaction(he_tr[i],source_balance));
 					}
 				}else {
 					Main.console.put("BLOCK09-E","このブロック : "+result.toString(10)+"\r\n"+"現在の難易度 : "+Main.shoki.toString(10));

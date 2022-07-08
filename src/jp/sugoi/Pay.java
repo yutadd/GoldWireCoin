@@ -11,15 +11,15 @@ public class Pay {
 		if(args.length>=3) {
 			if(args[1]!=null&&args[1].contains("0x0a")) {
 				if(args[2]!=null) {
-					if(Main.utxo.containsKey(Main.w.address_0x0a.split("0x0a")[0])) {
-						if(Main.utxo.get(Main.w.address_0x0a.split("0x0a")[0]).compareTo(BigDecimal.valueOf(Double.parseDouble(args[2])))==1) {
-							sum+=Main.w.address_0x0a+"@"+args[1].replace("0x0a", "0x0b")+"0x0c"+args[2]+"@"+"0.1"+"@"+System.currentTimeMillis();
+					String sourceaddr=Main.w.address_0x0a.split("0x0a")[0];
+					if(Main.utxo.containsKey(sourceaddr)) {
+						if(Main.utxo.get(sourceaddr).compareTo(BigDecimal.valueOf(Double.parseDouble(args[2])))==1) {
+							sum+=sourceaddr+"@"+args[1].replace("0x0a", "0x0b")+"0x0c"+args[2]+"@"+"0.1"+"@"+System.currentTimeMillis();
 							String hash=Transaction.hash(sum.replace("@", ""));
 							BigInteger[] sign0=Main.w.sign(hash.getBytes());
 							String sign=sign0[0].toString(16)+"0x0a"+sign0[1].toString(16);
-							Transaction tr=new Transaction(sum+"@"+sign, Main.utxo);
+							Transaction tr=new Transaction(sum+"@"+sign, Main.utxo.get(sourceaddr));
 							System.out.println("OK?:"+tr.ok);
-							tr.doTrade();
 							Main.pool.add(tr);
 							for(User u:Main.u) {
 								Network.share("trans~", tr.transaction_sum,u.s);

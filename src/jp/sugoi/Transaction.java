@@ -5,8 +5,6 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
 
 import priv.key.Bouncycastle_Secp256k1;
 
@@ -40,17 +38,17 @@ public class Transaction {
 	 * 認証に成功した場合、ハッシュ値が格納される。
 	 * (sha-256)
 	 */
+	BigDecimal sum_minus=new BigDecimal(0.0);
 	String hash;
 	String input;
-	HashMap<String,BigDecimal> Address_Amount =new HashMap<>();
 	String transaction_sum;
 	long timestamp;
 	String from;
 	BigDecimal fee;
+	Output[] out;
 	boolean ok;
-	BigDecimal amount;
-	Transaction(String s,Map<String,BigDecimal> temp_utxo){
-		
+	Transaction(String s,BigDecimal source_balance){
+
 		try {
 			//System.out.println("[トランザクション]@有り原文 : "+s);
 			from=s.split("@")[0];
@@ -65,12 +63,12 @@ public class Transaction {
 			BigInteger[] pu= toBigInteger(from, "0x0a", 16);
 			if(Bouncycastle_Secp256k1.verify(hash1.getBytes(), sig, pu)) {
 				Main.console.put("TRANSACTION0","認証完了");
-				Output[] out=getoutput(output.split("0x0a"));
+				out=getoutput(output.split("0x0a"));
 				this.fee=fee;
 				hash=hash1;
 				input= from.split("0x0a")[0];
 				transaction_sum=from+"@"+output+"@"+fee+"@"+time+"@"+sign;
-				if(checkoutput(out,temp_utxo)) {
+				if(checkoutput(out,source_balance)) {
 					ok=true;
 					Main.console.put("TRANSACTION1","トランザクションの認証に成功-fee : "+fee);
 				}else {Main.console.put("TRANSACTIONE-2","checkoutputに失敗");}
@@ -78,17 +76,15 @@ public class Transaction {
 		}catch(Exception e) {int i=0;for(StackTraceElement ste:e.getStackTrace())Main.console.put("TRANSACTIONE-4-"+i++,ste.toString());e.printStackTrace();}
 	}
 	public boolean doTrade() {
-		for(String s:Address_Amount.keySet()) {
-			//Main.console.put("TRANSACTION5","[トランザクション]取引実行前の残高 : "+Main.utxo.get(s));
-			BigDecimal d=Main.utxo.get(s);
-			Main.utxo.remove(s);
+		Main.utxo.put(input,Main.utxo.get(input).subtract(sum_minus));
+		for(Output s:out) {
+			BigDecimal d=Main.utxo.get(s.address[0].toString(16));
 			if(d==null) {
 				//System.out.println(d);
-				Main.utxo.put(s,Address_Amount.get(s));
+				Main.utxo.put(s.address[0].toString(16),s.amount);
 			}else {
-				Main.utxo.put(s,(d.add(Address_Amount.get(s))));
+				Main.utxo.put(s.address[0].toString(16),(d.add(s.amount)));
 			}
-			//Main.console.put("TRANSACTION6","[トランザクション]取引実行後の残高 : "+Main.utxo.get(s));
 		}
 		return true;
 	}
@@ -99,39 +95,29 @@ public class Transaction {
 		}
 		return out;
 	}
+
+
+
 	//同じアドレスだからアウトプットが適正に計算されない
-	boolean checkoutput(Output[] out,Map<String,BigDecimal> temp_utxo){
-		BigDecimal 総アウトプット=new BigDecimal(0.0);
+	boolean checkoutput(Output[] out,BigDecimal source_balance){
+		sum_minus=sum_minus.add(fee);
 		for(Output element:out) {
-			//System.out.println("[トランザクション]送金先と送金元↓\r\n送金先→\t"+element.address[0].toString(16)+"\r\n送金元→\t"+from.split("0x0a")[0]);
-			if(element.address[0].toString(16).equals(from.split("0x0a")[0])) {Main.console.put("TRANSACTIONE","]送金先と送金元が同じ");return false;}
-			Address_Amount.put(element.address[0].toString(16),element.amount);
-			総アウトプット=総アウトプット.add(element.amount);
+			if(element.address[0].toString(16).equals(from.split("0x0a")[0])) {
+				Main.console.put("TRANSACTIONE","]送金先と送金元が同じ");
+				return false;
+			}
+			sum_minus=sum_minus.add(element.amount);
 		}
-		BigDecimal utxo=new BigDecimal(0.0);
-		if(temp_utxo.containsKey(input)) {
-			Main.console.put("TRANSACTION5","UTXOが見つかった："+temp_utxo.get(input).doubleValue());
-			utxo=utxo.add(temp_utxo.get(input));
-		}else {
-			Main.console.put("TRANSACTIONE6","UTXOが見つからなかった。");
-			//System.out.println("支払元"+input+"\r\nutxo:");
+		for(Transaction t:Main.pool) {
+			if(t.input.equals(input)) {
+				sum_minus=sum_minus.add(t.sum_minus);
+			}
 		}
-
-
-		if(((総アウトプット.add(fee)).compareTo(utxo)<=0)&&総アウトプット.compareTo(new BigDecimal(0))>=0&&fee.compareTo(new BigDecimal(0))>0&&utxo.compareTo(new BigDecimal(0))>=0) {
-			BigDecimal amount =(utxo.subtract(総アウトプット.add(fee)));
-			/*System.out.println("[トランザクション]足りている : "+amount+" = "+utxo+"-"+総アウトプット+",fee : "+fee);
-			System.out.println(総アウトプット.add(fee));*/
-			Address_Amount.put(input,(総アウトプット.add(fee).multiply(new BigDecimal(-1))));
-			this.amount=総アウトプット.add(fee);
-		}else {
-			BigDecimal amount =(utxo.subtract(総アウトプット.add(fee)));
-			/*System.out.println("[トランザクション]足りていない :"+amount+" = "+utxo+"-"+総アウトプット+",fee : "+fee);
-			System.out.println(総アウトプット.add(fee));*/
-			return false;
+		if(sum_minus.compareTo(source_balance)<=0) {
+			Main.console.put("TRANSACTION07","残額チェックに成功しました");
+			return true;
 		}
-		Main.console.put("TRANSACTION7","成功して返す");
-		return true;
+		return false;
 	}
 
 

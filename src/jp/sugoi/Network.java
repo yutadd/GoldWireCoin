@@ -12,7 +12,7 @@ public class Network {
 					OutputStream os=u.s.getOutputStream();
 					if(!u.light) {
 						os.write((type+st).getBytes());
-						Main.console.put("NETWORK00", "Last Output String:"+(st.length()<14?"NONE":st.substring(0, 14)));
+						Main.console.put("NETWORK00", "Last Output String:"+(st.length()<14?st:st.substring(0, 14)));
 						os.write("\r\n".getBytes());
 						os.flush();
 					}

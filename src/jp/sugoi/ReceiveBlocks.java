@@ -15,27 +15,30 @@ public class ReceiveBlocks {
 			int i=0;
 			boolean ok=true;
 			if(args[0]==null) {return;}
-			Map<String,BigDecimal> temp_utxo=Main.utxo;
 			
 			Block bl=new Block(args[0],true,null,Main.utxo,true);
+			
+			Map<String,BigDecimal> kiso_utxo=Main.readhash(bl.number-1);
+			
+			
 			if(bl.ok) {
-				BigInteger temp_diff=Main.getBlock(bl.number-1).diff;
+				BigInteger kiso_diff=Main.getBlock(bl.number-1).diff;
 				for(Transaction t:bl.ts) {
 					if(t.ok) {
-						temp_utxo.put(t.from.split("0x0a")[0], temp_utxo.get(t.from.split("0x0a")[0]).subtract(t.amount.add(t.fee)));
+						kiso_utxo.put(t.from.split("0x0a")[0], kiso_utxo.get(t.from.split("0x0a")[0]).subtract(t.amount.add(t.fee)));
 						for(Entry<String,BigDecimal> add:t.Address_Amount.entrySet()) {
-							temp_utxo.put(add.getKey(),temp_utxo.get(add.getKey()).add(add.getValue()));
+							kiso_utxo.put(add.getKey(),kiso_utxo.get(add.getKey()).add(add.getValue()));
 						}
 					}
 				}
 				for(String s:args) {
-					Block b=new Block(s,false,temp_diff,temp_utxo,true);
+					Block b=new Block(s,false,kiso_diff,kiso_utxo,true);
 					if(b.ok) {
 						for(Transaction t:b.ts) {
 							if(t.ok) {
-								temp_utxo.put(t.from.split("0x0a")[0], temp_utxo.get(t.from.split("0x0a")[0]).subtract(t.amount.add(t.fee)));
+								kiso_utxo.put(t.from.split("0x0a")[0], kiso_utxo.get(t.from.split("0x0a")[0]).subtract(t.amount.add(t.fee)));
 								for(Entry<String,BigDecimal> add:t.Address_Amount.entrySet()) {
-									temp_utxo.put(add.getKey(),temp_utxo.get(add.getKey()).add(add.getValue()));
+									kiso_utxo.put(add.getKey(),kiso_utxo.get(add.getKey()).add(add.getValue()));
 								}
 							}
 						}

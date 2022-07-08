@@ -9,7 +9,8 @@ public class SendBalances {
 	public static void exec(Socket s) {
 		for(Entry<String, BigDecimal> e:Main.utxo.entrySet()) {
 			try {
-				s.getOutputStream().write(("balance~"+e.getKey()+","+e.getValue().toString()).getBytes());
+				s.getOutputStream().write(("balance~"+e.getKey()+","+e.getValue().toString()+"\r\n").getBytes());
+				s.getOutputStream().flush();
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}

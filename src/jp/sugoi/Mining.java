@@ -37,7 +37,10 @@ public class Mining extends Thread{
 					BigInteger result=new BigInteger(hash(before),16);
 					if(result.compareTo(Main.shoki)==-1) {
 						Main.console.put("MINING","mining完了 Hash: "+hash(before));
-						Network.share("block~",before, DNS.s);
+						for(User u:Main.u) {
+							Network.share("block~",before, u.s);
+						}
+						
 						/*記述*/
 						Main.addBlock(before);
 						Main.pool.clear();
