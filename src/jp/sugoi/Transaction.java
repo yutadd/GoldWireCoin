@@ -10,6 +10,21 @@ import java.util.Map;
 
 import priv.key.Bouncycastle_Secp256k1;
 
+/**
+ * FROM<br>
+ * TO_AMOUNT<br>
+ * FEE<br>
+ * TIMESTAMP<br>
+ * SIGN<br>
+ * Like this↓<br>
+ * 8c34d885b883597c17790d7e20def48ee700884eee1f72c0c245557750ee5ca60x0ae9f572f6f96b461c4a229f32fc71a24ea57e4872b21819321bb03d6305a02903@<br>
+ *1a17ac87a41ccf763f3c7b167e54580229be9f570776322c3b44ea6a652aacf80x0b526a25f24b9ff12f57989a765827e3f933a240d5498ee5e8a3ab936aa69a1cd20x0c50.0@<br>
+ *10.0@<br>
+ *1583043277586@<br>
+ *af958f7a1796b1f1841587bebcf6cc05efec9d7483ead206a5fe053f9b5c05080x0a84ccdae0158f7995dfb1f0fb2f9768cfb7c75cd8cb8a62b82af9b27890ebbba0<br>
+ * @author student
+ * 
+ */
 public class Transaction {
 	@Override
 	public boolean equals(Object obj) {
@@ -21,7 +36,6 @@ public class Transaction {
 		}
 		return false;
 	}
-
 	/**
 	 * 認証に成功した場合、ハッシュ値が格納される。
 	 * (sha-256)
@@ -36,19 +50,7 @@ public class Transaction {
 	boolean ok;
 	BigDecimal amount;
 	Transaction(String s,Map<String,BigDecimal> temp_utxo){
-
-		//                             from        (output       amount)         fee                                 time_stamp                                  sign
-		//input :
-		//   address[0]
-		//output:
-		//   TO 0x0b TO 0x0c 2 0x0a TO 0x0b TO 0x0c 3
-		/*
-	FROM				8c34d885b883597c17790d7e20def48ee700884eee1f72c0c245557750ee5ca60x0ae9f572f6f96b461c4a229f32fc71a24ea57e4872b21819321bb03d6305a02903@
-	TO_AMOUNT		1a17ac87a41ccf763f3c7b167e54580229be9f570776322c3b44ea6a652aacf80x0b526a25f24b9ff12f57989a765827e3f933a240d5498ee5e8a3ab936aa69a1cd20x0c50.0@
-	FEE					10.0@
-	TIME					1583043277586@
-	SIGN				af958f7a1796b1f1841587bebcf6cc05efec9d7483ead206a5fe053f9b5c05080x0a84ccdae0158f7995dfb1f0fb2f9768cfb7c75cd8cb8a62b82af9b27890ebbba0
-		 */
+		
 		try {
 			//System.out.println("[トランザクション]@有り原文 : "+s);
 			from=s.split("@")[0];
@@ -62,7 +64,6 @@ public class Transaction {
 			BigInteger[] sig= toBigInteger(sign,"0x0a",16);
 			BigInteger[] pu= toBigInteger(from, "0x0a", 16);
 			if(Bouncycastle_Secp256k1.verify(hash1.getBytes(), sig, pu)) {
-				
 				Main.console.put("TRANSACTION0","認証完了");
 				Output[] out=getoutput(output.split("0x0a"));
 				this.fee=fee;
@@ -75,7 +76,6 @@ public class Transaction {
 				}else {Main.console.put("TRANSACTIONE-2","checkoutputに失敗");}
 			}else {Main.console.put("TRANSACTIONE-3",sum+"\r\n"+from+"@"+output+"@"+fee+"@"+time+"@"+sign+"\r\n署名の検証に失敗");}
 		}catch(Exception e) {int i=0;for(StackTraceElement ste:e.getStackTrace())Main.console.put("TRANSACTIONE-4-"+i++,ste.toString());e.printStackTrace();}
-		
 	}
 	public boolean doTrade() {
 		for(String s:Address_Amount.keySet()) {
