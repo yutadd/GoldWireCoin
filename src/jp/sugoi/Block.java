@@ -35,6 +35,7 @@ public class Block {
 			number=Integer.parseInt(he_tr[3]);
 			time=Long.parseLong(he_tr[4]);
 			for(int i=5;i<he_tr.length;i++) {
+				Main.console.put("BlockE-ERR", he_tr[i]);
 				ts.add(new Transaction(he_tr[i],Main.checkNullAndGetValue(utxo,he_tr[i].split("@")[0].split("0x0a")[0]),PassCheck));
 			}
 			this.diff=diff;

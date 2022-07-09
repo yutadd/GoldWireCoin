@@ -14,17 +14,19 @@ public class Pay {
 					String sourceaddr=Main.w.address_0x0a.split("0x0a")[0];
 					if(Main.utxo.containsKey(sourceaddr)) {
 						if(Main.utxo.get(sourceaddr).compareTo(BigDecimal.valueOf(Double.parseDouble(args[2])))==1) {
-							sum+=sourceaddr+"@"+args[1].replace("0x0a", "0x0b")+"0x0c"+args[2]+"@"+"0.1"+"@"+System.currentTimeMillis();
+							sum+=Main.w.address_0x0a+"@"+args[1].replace("0x0a", "0x0b")+"0x0c"+args[2]+"@"+"0.1"+"@"+System.currentTimeMillis();
 							String hash=Transaction.hash(sum.replace("@", ""));
 							BigInteger[] sign0=Main.w.sign(hash.getBytes());
 							String sign=sign0[0].toString(16)+"0x0a"+sign0[1].toString(16);
 							Transaction tr=new Transaction(sum+"@"+sign, Main.checkNullAndGetValue(Main.utxo,sourceaddr),false);
+							System.out.println(sum+"@"+sign);
 							System.out.println("OK?:"+tr.ok);
-							Main.pool.add(tr);
-							for(User u:Main.u) {
-								Network.share("trans~", tr.transaction_sum,u.s);
+							if(tr.ok) {
+								Main.pool.add(tr);
+								for(User u:Main.u) {
+									Network.share("trans~", tr.transaction_sum,u.s);
+								}
 							}
-							
 						}else {
 							System.out.println("[ペイ]残額が足りまへん");
 						}

@@ -86,10 +86,14 @@ public class Transaction {
 						Main.console.put("TRANSACTIONE-2","checkoutputに失敗");
 						Main.console.put("TRANSACTIONE-CHECK", source_balance.toString()+"\r\n"+s);
 					}
-
-				}else {Main.console.put("TRANSACTIONE-3",sum+"\r\n"+from+"@"+output+"@"+fee+"@"+time+"@"+sign+"\r\n署名の検証に失敗");}
+				}else {
+					Main.console.put("TRANSACTIONE-3",sum+"\r\n"+from+"@"+output+"@"+fee+"@"+time+"@"+sign+"\r\n署名の検証に失敗");}
 			}
-		}catch(Exception e) {Main.console.put("TRANSACTIOMNE-ERROR", e.getMessage());}
+		}catch(Exception e) {
+			Main.console.put("TRANSACTIOMNE-ERROR0", e.getMessage());
+			Main.console.put("TRANSACTIOMNE-ERROR1", e.getStackTrace()[0].toString());
+			}
+				
 	}
 	public boolean doTrade() {
 		Main.utxo.put(input,Main.utxo.get(input).subtract(sum_minus));
