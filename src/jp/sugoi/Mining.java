@@ -35,7 +35,7 @@ public class Mining extends Thread{
 						before=before+","+t.transaction_sum;
 					}
 					BigInteger result=new BigInteger(hash(before),16);
-					if(result.compareTo(Main.shoki)==-1) {
+					if(result.compareTo(Main.min)<0) {
 						Main.console.put("MINING","mining完了 Hash: "+hash(before));
 						for(User u:Main.u) {
 							Network.share("block~",before, u.s);

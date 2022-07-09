@@ -7,7 +7,7 @@ public class ReceiveTransaction {
 	public static void exec(String line,Socket so) {
 		String[] tr=line.split("~");
 		String from=tr[1].split("@")[0];
-		Transaction t=new Transaction((tr[0].equals("disc_transaction"))?tr[2]:tr[1],Main.utxo.get(from));
+		Transaction t=new Transaction((tr[0].equals("disc_transaction"))?tr[2]:tr[1],Main.checkNullAndGetValue(Main.utxo,from),false);
 		if(t.ok) {
 			try {
 				so.getOutputStream().write((t.hash+"~ok\r\n").getBytes());

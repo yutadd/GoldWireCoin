@@ -261,7 +261,7 @@ public class Main {
 				new ProcessBuilder("/bin/clear").inheritIO().start().waitFor();
 		} catch (IOException | InterruptedException ex) {}
 	}
-
+/**ジェネシスブロックがあるため、チェックを行わない。*/
 	static HashMap<String,BigDecimal> readhash(int leng){
 		boolean shuryo=false;
 		HashMap<String,BigDecimal> result=new HashMap<String,BigDecimal>();
@@ -278,20 +278,19 @@ public class Main {
 					if(leng<i+(a-1)*10000) {
 						shuryo=true;
 						break;
-
 					}
 					try {
 						String line = bs.readLine();
 						if(line==null) {bs.close();shuryo=true;break;}
-						Block b=new Block(line,false,min,utxo,false);
+						Block b=new Block(line,BigInteger.ZERO,new HashMap<String,BigDecimal>(),true);
 						for(Transaction t:b.ts) {
 							BigDecimal bal=result.get(t.input);
 							if(bal==null)bal=new BigDecimal(0);
 							result.put(t.input,bal.subtract(t.sum_minus));
 							for(Output o:t.out) {
-								BigDecimal bal2=result.get(o.address[0].toString(16));
-								if(bal2==null)bal2=new BigDecimal(0);
-								result.put(o.address[0].toString(16),bal2.add(o.amount));
+								result.put(o.address[0].toString(16),
+										checkNullAndGetValue(result,o.address[0].toString(16)).add(o.amount)
+										);
 							}
 						}
 						BigDecimal m_balance=result.get(b.miner);
@@ -303,7 +302,7 @@ public class Main {
 		}
 		return result;
 	}
-	//データベースに格納するものだから一番最初に
+	/**ジェネシスブロックがあるため、チェックを行わない。<br>一番最初に呼んで*/
 	static void readHash() {
 		mati=true;
 		boolean shuryo=false;
@@ -326,7 +325,7 @@ public class Main {
 					try {
 						String line = bs.readLine();
 						if(line==null) {bs.close();shuryo=true;break;}
-						Block b=new Block(line,false,min,utxo,false);
+						Block b=new Block(line,min,utxo,i<=4);
 						b.give_utxo(false);
 						for(Transaction t:b.ts) {
 							t.doTrade();
@@ -388,7 +387,7 @@ public class Main {
 		}
 	}
 	static void addBlock(String block) {
-		Block blo=new Block(block,true,min,utxo,false);
+		Block blo=new Block(block,min,utxo,true);
 		int numb=blo.number;
 		console.put("MAIN04","このブロックのナンバー: "+numb);
 		console.put("MAIN05","セーブされたブロックの数: "+getBlockSize());
@@ -397,6 +396,7 @@ public class Main {
 			saveBlock(block);
 		}
 	}
+	/**GETBLOCKは保存された後のブロックを利用するため、チェックを行わない。*/
 	static Block getBlock(int numb) {
 		File file=new File("Blocks"+File.separator+"Block-"+((numb/10000)+1));
 		String s;
@@ -407,7 +407,7 @@ public class Main {
 			while ((s = br.readLine()) != null) {
 				if (numb%10000 == count++) {
 					br.close();
-					b=new Block(s,true,null,utxo,false);
+					b=new Block(s,BigInteger.ZERO,utxo,true);
 					return b;
 				}
 			}
@@ -453,35 +453,34 @@ public class Main {
 		}
 		return -1;
 	}
+	/**セーブすることが目的なので、チェックを行いません*/
 	private static void saveBlock(String arg) {
-		Block b=new Block(arg,false,min,utxo,false);
-		if(b.ok) {
-			File file=new File("Blocks"+File.separator+"Block-"+((b.number/10000)+1));
-			try {
-				file.createNewFile();
-				FileWriter fw=new FileWriter(file,true);
-				fw.write(arg+System.getProperty("line.separator"));
-				fw.flush();
-				fw.close();
-				for(Transaction t :b.ts) {
-					t.doTrade();//取引完了させる
-				}
-				for(Transaction t:b.ts) {
-					pool.remove(t);
-				}
-				b.give_utxo(false);
-			} catch (IOException e) {
-				// TODO 自動生成された catch ブロック
-				e.printStackTrace();
+		Block b=new Block(arg,BigInteger.ZERO,new HashMap<String,BigDecimal>(),true);
+		File file=new File("Blocks"+File.separator+"Block-"+((b.number/10000)+1));
+		try {
+			file.createNewFile();
+			FileWriter fw=new FileWriter(file,true);
+			fw.write(arg+System.getProperty("line.separator"));
+			fw.flush();
+			fw.close();
+			for(Transaction t :b.ts) {
+				t.doTrade();//取引完了させる
 			}
-			latestHash=Mining.hash(b.sum);
-			size=b.number;
-			try {
-				time[0]=b.time;
-				time[1]=getBlock(b.number-1).time;
-			}catch(Exception e) {console.put("MAINE-06","minの計算中にエラーが発生しました");time[0]=6000;time[1]=6000;}
-			min=getMin(true);
+			for(Transaction t:b.ts) {
+				pool.remove(t);
+			}
+			b.give_utxo(false);
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
 		}
+		latestHash=Mining.hash(b.sum);
+		size=b.number;
+		try {
+			time[0]=b.time;
+			time[1]=getBlock(b.number-1).time;
+		}catch(Exception e) {console.put("MAINE-06","minの計算中にエラーが発生しました");time[0]=6000;time[1]=6000;}
+		min=getMin(true);
 
 	}
 	static String getlatesthash() {
@@ -567,5 +566,10 @@ public class Main {
 			}
 		}
 
+	}
+	public static BigDecimal checkNullAndGetValue(Map<String,BigDecimal> map,String key) {
+		BigDecimal bal2=map.get(key);
+		if(bal2==null)bal2=new BigDecimal(0);
+		return bal2;
 	}
 }

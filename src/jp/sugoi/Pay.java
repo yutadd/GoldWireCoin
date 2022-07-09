@@ -18,7 +18,7 @@ public class Pay {
 							String hash=Transaction.hash(sum.replace("@", ""));
 							BigInteger[] sign0=Main.w.sign(hash.getBytes());
 							String sign=sign0[0].toString(16)+"0x0a"+sign0[1].toString(16);
-							Transaction tr=new Transaction(sum+"@"+sign, Main.utxo.get(sourceaddr));
+							Transaction tr=new Transaction(sum+"@"+sign, Main.checkNullAndGetValue(Main.utxo,sourceaddr),false);
 							System.out.println("OK?:"+tr.ok);
 							Main.pool.add(tr);
 							for(User u:Main.u) {

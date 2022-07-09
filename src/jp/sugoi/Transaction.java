@@ -34,11 +34,12 @@ public class Transaction {
 		}
 		return false;
 	}
+
+	BigDecimal sum_minus=new BigDecimal(0.0);
 	/**
 	 * 認証に成功した場合、ハッシュ値が格納される。
 	 * (sha-256)
 	 */
-	BigDecimal sum_minus=new BigDecimal(0.0);
 	String hash;
 	String input;
 	String transaction_sum;
@@ -47,7 +48,7 @@ public class Transaction {
 	BigDecimal fee;
 	Output[] out;
 	boolean ok;
-	Transaction(String s,BigDecimal source_balance){
+	Transaction(String s,BigDecimal source_balance,boolean PassCheck){
 
 		try {
 			//System.out.println("[トランザクション]@有り原文 : "+s);
@@ -61,30 +62,43 @@ public class Transaction {
 			//System.out.printf("[sign]hash = %s\r\n",sum);
 			BigInteger[] sig= toBigInteger(sign,"0x0a",16);
 			BigInteger[] pu= toBigInteger(from, "0x0a", 16);
-			if(Bouncycastle_Secp256k1.verify(hash1.getBytes(), sig, pu)) {
-				Main.console.put("TRANSACTION0","認証完了");
-				out=getoutput(output.split("0x0a"));
-				this.fee=fee;
-				hash=hash1;
-				input= from.split("0x0a")[0];
-				transaction_sum=from+"@"+output+"@"+fee+"@"+time+"@"+sign;
-				if(checkoutput(out,source_balance)) {
-					ok=true;
-					Main.console.put("TRANSACTION1","トランザクションの認証に成功-fee : "+fee);
-				}else {Main.console.put("TRANSACTIONE-2","checkoutputに失敗");}
-			}else {Main.console.put("TRANSACTIONE-3",sum+"\r\n"+from+"@"+output+"@"+fee+"@"+time+"@"+sign+"\r\n署名の検証に失敗");}
-		}catch(Exception e) {int i=0;for(StackTraceElement ste:e.getStackTrace())Main.console.put("TRANSACTIONE-4-"+i++,ste.toString());e.printStackTrace();}
+			out=getoutput(output.split("0x0a"));
+			hash=hash1;
+			this.fee=fee;
+			input= from.split("0x0a")[0];
+			transaction_sum=from+"@"+output+"@"+fee+"@"+time+"@"+sign;
+			sum_minus=sum_minus.add(fee);
+			for(Output element:out) {
+				sum_minus=sum_minus.add(element.amount);
+			}
+			for(Transaction t:Main.pool) {
+				if(t.input.equals(input)) {
+					sum_minus=sum_minus.add(t.sum_minus);
+				}
+			}
+			if(!PassCheck) {
+				if(Bouncycastle_Secp256k1.verify(hash1.getBytes(), sig, pu)) {
+					Main.console.put("TRANSACTION0","認証完了");
+					if(checkoutput(out,source_balance)) {
+						ok=true;
+						Main.console.put("TRANSACTION1","トランザクションの認証に成功-fee : "+fee);
+					}else {
+						Main.console.put("TRANSACTIONE-2","checkoutputに失敗");
+						Main.console.put("TRANSACTIONE-CHECK", source_balance.toString()+"\r\n"+s);
+					}
+
+				}else {Main.console.put("TRANSACTIONE-3",sum+"\r\n"+from+"@"+output+"@"+fee+"@"+time+"@"+sign+"\r\n署名の検証に失敗");}
+			}
+		}catch(Exception e) {Main.console.put("TRANSACTIOMNE-ERROR", e.getMessage());}
 	}
 	public boolean doTrade() {
 		Main.utxo.put(input,Main.utxo.get(input).subtract(sum_minus));
 		for(Output s:out) {
-			BigDecimal d=Main.utxo.get(s.address[0].toString(16));
-			if(d==null) {
-				//System.out.println(d);
-				Main.utxo.put(s.address[0].toString(16),s.amount);
-			}else {
-				Main.utxo.put(s.address[0].toString(16),(d.add(s.amount)));
-			}
+			Main.utxo.put(
+					s.address[0].toString(16)
+					,Main.checkNullAndGetValue(Main.utxo,s.address[0].toString(16))
+					.add(s.amount)
+					);
 		}
 		return true;
 	}
@@ -99,11 +113,12 @@ public class Transaction {
 
 
 	//同じアドレスだからアウトプットが適正に計算されない
+
 	boolean checkoutput(Output[] out,BigDecimal source_balance){
 		sum_minus=sum_minus.add(fee);
 		for(Output element:out) {
 			if(element.address[0].toString(16).equals(from.split("0x0a")[0])) {
-				Main.console.put("TRANSACTIONE","]送金先と送金元が同じ");
+				Main.console.put("TRANSACTIONE-SAME","]送金先と送金元が同じ");
 				return false;
 			}
 			sum_minus=sum_minus.add(element.amount);
@@ -116,6 +131,9 @@ public class Transaction {
 		if(sum_minus.compareTo(source_balance)<=0) {
 			Main.console.put("TRANSACTION07","残額チェックに成功しました");
 			return true;
+		}else {
+			Main.console.put("TRANSACTIONE-FCB","残額チェックに失敗しました\r\n"+source_balance.toString()+"\r\n"+sum_minus);
+
 		}
 		return false;
 	}
