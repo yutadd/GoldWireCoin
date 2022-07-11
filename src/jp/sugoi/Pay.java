@@ -23,9 +23,7 @@ public class Pay {
 							System.out.println("OK?:"+tr.ok);
 							if(tr.ok) {
 								Main.pool.add(tr);
-								for(User u:Main.u) {
-									Network.share("trans~", tr.transaction_sum,u.s);
-								}
+								Network.shareToNodes("trans~"+ tr.transaction_sum);
 							}
 						}else {
 							System.out.println("[ペイ]残額が足りまへん");

@@ -24,7 +24,7 @@ public class User extends Thread{
 				Main.console.put("NETWORK(USER)02", "Last input String:"+(line.length()<14?line:line.substring(0, 14)));
 				if(line.startsWith("block~")) {
 					ReceiveBlock.exec(line,s);
-				}else if(line.startsWith("trans~")||line.startsWith("disc_transaction~")) {
+				}else if(line.startsWith("transaction~")) {
 					ReceiveTransaction.exec(line,s);
 				}else if(line.startsWith("notfound")){
 					System.out.println("["+Main.getfrom+"][ユーザー]notfoundが送られてきた。");

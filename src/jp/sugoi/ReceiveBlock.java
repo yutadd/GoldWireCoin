@@ -12,7 +12,7 @@ public class ReceiveBlock {
 			if(b.previous_hash.equals(Main.getlatesthash())) {
 				if(b.ok) {
 					Main.addBlock(b.sum);
-					Network.share("block~", b.sum, s);
+					Network.shareToNodes("block~"+ b.sum);
 					//System.out.println("[ユーザー]書き込みました。");
 				}else {
 					Main.console.put("RECEIVEBLOCKE-01", "受信したブロックが不正");
