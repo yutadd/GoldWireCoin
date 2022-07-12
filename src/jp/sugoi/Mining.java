@@ -37,8 +37,8 @@ public class Mining extends Thread{
 					BigInteger result=new BigInteger(hash(before),16);
 					if(result.compareTo(Main.min)<0) {
 						Main.console.put("MINING","mining完了 Hash: "+hash(before));
-							Network.shareToNodes("block~"+before);
-						
+						Network.shareToNodes("block~"+before);
+
 						/*記述*/
 						Main.addBlock(before);
 						Main.pool.clear();

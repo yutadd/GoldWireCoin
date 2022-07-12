@@ -17,8 +17,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.sun.jna.Function;
+import com.sun.jna.platform.win32.WinDef.BOOL;
+import com.sun.jna.platform.win32.WinDef.DWORD;
+import com.sun.jna.platform.win32.WinDef.DWORDByReference;
+import com.sun.jna.platform.win32.WinNT.HANDLE;
 
 
 //
@@ -31,9 +36,17 @@ class TreeMap2<K,V> extends ConcurrentHashMap<K,V>{
 	@SuppressWarnings("unchecked")
 	public V put(K key,V value){
 		if(key instanceof String&& value instanceof String) {
-			if(((String)key).contains("E-"))return super.put((K)((String)key+" "+new SimpleDateFormat("HH時mm分ss秒").format(new Date())),value);
+			if(((String)key).contains("E-"))key=(K) ((String)key+" "+new SimpleDateFormat("HH時mm分ss秒").format(new Date()));
 		}
-		return super.put(key,value);
+		if(((String)key).matches(".*E-.*")) {
+			System.out.println("[\033[31m"+((String)key)+"\033[37m]"+((String)value)+"\033[37m");
+		}else if(((String)key).matches(".*I-.*")) {
+			System.out.println("[\033[34m"+((String)key)+"\033[37m]"+((String)value)+"\033[37m");
+		}else  if(((String)key).matches(".*")) {
+			System.out.println("[\033[32m"+((String)key)+"\033[37m]"+((String)value)+"\033[37m");
+		}
+		return value;
+		//return super.put(key,value);
 	}
 }
 
@@ -79,12 +92,26 @@ public class Main {
 	static BigInteger shoki=new BigInteger("26611349253966442813730644663330183884399686815584447189708332380985641",10);
 	static String console_mode="live";
 	public static void main(String[] args) {
-
+		if(System.getProperty("os.name").startsWith("Windows"))
+		{
+			// Set output mode to handle virtual terminal s	equences
+			Function GetStdHandleFunc = Function.getFunction("kernel32", "GetStdHandle");
+			DWORD STD_OUTPUT_HANDLE = new DWORD(-11);
+			HANDLE hOut = (HANDLE)GetStdHandleFunc.invoke(HANDLE.class, new Object[]{STD_OUTPUT_HANDLE});
+			DWORDByReference p_dwMode = new DWORDByReference(new DWORD(0));
+			Function GetConsoleModeFunc = Function.getFunction("kernel32", "GetConsoleMode");
+			GetConsoleModeFunc.invoke(BOOL.class, new Object[]{hOut, p_dwMode});
+			int ENABLE_VIRTUAL_TERMINAL_PROCESSING = 4;
+			DWORD dwMode = p_dwMode.getValue();
+			dwMode.setValue(dwMode.intValue() | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+			Function SetConsoleModeFunc = Function.getFunction("kernel32", "SetConsoleMode");
+			SetConsoleModeFunc.invoke(BOOL.class, new Object[]{hOut, dwMode});
+		}
 		/* 
 
 
 
-		以前生成した公開鍵x,yがあり、このxから同じyを導き出したい。
+		以前生成した公開鍵x,yがあり、このxから同じyを導き出したい。	
 		BigInteger x=new BigInteger("f7723c38398cef511bc83c70dd8733efb401e60563245ca9969997e2e93c5db9",16);
 		BigInteger y=new BigInteger("b90c7a7fcabdd98291b2df5d3488a930413f7d0399ab449dafd95e556f1ea0a3",16);
 
@@ -115,12 +142,12 @@ public class Main {
 		System.out.println(System.getProperty("file.encoding"));
 		w=new Wallet();
 		addManuals();
-		Thread th1=new Thread() {
+		/*Thread th1=new Thread() {
 			@Override
 			public void run() {
 				while(true) {
 					if(console_mode.equals("live")) {
-						console_clear();
+						console_reset();
 						System.out.println("現在時刻："+new SimpleDateFormat("HH時mm分ss秒").format(new Date())+"\033[37m");
 						TreeMap<String,String> ent=new TreeMap<String,String>();
 						ent.putAll(console);
@@ -155,7 +182,20 @@ public class Main {
 			}
 		};
 		th1.start();
-		readHash();
+		Thread th_clear=new Thread() {
+			public void run() {
+				while(true) {
+					if(console_mode.equals("live")) {
+						console_clear();
+					}
+					try {
+						sleep(4000);
+					} catch (InterruptedException e) {}
+				}
+			}
+		};
+		th_clear.start();
+		
 		try {
 			//Runtime.getRuntime().exec("cmd /c cls");
 		}catch(Exception e) {e.printStackTrace();}
@@ -167,8 +207,8 @@ public class Main {
 					try {Thread.sleep(700);} catch (InterruptedException e) {e.printStackTrace();}
 				}
 			}
-		};
-		Dr_AI.start();
+		};Dr_AI.start();*/
+		readHash();
 		mining=true;
 		new Mining();
 		//65261
@@ -178,11 +218,26 @@ public class Main {
 			@Override
 			public void run() {
 				Scanner sc=new Scanner(System.in);
-				for(;;) {
+				//InputStreamReader isr=new InputStreamReader(System.in);
+				//char c;
+				while(true) {
 					System.out.print("\033[34m┌──(\033[31mGWC\033[37m x💀x \033[31mCMD\033[34m)-[\033[37mBlock Size :"+size+"\033[34m]\r\n└─#\033[37m");
 					String s=sc.nextLine();
+					/*String s="";
+					try {
+						while((c=(char)isr.read())!=(char)-1) {
+							if(c!='\r'&&c!='\n') {
+								System.out.print(c);
+							s+=c;
+							}else {
+								break;
+							}
+						}
+					} catch (IOException e) {
+						// TODO 自動生成された catch ブロック
+						break;
+					}*/
 					String cmd=s.split(" ")[0];
-					if(console_mode.equals("cmd")) {
 						if(cmd.equals("pay")) {
 							new Pay(s);
 						}else if(cmd.equals("mining")) {
@@ -208,10 +263,6 @@ public class Main {
 							}
 							System.out.println("YOUR ADDRESS : "+w.address_0x0a);
 							System.out.println("==========↑Stats↑==========");
-						}else if(cmd.equals("")) {
-							console_mode="live";
-						}else if(cmd.equals("live")) {
-							console_mode="live";
 						}else if(cmd.equals("help")) {
 							System.out.println();
 							System.out.println(man);
@@ -228,21 +279,6 @@ public class Main {
 								}
 							} catch (IOException | InterruptedException ex) {}
 						}
-					}else {
-						console_mode="cmd";
-						console_clear();
-						for(Entry<String,String> e:console.entrySet()) {
-							if(e.getKey().matches(".*E-.*")) {
-								System.out.println("\033[31m["+e.getKey()+"]"+e.getValue()+"\033[37m");
-							}else if(e.getKey().matches(".*I-.*")) {
-								System.out.println("\033[34m["+e.getKey()+"\033[37m]"+e.getValue()+"\033[37m");
-							}else  if(e.getKey().matches(".*")) {
-								System.out.println("\033[32m["+e.getKey()+"\033[37m]"+e.getValue());
-							}
-						}
-						System.out.println("モード：\033[44mコマンド入力モード\033[49m\r\n\t(ENTERで切り替え)");
-
-					}
 				}
 			}
 		};
@@ -250,10 +286,22 @@ public class Main {
 
 		new DNS();
 	}
+	/*
+	 * public static void console_reset() {
+		System.out.print("\033[0;0H");
+		System.out.print("\033[0;0f");
+	}
+	*/
 	public static void console_clear(){
+
+		/*for(int i=0;i<console.size();i++) {
+			System.out.print("\033[1A");
+		}*/
 
 		//System.out.print("\033[2J");
 		//Clears Screen in java
+
+
 		try {
 			if (System.getProperty("os.name").contains("Windows"))
 				new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
@@ -261,7 +309,7 @@ public class Main {
 				new ProcessBuilder("/bin/clear").inheritIO().start().waitFor();
 		} catch (IOException | InterruptedException ex) {}
 	}
-/**ジェネシスブロックがあるため、チェックを行わない。*/
+	/**ジェネシスブロックがあるため、チェックを行わない。*/
 	static HashMap<String,BigDecimal> readhash(int leng){
 		boolean shuryo=false;
 		HashMap<String,BigDecimal> result=new HashMap<String,BigDecimal>();

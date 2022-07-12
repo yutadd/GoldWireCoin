@@ -12,6 +12,13 @@
      <maven.compiler.target>9</maven.compiler.target>
 </properties>
 <dependencies>
+<dependency>
+    <groupId>net.java.dev.jna</groupId>
+    <artifactId>jna-platform</artifactId>
+    <version>5.12.1</version>
+</dependency>
+
+
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bctls-jdk15on</artifactId>
