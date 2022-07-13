@@ -9,10 +9,12 @@ import java.net.Socket;
 public class DNS extends Main {
 	static Socket s;
 	DNS(){
+		//デプロイ時に内容の優先度を入れ替える。
 		try {
-			console.put("DNS00","yutadd.com - timeout1024ms");
+			console.put("DNS00","localhost - timeout1024ms");
 			s=new Socket();
-			InetSocketAddress endpoint= new InetSocketAddress("yutadd.com",25565);
+			InetSocketAddress endpoint= new InetSocketAddress("localhost",  25565);
+			
 			s.connect(endpoint,1024);
 			console.put("DNS01","connect complete");
 		} catch (Exception e) {
@@ -26,26 +28,27 @@ public class DNS extends Main {
 				try {
 					System.out.println("localhost - timeout1024ms");
 					s=new Socket();
-					InetSocketAddress endpoint= new InetSocketAddress("localhost",  25565);
+					InetSocketAddress endpoint= new InetSocketAddress("yutadd.com",25565);
 					s.connect(endpoint,1024);
 					console.put("DNS00","connect complete");
 				}catch(Exception ep) {
 					console.put("DNS01","faild to connect");
 				}
 			}
+		}
 			if(s!=null){
 				try {
 					s.getOutputStream().write("get\r\n".getBytes());
+					console.put("DNS-3","Writed GET");
 				} catch (IOException e1) {
 					console.put("DNSE-3",e1.getMessage());
 				}
 				Thread th_in=new Thread(){
-					@Override
 					public void run() {
-						for(;;) {
+						System.out.println("th_in_started");
 							try {
 								BufferedReader br=new BufferedReader(new InputStreamReader(s.getInputStream()));
-								for(;!s.isClosed();) {
+								while(!s.isClosed()) {
 									String cmd=br.readLine();
 									System.out.println(cmd);
 									if(cmd.equals("no_users")) {
@@ -61,31 +64,31 @@ public class DNS extends Main {
 											console.put("DNS02","[DNS]返答："+cmd);
 											try {//65261
 												Socket s=new Socket(cmd,0xfeed);
-												System.out.println("connect"+s.getInetAddress().getHostName());
+												console.put("DNS-CON","CONNECTED TO RECEIVED ADDRESS!");
 												User user = new User(s,Main.BANGO);
 												Main.BANGO++;
 												Main.u.add(user);
 												user.start();
-											}catch(Exception e) {e.printStackTrace();}
+												
+											}catch(Exception e) {console.put("DNSE-KEN","CONNOT CONNECT TO RECEIVED ADDRESS;;");}
 										}else {
-											console.put("DNS02","ALREADY CONNECTED");
+											console.put("DNSE-ALR","ALREADY CONNECTED");
 										}
 									}
 								}
+								console.put("DNSE-ALR","Shutdowning input stream.");
 							} catch (Exception e) {
-								//e.printStackTrace();
+								e.printStackTrace();
 								try {
 									s.close();
 								} catch (IOException e1) {
 									e1.printStackTrace();
 								}
-								break;
 							}
 						}
-					}
 				};
 				th_in.start();
+				System.out.println("th_in_started");
 			}
 		}
-	}
 }

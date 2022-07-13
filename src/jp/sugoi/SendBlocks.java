@@ -1,29 +1,35 @@
 package jp.sugoi;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class SendBlocks {
 	public static void exec(String line,Socket s) {
 		try {
-			String hash=line.split("~")[1];
-			int block_number=Main.getNumber(hash);
-			if(!(block_number<0)) {//                                                 3
-				Block[] list=new Block[(Main.getBlockSize()+1)-block_number];
-				int shoki=block_number;
+			String[] args=line.split("~");
+			Block receivedBlock=new Block(args[1],BigInteger.ZERO,new HashMap<String,BigDecimal>(),true);
+			int receivedNumber=receivedBlock.number;
+			String localHash=Main.getHash(receivedNumber);
+			Main.console.put("[SENDBLOCK-RECE]",String.valueOf(receivedNumber));
+			if(localHash!=null&&localHash.equals(Mining.hash(receivedBlock.sum))) {
+				receivedNumber+=1;
+				ArrayList<Block> list=new ArrayList<Block>();
 				boolean ok=true;
-				for(;block_number<=Main.getBlockSize();block_number++) {
-					Block b=Main.getBlock(block_number);
-					if(b==null) {System.out.println("[ユーザー]ブロックを読み込めず。");ok=false;break;}
-					if(b.ok) {
-						//4?                     4
-						list[block_number-shoki]=b;
+				for(;receivedNumber<=Main.getBlockSize();receivedNumber++) {
+					Block b=Main.getBlock(receivedNumber);
+					if(b!=null) {
+						list.add(b);
 					}else {
+						Main.console.put("[SENDBLOCKE-NUL]","b is null");
 						ok=false;
 						break;
 					}
 				}
-				System.out.println("["+Main.getfrom+"][block]ok? : " + ok);
 				if(ok) {
+					Main.console.put("[SENDBLOCK-READY]","Created blocks is okay ready to send");
 					int i=0;
 					StringBuilder sb=new StringBuilder();
 					for(Block b:list) {
@@ -35,11 +41,17 @@ public class SendBlocks {
 						i++;
 					}
 					s.getOutputStream().write(("blocks~"+sb.toString()+"\r\n").getBytes());
-					System.out.println("["+Main.getfrom+"][ユーザー]お繰り返した");
+					Main.console.put("[SENDBLOCK-RET]","Returned blocks");
 				}
 			}else {
-				s.getOutputStream().write("notfound\r\n".getBytes());
-				System.out.println("["+Main.getfrom+"][ユーザー]hashが見つかりませんでした.");
+				//receivenumberはifブロック内で増えるので、-1でいい。
+				Block b=Main.getBlock(receivedNumber-1);
+				if(b!=null) {
+					s.getOutputStream().write(("isSame~"+(b.sum)+"\r\n").getBytes());
+					Main.console.put("[SENDBLOCK-ISAME]",String.valueOf(receivedNumber-1));
+				}else {
+					Main.console.put("[SENDBLOCK-NSC]","Not Same Chain");
+				}
 			}
 		}catch(Exception e) {e.printStackTrace();}
 	}

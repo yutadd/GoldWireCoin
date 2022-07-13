@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,7 +40,9 @@ class TreeMap2<K,V> extends ConcurrentHashMap<K,V>{
 			if(((String)key).contains("E-"))key=(K) ((String)key+" "+new SimpleDateFormat("HH時mm分ss秒").format(new Date()));
 		}
 		if(((String)key).matches(".*E-.*")) {
+
 			System.out.println("[\033[31m"+((String)key)+"\033[37m]"+((String)value)+"\033[37m");
+			return super.put(key,value);
 		}else if(((String)key).matches(".*I-.*")) {
 			System.out.println("[\033[34m"+((String)key)+"\033[37m]"+((String)value)+"\033[37m");
 		}else  if(((String)key).matches(".*")) {
@@ -55,19 +58,20 @@ public class Main {
 	static int reflesh=1;
 	static boolean haikei_nashi=false;
 	static Map<String,BigDecimal> utxo=new HashMap<String,BigDecimal>();
-	static int BANGO=0;
-	static int getfrom=0;
 	static boolean mati=false;
 	static String buffer=new Random().nextInt()+"";
 	static String latestHash=null;
-	static long[] time= {6000,6000};
 	static String name="XGW";
 	static ArrayList<Transaction> pool=new ArrayList<Transaction>();
 	static Wallet w;
 	static String man="";
+
+	/**
+	 * this may contains only error message
+	 */
 	static TreeMap2<String, String> console=new TreeMap2<String,String>();
-	static long[] 間隔=new long[1];
-	static long[] 難易度 = new long[1];
+	static int BANGO=0;
+
 	static ArrayList<User> u=new ArrayList<User>();
 	static String mining_block_sum="";
 
@@ -84,7 +88,6 @@ public class Main {
 	 * ソケットとそれに対応するIPTextFieldを記憶する。
 	 */
 	//static HashMap<User,Integer> debug_lab=new HashMap<>();
-	static Block rsv_Block;
 	static boolean mining=false;
 	static Mining m;
 	static int size=0;
@@ -142,72 +145,6 @@ public class Main {
 		System.out.println(System.getProperty("file.encoding"));
 		w=new Wallet();
 		addManuals();
-		/*Thread th1=new Thread() {
-			@Override
-			public void run() {
-				while(true) {
-					if(console_mode.equals("live")) {
-						console_reset();
-						System.out.println("現在時刻："+new SimpleDateFormat("HH時mm分ss秒").format(new Date())+"\033[37m");
-						TreeMap<String,String> ent=new TreeMap<String,String>();
-						ent.putAll(console);
-						for(Entry<String,String> e:ent.entrySet()) {
-							if(e.getKey().matches(".*E-.*")) {
-								System.out.println("[\033[31m"+e.getKey()+"\033[37m]"+e.getValue()+"\033[37m");
-							}else if(e.getKey().matches(".*I-.*")) {
-								System.out.println("[\033[34m"+e.getKey()+"\033[37m]"+e.getValue()+"\033[37m");
-							}else  if(e.getKey().matches(".*")) {
-								System.out.println("[\033[32m"+e.getKey()+"\033[37m]"+e.getValue()+"\033[37m");
-							}
-						}
-					}
-					console.put("MAINI-01","My wallet balance : "+utxo.get(w.pub[0].toString(16)));
-					console.put("MAINI-02","blockSize : "+getBlockSize());
-					console.put("MAINI-03","YOUR ADDRESS : "+w.address_0x0a);
-					console.put("MAINI-04","NODES : "+"ME");
-					for(User us:u) {
-						console.put("MAINI-04",console.get("MAINI-04")+" "+us.s.getInetAddress().getHostAddress());
-					}
-					if(console_mode.equals("live"))System.out.println("モード：\033[42mライブモード\033[49m\r\n\t(ENTERで切り替え)");
-					for(int i=0;i<reflesh;i++) {
-						if(console_mode.equals("live")) {
-							System.out.print("\r"+((reflesh-i)/10.0)+"  ");
-						}
-						try{
-							Thread.sleep(100);
-						}catch(Exception e) {};
-					}
-
-				}
-			}
-		};
-		th1.start();
-		Thread th_clear=new Thread() {
-			public void run() {
-				while(true) {
-					if(console_mode.equals("live")) {
-						console_clear();
-					}
-					try {
-						sleep(4000);
-					} catch (InterruptedException e) {}
-				}
-			}
-		};
-		th_clear.start();
-		
-		try {
-			//Runtime.getRuntime().exec("cmd /c cls");
-		}catch(Exception e) {e.printStackTrace();}
-		Thread Dr_AI=new Thread(){
-			@Override
-			public void run() {
-				for(;;) {
-					//gui_check();
-					try {Thread.sleep(700);} catch (InterruptedException e) {e.printStackTrace();}
-				}
-			}
-		};Dr_AI.start();*/
 		readHash();
 		mining=true;
 		new Mining();
@@ -223,75 +160,65 @@ public class Main {
 				while(true) {
 					System.out.print("\033[34m┌──(\033[31mGWC\033[37m x💀x \033[31mCMD\033[34m)-[\033[37mBlock Size :"+size+"\033[34m]\r\n└─#\033[37m");
 					String s=sc.nextLine();
-					/*String s="";
-					try {
-						while((c=(char)isr.read())!=(char)-1) {
-							if(c!='\r'&&c!='\n') {
-								System.out.print(c);
-							s+=c;
-							}else {
-								break;
-							}
-						}
-					} catch (IOException e) {
-						// TODO 自動生成された catch ブロック
-						break;
-					}*/
 					String cmd=s.split(" ")[0];
-						if(cmd.equals("pay")) {
-							new Pay(s);
-						}else if(cmd.equals("mining")) {
-							if(mining) {
-								mining=false;
-								System.out.println("\033[31mMINING STOPPED.");
-							}else {
-								mining=true;
-								new Mining();
-								System.out.println("\033[32mMINING STARTED.");
-							}
-						}else if(cmd.equals("stats")){
-							System.out.println("==========↓Stats↓==========");
-							System.out.println("My wallet balance : "+utxo.get(w.pub[0].toString(16)));
-							System.out.println("mati"+mati);
-							System.out.println("blockSize : "+getBlockSize());
-							String now_10=min.toString(10);
-							String def_10=shoki.toString(10);
-							System.out.println("NOW : "+now_10+"\r\n"+" 初期 - 今: "+shoki.subtract(min).toString(10)+"\r\n"+"DEF : "+def_10);
-							//gui_check();
-							for(Entry<String,BigDecimal> set:utxo.entrySet()) {
-								System.out.printf("%s : %f \r\n",set.getKey(),set.getValue().doubleValue());
-							}
-							System.out.println("YOUR ADDRESS : "+w.address_0x0a);
-							System.out.println("==========↑Stats↑==========");
-						}else if(cmd.equals("help")) {
-							System.out.println();
-							System.out.println(man);
-							System.out.println();
-						}else if(cmd.equals("clear")||cmd.equals("cls")){
-							console_clear();
+					if(cmd.equals("pay")) {
+						new Pay(s);
+					}else if(cmd.equals("mining")) {
+						if(mining) {
+							mining=false;
+							System.out.println("\033[31mMINING STOPPED.");
 						}else {
-							System.out.println("execute→"+s);
-							try {
-								if (System.getProperty("os.name").contains("Windows")) {
-									new ProcessBuilder("cmd","/c",s).inheritIO().start().waitFor();
-								}else {
-									new ProcessBuilder(s.split(" ")).inheritIO().start().waitFor();
-								}
-							} catch (IOException | InterruptedException ex) {}
+							mining=true;
+							new Mining();
+							System.out.println("\033[32mMINING STARTED.");
 						}
+					}else if(cmd.equals("stats")){
+						showStats();
+					}else if(cmd.equals("help")) {
+						System.out.println();
+						System.out.println(man);
+						System.out.println();
+					}else if(cmd.equals("clear")||cmd.equals("cls")){
+						console_clear();
+					}else if(cmd.equals("exit")){
+						System.exit(0);
+					}else {
+						System.out.println("execute→"+s);
+						try {
+							if (System.getProperty("os.name").contains("Windows")) {
+								new ProcessBuilder("cmd","/c",s).inheritIO().start().waitFor();
+							}else {
+								new ProcessBuilder(s.split(" ")).inheritIO().start().waitFor();
+							}
+						} catch (IOException | InterruptedException ex) {}
+					}
 				}
 			}
 		};
-		th_.start();
-
 		new DNS();
+		showStats();
+		th_.start();
 	}
-	/*
-	 * public static void console_reset() {
-		System.out.print("\033[0;0H");
-		System.out.print("\033[0;0f");
+	public static void showStats() {
+		System.out.println("\033[32m==========↓Stats↓==========");
+		System.out.println("[\033[34mYOUR WALLET BALANCE\033[37m]: "+utxo.get(w.pub[0].toString(16)));
+		System.out.println("[\033[34mIS WAITING PROCESS IS DONE\033[37m]: "+mati);
+		System.out.println("[\033[34mBLOCK SIZE\033[37m]: "+getBlockSize());
+
+		char hugo=(min.compareTo(shoki)>=0?'+':'-');
+		System.out.println("[\033[34mdifficulty\033[37m]:"+hugo+min.subtract(shoki).abs().toString(16));
+		//gui_check();
+
+		for(Entry<String,BigDecimal> set:utxo.entrySet()) {
+			System.out.printf("[\033[34mADDR\033[37m:\033[34m%s\033[37m]: \033[42m%s\033[49m \r\n",set.getKey(),set.getValue().toString());
+		}
+		System.out.println("\033[34mYOUR ADDRESS \033[37m: "+w.address_0x0a);
+		for(Entry<String,String> ent:console.entrySet()) {
+			System.out.println("[\033[31m"+ent.getKey()+"\033[37m]"+ent.getValue()+"\033[37m");
+		}
+		System.out.println("\033[32m==========↑Stats↑==========\033[37m");
 	}
-	*/
+
 	public static void console_clear(){
 
 		/*for(int i=0;i<console.size();i++) {
@@ -310,8 +237,9 @@ public class Main {
 		} catch (IOException | InterruptedException ex) {}
 	}
 	/**ジェネシスブロックがあるため、チェックを行わない。*/
-	static HashMap<String,BigDecimal> readhash(int leng){
+	static Entry<BigInteger,HashMap<String,BigDecimal>> readhash(int leng){
 		boolean shuryo=false;
+		BigInteger diff=shoki;
 		HashMap<String,BigDecimal> result=new HashMap<String,BigDecimal>();
 		for(int a=1;!shuryo;a++) {
 			File file=new File("Blocks"+File.separator+"Block-"+a);
@@ -329,11 +257,9 @@ public class Main {
 					}
 					try {
 						String line = bs.readLine();
-						if(line==null) {bs.close();shuryo=true;break;}
-						Block b=new Block(line,BigInteger.ZERO,new HashMap<String,BigDecimal>(),true);
+						Block b=new Block(line,diff,result,i+(a-1)*10000<=4);
 						for(Transaction t:b.ts) {
-							BigDecimal bal=result.get(t.input);
-							if(bal==null)bal=new BigDecimal(0);
+							BigDecimal bal=checkNullAndGetValue(result, t.input);
 							result.put(t.input,bal.subtract(t.sum_minus));
 							for(Output o:t.out) {
 								result.put(o.address[0].toString(16),
@@ -341,62 +267,68 @@ public class Main {
 										);
 							}
 						}
-						BigDecimal m_balance=result.get(b.miner);
-						if(m_balance==null)m_balance=new BigDecimal(0);
+						BigDecimal m_balance=checkNullAndGetValue(result,b.miner);
 						result.put(b.miner,m_balance.add(new BigDecimal(50.0)));
+						if(i+(a-1)*10000>4) {
+							SimpleEntry<BigInteger,BigInteger> time=new SimpleEntry<BigInteger,BigInteger>(BigInteger.valueOf(b.time),BigInteger.valueOf(getBlock(b.number-1).time));
+							diff=getMin(diff,time);
+						}
 					}catch(Exception e) {return null;}
 				}
 			}
 		}
-		return result;
+		return new SimpleEntry<BigInteger,HashMap<String,BigDecimal>>(diff,result);
 	}
-	/**ジェネシスブロックがあるため、チェックを行わない。<br>一番最初に呼んで*/
+	/**4ブロック以降はチェックを行う<br>一番最初に呼んで*/
 	static void readHash() {
-		mati=true;
+		mati=false;
 		boolean shuryo=false;
-		間隔=new long[1];
-		難易度 = new long[1];
 		pool=new ArrayList<Transaction>();
 		utxo.clear();
 		min=shoki;
 		for(int a=1;!shuryo;a++) {
 			File file=new File("Blocks"+File.separator+"Block-"+a);
-			FileReader is=null;
-			BufferedReader bs=null;
 			try {
-				is=new FileReader(file);
-				bs=new BufferedReader(is);
+				FileReader is=new FileReader(file);
+				BufferedReader bs=new BufferedReader(is);
+				if(file.exists()) {
+					for(int i=1;i<=10000;i++) {
+						try {
+							String line = bs.readLine();
+							if(line==null) {bs.close();return;}
+							Block b=new Block(line,min,utxo,i+(a-1)*10000<=4);
+							if(i+(a-1)*10000>4) {
+								if(b.ok) {
+									b.give_utxo(false);
+									for(Transaction t:b.ts) {
+										t.doTrade();
+									}
+									try {
+										SimpleEntry<BigInteger,BigInteger> time= new SimpleEntry<BigInteger,BigInteger>(BigInteger.valueOf(b.time),BigInteger.valueOf(getBlock(b.number-1).time));
+										size=i;
+										min=getMin(min,time);
+									}catch(Exception e) {
+										console.put("MAINE-02","[ブロック]minの計算中にエラーが発生しました");
+										System.exit(1);
+									}
+								}else {
+									mining=false;
+									console.put("MAINE-01","Block "+i+" invalid");
+									System.exit(1);
+								}
+							}
+							latestHash=Mining.hash(b.sum);
+						} catch (IOException e) {int r=0;for(StackTraceElement ste:e.getStackTrace())Main.console.put("MAINE-2-"+r++,ste.toString());break;}
+						size=i+(a-1)*10000;
+						//if(i>=6) {
 
-			} catch (FileNotFoundException e) {console.put("MAINE-00","File Not Found");}
-			if(file.exists()) {
-				for(int i=1;i<=10000;i++) {
-					try {
-						String line = bs.readLine();
-						if(line==null) {bs.close();shuryo=true;break;}
-						Block b=new Block(line,min,utxo,i<=4);
-						b.give_utxo(false);
-						for(Transaction t:b.ts) {
-							t.doTrade();
-						}
-						latestHash=Mining.hash(b.sum);
-					} catch (IOException e) {int r=0;for(StackTraceElement ste:e.getStackTrace())Main.console.put("MAINE-2-"+r++,ste.toString());break;}
-					size=i+(a-1)*10000;
-					//if(i>=6) {
-					try {
-						Block b=getBlock(i);
-						time[0]=b.time;
-						time[1]=getBlock(b.number-1).time;
-						//time_sum+=time[0]-time[1];
-						//System.out.println("[ブロック]平均掘削時間:"+ ((time_sum/i-5))/1000);
-					}catch(Exception e) {console.put("MAINE-02","[ブロック]minの計算中にエラーが発生しました");time[0]=6000;time[1]=6000;}
-					size=i;
-					min=getMin(true);
-					//}
+						//}
 
+					}
+				}else {
+					break;
 				}
-			}else {
-				break;
-			}
+			} catch (FileNotFoundException e) {console.put("MAINE-00","can't access to file"+file.getAbsolutePath());}
 		}
 		reflesh=2;
 		mati=false;
@@ -439,67 +371,32 @@ public class Main {
 		int numb=blo.number;
 		console.put("MAIN04","このブロックのナンバー: "+numb);
 		console.put("MAIN05","セーブされたブロックの数: "+getBlockSize());
-		if(numb>getBlockSize()) {
 			delfrom(numb);
 			saveBlock(block);
-		}
 	}
 	/**GETBLOCKは保存された後のブロックを利用するため、チェックを行わない。*/
 	static Block getBlock(int numb) {
-		File file=new File("Blocks"+File.separator+"Block-"+((numb/10000)+1));
-		String s;
-		int count=1;
-		Block b=null;
-		try {
-			BufferedReader br=new BufferedReader(new FileReader(file));
-			while ((s = br.readLine()) != null) {
-				if (numb%10000 == count++) {
-					br.close();
-					b=new Block(s,BigInteger.ZERO,utxo,true);
-					return b;
-				}
-			}
-			Main.console.put("見つからない", "です"+numb);
-			br.close();
-			return null;
-		}catch(Exception e) {e.printStackTrace();}
-		return null;
-	}
-	static int getNumber(String hash) {
-		boolean syuryo=false;
-		for(int a=1;!syuryo;a++) {
-			File file=new File("Blocks"+File.separator+"Block-"+a);
-			FileReader is=null;
-			BufferedReader bs=null;
-			try {
-				is=new FileReader(file);
-				bs=new BufferedReader(is);
-			} catch (FileNotFoundException e) {console.put("MAINE-00","File Not Found");}
-			if(file.exists()) {
-				for(int i=1;i<=10000;i++) {
-					try {
-						String line = bs.readLine();
-						if(line==null) {bs.close();syuryo=true;break;}
-						if(Mining.hash(line).equals(hash))return i;
-					}catch(Exception e) {e.printStackTrace();}
-				}
-			}else {
-				return -1;
-			}
-		}
-		for(int i=1;i<=getBlockSize();i++) {
-			File file=new File("Blocks"+File.separator+"Block-"+i);
+		if(numb>0) {
+			File file=new File("Blocks"+File.separator+"Block-"+((numb/10000)+1));
 			String s;
+			int count=1;
+			Block b=null;
 			try {
 				BufferedReader br=new BufferedReader(new FileReader(file));
-				s=br.readLine().trim();
-				br.close();
-				if(Mining.hash(s).equals(hash)) {
-					return i;
+				while ((s = br.readLine()) != null) {
+					if (numb%10000 == count++) {
+						br.close();
+						b=new Block(s,BigInteger.ZERO,utxo,true);
+						return b;
+					}
 				}
-			}catch(Exception e) {e.printStackTrace();return -1;}
+				Main.console.put("見つからない", "です"+numb);
+				br.close();
+				return null;
+			}catch(Exception e) {e.printStackTrace();}
 		}
-		return -1;
+		return null;
+
 	}
 	/**セーブすることが目的なので、チェックを行いません*/
 	private static void saveBlock(String arg) {
@@ -525,10 +422,12 @@ public class Main {
 		latestHash=Mining.hash(b.sum);
 		size=b.number;
 		try {
-			time[0]=b.time;
-			time[1]=getBlock(b.number-1).time;
-		}catch(Exception e) {console.put("MAINE-06","minの計算中にエラーが発生しました");time[0]=6000;time[1]=6000;}
-		min=getMin(true);
+			if(b.number>4) {
+				SimpleEntry<BigInteger,BigInteger> time=new SimpleEntry<BigInteger,BigInteger>(BigInteger.valueOf(b.time),BigInteger.valueOf(getBlock(b.number-1).time));
+				min=getMin(min,time);
+			}
+		}catch(Exception e) {console.put("MAINE-06","minの計算中にエラーが発生しました");}
+
 
 	}
 	static String getlatesthash() {
@@ -553,42 +452,17 @@ public class Main {
 			fw.close();
 		}catch(Exception e) {int da=0;for(StackTraceElement ste:e.getStackTrace())Main.console.put("MainE-4-"+da++,ste.toString());}
 	}
-	static BigInteger getMin(boolean show){
-		Long sa=Main.time[0]-Main.time[1];
-		long result=sa-60000;
-
-		if(!(size<=4)) {
-			if(sa>60000) {
-				//時間が60秒オーバー：もっとかんたんに：数値にプラス
-				if(show) {
-					long[] temp=new long[間隔.length+1];
-					間隔[間隔.length-1]=sa;
-					System.arraycopy(間隔, 0, temp, 0, 間隔.length);
-					間隔=temp;
-					long[] temp_d=new long[難易度.length+1];
-					難易度[難易度.length-1]=result;
-					System.arraycopy(難易度, 0, temp_d, 0, 難易度.length);
-					難易度=temp_d;
-				}
-				BigInteger i=new BigInteger("2910A562CF81F8A20CB31817F4350CA75ECF1CB59BED6E75AB6AEB1F4",16);
-				return min.add(i);
-			}else {
-				//６０秒以下：もっと難しく:数値にマイナス
-				if(show) {
-					long[] temp=new long[間隔.length+1];
-					間隔[間隔.length-1]=sa;
-					System.arraycopy(間隔, 0, temp, 0, 間隔.length);
-					間隔=temp;
-					long[] temp_d=new long[難易度.length+1];
-					難易度[難易度.length-1]=result;
-					System.arraycopy(難易度, 0, temp_d, 0, 難易度.length);
-					難易度=temp_d;
-				}
-				BigInteger i=new BigInteger("2910A562CF81F8A20CB31817F4350CA75ECF1CB59BED6E75AB6AEB1F4",16);
-				return min.subtract(i);
-			}
+	/**最初の４つでは呼ばないでぇ*/
+	static BigInteger getMin(BigInteger base,SimpleEntry<BigInteger,BigInteger> arg){
+		BigInteger sa=arg.getKey().subtract(arg.getValue());
+		if(sa.compareTo(BigInteger.valueOf(60000))>0) {
+			//時間が60秒オーバー：もっとかんたんに：数値にプラス
+			BigInteger i=new BigInteger("2910A562CF81F8A20CB31817F4350CA75ECF1CB59BED6E75AB6AEB1F4",16);
+			return base.add(i);
 		}else {
-			return shoki;
+			//６０秒以下：もっと難しく:数値にマイナス
+			BigInteger i=new BigInteger("2910A562CF81F8A20CB31817F4350CA75ECF1CB59BED6E75AB6AEB1F4",16);
+			return base.subtract(i);
 		}
 	}
 	private static void addManuals() {

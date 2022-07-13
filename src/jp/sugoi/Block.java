@@ -31,7 +31,7 @@ public class Block {
 			Main.console.put("BLOCK06","\t\t============");
 			sum=string;
 			String[] he_tr=string.split(",");
-			miner=he_tr[2];
+			miner=he_tr[1];
 			number=Integer.parseInt(he_tr[3]);
 			time=Long.parseLong(he_tr[4]);
 			for(int i=5;i<he_tr.length;i++) {
@@ -53,8 +53,7 @@ public class Block {
 							Main.console.put("BLOCK08","ブロックの認証成功");
 							ok=true;
 						}else {
-							Main.console.put("BLOCK09E-DIFF","このブロック : "+result.toString(10)+"\r\n"+"現在の難易度 : "+diff.toString(10));
-							Main.console.put("BLOCK10E-DIFF2","認証失敗");
+							Main.console.put("BLOCK09E-DIFF","Block difficulty wrong.\r\nこのブロック : "+result.toString(16)+"\r\n"+"現在の難易度 : "+diff.toString(16));
 						}
 					}else {
 						Main.console.put("BLOCKE-DIFNUL","DIFFがnullです");

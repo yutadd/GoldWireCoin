@@ -29,7 +29,7 @@ public class Mining extends Thread{
 				Main.console.put("MINING","Now, I started mining!");
 				Random ran=new Random();
 				String before;
-				for(;Main.mining;) {
+				while(Main.mining) {
 					before=(Main.getlatesthash()+","+Main.w.pub[0].toString(16)+","+ran.nextInt()+","+(Main.getBlockSize()+1)+","+System.currentTimeMillis());
 					for(Transaction t:Main.pool) {
 						before=before+","+t.transaction_sum;
@@ -40,8 +40,10 @@ public class Mining extends Thread{
 						Network.shareToNodes("block~"+before);
 
 						/*記述*/
-						Main.addBlock(before);
-						Main.pool.clear();
+						if(Main.mati) {
+							Main.addBlock(before);
+							Main.pool.clear();
+						}
 					}
 				}
 				Main.console.remove("MINING");
@@ -51,17 +53,21 @@ public class Mining extends Thread{
 		th.start();
 	}
 	public static String hash(String arg) {
-		MessageDigest md = null;
-		try {
-			md = MessageDigest.getInstance("SHA-256");
-		} catch (NoSuchAlgorithmException e1) {
-			e1.printStackTrace();
+		if(arg!=null) {
+			MessageDigest md = null;
+			try {
+				md = MessageDigest.getInstance("SHA-256");
+			} catch (NoSuchAlgorithmException e1) {
+				e1.printStackTrace();
+			}
+			byte[] hashInBytes = md.digest(arg.getBytes(StandardCharsets.UTF_8));
+			StringBuilder sb = new StringBuilder();
+			for (byte b : hashInBytes) {
+				sb.append(String.format("%02x", b));
+			}
+			return sb.toString();
+		}else {
+			return null;
 		}
-		byte[] hashInBytes = md.digest(arg.getBytes(StandardCharsets.UTF_8));
-		StringBuilder sb = new StringBuilder();
-		for (byte b : hashInBytes) {
-			sb.append(String.format("%02x", b));
-		}
-		return sb.toString();
 	}
 }

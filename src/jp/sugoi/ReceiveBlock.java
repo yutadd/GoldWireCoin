@@ -20,14 +20,14 @@ public class ReceiveBlock {
 			}else {
 				if(b.number>Main.getBlockSize()) {
 					try {
-						s.getOutputStream().write(("getfrom~"+Main.getlatesthash()+"\r\n").getBytes());
+						s.getOutputStream().write(("getfrom~"+Main.getBlock(Main.getBlockSize()).sum+"\r\n").getBytes());
 					} catch (IOException e) {
 						Main.console.put("RECEIVEBLOCKE-02", "getfromを送信できない");
 						e.printStackTrace();
 					}
 					
 				}else {
-					Main.console.put("RECEIVEBLOCK03", "記述し終えたブロックが送られてきた。");
+					Main.console.put("RECEIVEBLOCKI-03", "記述し終えたブロックが送られてきた。");
 				}
 			}
 		}

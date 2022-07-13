@@ -3,7 +3,10 @@ package jp.sugoi;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.Socket;
+import java.util.HashMap;
 
 public class User extends Thread{
 	Socket s;
@@ -20,17 +23,17 @@ public class User extends Thread{
 			BufferedReader sock_br = new BufferedReader(sock_is);
 			for(;;) {
 				String line=sock_br.readLine();
-				if(line==null) {Main.console.put("NETWORK(USER)E-01", "user sent null; ;");;break;}
-				Main.console.put("NETWORK(USER)02", "Last input String:"+(line.length()<14?line:line.substring(0, 14)));
+				if(line==null) {Main.console.put("USERE-NUL", "user sent null; ;");break;}
+				Main.console.put("USER-LAST", "Last input String:"+(line.length()<14?line:line.substring(0, 14)));
 				if(line.startsWith("block~")) {
 					ReceiveBlock.exec(line,s);
 				}else if(line.startsWith("transaction~")) {
 					ReceiveTransaction.exec(line,s);
-				}else if(line.startsWith("notfound")){
-					System.out.println("["+Main.getfrom+"][ユーザー]notfoundが送られてきた。");
-					s.getOutputStream().write(("getfrom~"+Main.getHash(3)+"\r\n").getBytes());
+				}else if(line.startsWith("isSame~")){
+					receiveIsSame(line);
 				}else if(line.startsWith("blocks~")) {
 					ReceiveBlocks.exec(line);
+					Main.mati=false;
 				}else if(line.startsWith("getfrom~")) {
 					SendBlocks.exec(line,s);
 				}else if(line.startsWith("balances~")){
@@ -40,10 +43,26 @@ public class User extends Thread{
 
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			remove();
 		}
 	}
-
+	void receiveIsSame(String line){
+		try {
+			String[] args=line.split("~");
+			Block receivedBlock=new Block(args[1],BigInteger.ZERO,new HashMap<String,BigDecimal>(),true);
+			String ReceivedHash=Mining.hash(receivedBlock.sum);
+			int receivedNumber=receivedBlock.number;
+			String localHash=Main.getHash(receivedNumber);
+			if(localHash!=null&&localHash.equals(ReceivedHash)) {
+				s.getOutputStream().write(("getfrom~"+Main.getBlock(receivedNumber).sum+"\r\n").getBytes());
+				Main.console.put("[User]","getfrom "+receivedNumber+"is already writed.\r\n so getfrom "+receivedNumber+" has sent.");
+			}else {
+				s.getOutputStream().write(("getfrom~"+Main.getBlock(receivedNumber-1).sum+"\r\n").getBytes());
+				Main.console.put("[User]","getfrom "+receivedNumber+" has sent.");
+			}
+		}catch(Exception e) {e.printStackTrace();}
+	}
 	synchronized public void remove() {
 
 		Main.console.put("USER03", "LAST DELETED USER:"+s.getInetAddress().getHostAddress());
