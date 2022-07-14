@@ -45,12 +45,10 @@ public class DNS extends Main {
 				}
 				Thread th_in=new Thread(){
 					public void run() {
-						System.out.println("th_in_started");
 							try {
 								BufferedReader br=new BufferedReader(new InputStreamReader(s.getInputStream()));
 								while(!s.isClosed()) {
 									String cmd=br.readLine();
-									System.out.println(cmd);
 									if(cmd.equals("no_users")) {
 										console.put("DNS02","[DNS]返答：no users");
 									}else {
@@ -88,7 +86,6 @@ public class DNS extends Main {
 						}
 				};
 				th_in.start();
-				System.out.println("th_in_started");
 			}
 		}
 }

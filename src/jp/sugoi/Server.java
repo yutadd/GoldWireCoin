@@ -11,21 +11,18 @@ public class Server extends Main implements Runnable {
 		ServerSocket ss = null;
 		try {
 			ss = new ServerSocket(0xfeed);
-		} catch (IOException e1) {
-			// TODO 自動生成された catch ブロック
-			e1.printStackTrace();
-		}
-		for(;;) {
-			Socket so = null;
+			for (;;) {
+				Socket so = null;
 				//65261
-			try {
-				so=ss.accept();
-			}catch(IOException e){e.printStackTrace();}
-			System.out.println("connected from:"+so.getInetAddress().getHostAddress());
-			User u=new User(so,Main.BANGO);
-			Main.BANGO++;
-			Main.u.add(u);
-			u.start();
+				so = ss.accept();
+				System.out.println("connected from:" + so.getInetAddress().getHostAddress());
+				User u = new User(so, Main.BANGO);
+				Main.BANGO++;
+				Main.u.add(u);
+				u.start();
+			}
+		} catch (IOException e) {
+			console.put("SERVICE-BIND", "Already binded port 0xfeed?");
 		}
 	}
 }
