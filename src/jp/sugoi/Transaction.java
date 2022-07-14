@@ -24,11 +24,11 @@ import priv.key.Bouncycastle_Secp256k1;
  * 
  */
 public class Transaction {
+	/**Transactionの署名は一致する確率が1/(2^256)なのでこれを使ってtransactionを区別する*/
 	@Override
 	public boolean equals(Object obj) {
-		// TODO 自動生成されたメソッド・スタブ
 		if(obj instanceof Transaction) {
-			if(((Transaction)obj).transaction_sum==transaction_sum) {
+			if(((Transaction)obj).sig[0].equals(sig[0])) {
 				return true;
 			}
 		}

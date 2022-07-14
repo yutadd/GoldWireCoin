@@ -12,7 +12,6 @@ public  class ReceiveBlocks {
 		try {
 			Main.mati=true;
 			System.out.println("ブロックス！："+line);
-
 			String st=line.split("~")[1];
 			String[] args=st.split("0x0f");
 			Block[] blocks=new Block[args.length];
@@ -24,7 +23,6 @@ public  class ReceiveBlocks {
 			BigInteger kiso_diff=kiso.getKey();
 			Map<String,BigDecimal> kiso_utxo=kiso.getValue();
 			for(String s:args) {
-
 				Block b=new Block(s,kiso_diff,kiso_utxo,false);
 				if(b.ok) {
 					for(Transaction t:b.ts) {
@@ -48,7 +46,6 @@ public  class ReceiveBlocks {
 					break;
 				}
 				i++;
-
 			}
 			if(ok) {
 				if(!Main.mati) {
@@ -76,4 +73,5 @@ public  class ReceiveBlocks {
 		}catch(Exception e) {e.printStackTrace();}
 		Main.mati=false;
 	}
+	
 }

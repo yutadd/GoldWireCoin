@@ -8,7 +8,7 @@ public class ReceiveBlock {
 		if(!Main.mati) {
 			Main.console.put("RECEIVEBLOCK00", "一つのブロックを受信");
 			String blocks=line.split("~")[1];
-			Block b=new Block(blocks,Main.min,Main.utxo,false);
+			Block b=new Block(blocks,Main.diff,Main.utxo,false);
 			if(b.previous_hash.equals(Main.getlatesthash())) {
 				if(b.ok) {
 					Main.addBlock(b.sum);

@@ -10,7 +10,6 @@ import java.util.HashMap;
 
 public class User extends Thread{
 	Socket s;
-	boolean light=false;
 	int b;
 
 	@Override

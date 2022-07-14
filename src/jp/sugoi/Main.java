@@ -16,7 +16,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,27 +25,27 @@ import com.sun.jna.platform.win32.WinDef.DWORD;
 import com.sun.jna.platform.win32.WinDef.DWORDByReference;
 import com.sun.jna.platform.win32.WinNT.HANDLE;
 
-
 //
 /**
  * マイニングしているかどうかをメインに表示。(nonceも表示してみる)
  * ステータスの表示に時間を加える。
  * @author yutadd
  */
-class TreeMap2<K,V> extends ConcurrentHashMap<K,V>{
+class TreeMap2<K, V> extends ConcurrentHashMap<K, V> {
 	@SuppressWarnings("unchecked")
-	public V put(K key,V value){
-		if(key instanceof String&& value instanceof String) {
-			if(((String)key).contains("E-"))key=(K) ((String)key+" "+new SimpleDateFormat("HH時mm分ss秒").format(new Date()));
+	public V put(K key, V value) {
+		if (key instanceof String && value instanceof String) {
+			if (((String) key).contains("E-"))
+				key = (K) ((String) key + " " + new SimpleDateFormat("HH時mm分ss秒").format(new Date()));
 		}
-		if(((String)key).matches(".*E-.*")) {
+		if (((String) key).matches(".*E-.*")) {
 
-			System.out.println("[\033[31m"+((String)key)+"\033[37m]"+((String)value)+"\033[37m");
-			return super.put(key,value);
-		}else if(((String)key).matches(".*I-.*")) {
-			System.out.println("[\033[34m"+((String)key)+"\033[37m]"+((String)value)+"\033[37m");
-		}else  if(((String)key).matches(".*")) {
-			System.out.println("[\033[32m"+((String)key)+"\033[37m]"+((String)value)+"\033[37m");
+			System.out.println("[\033[31m" + ((String) key) + "\033[37m]" + ((String) value) + "\033[37m");
+			return super.put(key, value);
+		} else if (((String) key).matches(".*I-.*")) {
+			System.out.println("[\033[34m" + ((String) key) + "\033[37m]" + ((String) value) + "\033[37m");
+		} else if (((String) key).matches(".*")) {
+			System.out.println("[\033[32m" + ((String) key) + "\033[37m]" + ((String) value) + "\033[37m");
 		}
 		return value;
 		//return super.put(key,value);
@@ -54,26 +53,24 @@ class TreeMap2<K,V> extends ConcurrentHashMap<K,V>{
 }
 
 public class Main {
-	static int ERROR=0;
-	static int reflesh=1;
-	static boolean haikei_nashi=false;
-	static Map<String,BigDecimal> utxo=new HashMap<String,BigDecimal>();
-	static boolean mati=false;
-	static String buffer=new Random().nextInt()+"";
-	static String latestHash=null;
-	static String name="XGW";
-	static ArrayList<Transaction> pool=new ArrayList<Transaction>();
+	static ArrayList<Transaction> savedTransaction = new ArrayList<Transaction>();
+	static int ERROR = 0;
+	static boolean haikei_nashi = false;
+	static Map<String, BigDecimal> utxo = new HashMap<String, BigDecimal>();
+	static boolean mati = false;
+	static String latestHash = null;
+	static String name = "XGW";
+	static ArrayList<Transaction> pool = new ArrayList<Transaction>();
 	static Wallet w;
-	static String man="";
+	static String man = "";
 
 	/**
 	 * this may contains only error message
 	 */
-	static TreeMap2<String, String> console=new TreeMap2<String,String>();
-	static int BANGO=0;
+	static TreeMap2<String, String> console = new TreeMap2<String, String>();
+	static int BANGO = 0;
 
-	static ArrayList<User> u=new ArrayList<User>();
-	static String mining_block_sum="";
+	static ArrayList<User> u = new ArrayList<User>();
 
 	/**]
 	 * (ServerSocket)サーバーソケットからIPフィールドを取得するためのもの
@@ -88,27 +85,28 @@ public class Main {
 	 * ソケットとそれに対応するIPTextFieldを記憶する。
 	 */
 	//static HashMap<User,Integer> debug_lab=new HashMap<>();
-	static boolean mining=false;
+	static boolean mining = false;
 	static Mining m;
-	static int size=0;
-	static BigInteger min=new BigInteger("26611349253966442813730644663330183884399686815584447189708332380985641",10);
-	static BigInteger shoki=new BigInteger("26611349253966442813730644663330183884399686815584447189708332380985641",10);
-	static String console_mode="live";
+	static int size = 0;
+	static BigInteger diff = new BigInteger("26611349253966442813730644663330183884399686815584447189708332380985641",
+			10);
+	static BigInteger shoki = new BigInteger("26611349253966442813730644663330183884399686815584447189708332380985641",
+			10);
+
 	public static void main(String[] args) {
-		if(System.getProperty("os.name").startsWith("Windows"))
-		{
+		if (System.getProperty("os.name").startsWith("Windows")) {
 			// Set output mode to handle virtual terminal s	equences
 			Function GetStdHandleFunc = Function.getFunction("kernel32", "GetStdHandle");
 			DWORD STD_OUTPUT_HANDLE = new DWORD(-11);
-			HANDLE hOut = (HANDLE)GetStdHandleFunc.invoke(HANDLE.class, new Object[]{STD_OUTPUT_HANDLE});
+			HANDLE hOut = (HANDLE) GetStdHandleFunc.invoke(HANDLE.class, new Object[] { STD_OUTPUT_HANDLE });
 			DWORDByReference p_dwMode = new DWORDByReference(new DWORD(0));
 			Function GetConsoleModeFunc = Function.getFunction("kernel32", "GetConsoleMode");
-			GetConsoleModeFunc.invoke(BOOL.class, new Object[]{hOut, p_dwMode});
+			GetConsoleModeFunc.invoke(BOOL.class, new Object[] { hOut, p_dwMode });
 			int ENABLE_VIRTUAL_TERMINAL_PROCESSING = 4;
 			DWORD dwMode = p_dwMode.getValue();
 			dwMode.setValue(dwMode.intValue() | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
 			Function SetConsoleModeFunc = Function.getFunction("kernel32", "SetConsoleMode");
-			SetConsoleModeFunc.invoke(BOOL.class, new Object[]{hOut, dwMode});
+			SetConsoleModeFunc.invoke(BOOL.class, new Object[] { hOut, dwMode });
 		}
 		/* 
 
@@ -141,56 +139,57 @@ public class Main {
 
 		 */
 
-
 		System.out.println(System.getProperty("file.encoding"));
-		w=new Wallet();
+		w = new Wallet();
 		addManuals();
 		readHash();
-		mining=true;
+		mining = true;
 		new Mining();
 		//65261
-		Thread th=new Thread(new Server());
+		Thread th = new Thread(new Server());
 		th.start();
-		Thread th_=new Thread() {
+		Thread th_ = new Thread() {
 			@Override
 			public void run() {
-				Scanner sc=new Scanner(System.in);
+				Scanner sc = new Scanner(System.in);
 				//InputStreamReader isr=new InputStreamReader(System.in);
 				//char c;
-				while(true) {
-					System.out.print("\033[34m┌──(\033[31mGWC\033[37m x💀x \033[31mCMD\033[34m)-[\033[37mBlock Size :"+size+"\033[34m]\r\n└─#\033[37m");
-					String s=sc.nextLine();
-					String cmd=s.split(" ")[0];
-					if(cmd.equals("pay")) {
+				while (true) {
+					System.out.print("\033[34m┌──(\033[31mGWC\033[37m x💀x \033[31mCMD\033[34m)-[\033[37mBlock Size :"
+							+ size + "\033[34m]\r\n└─#\033[37m");
+					String s = sc.nextLine();
+					String cmd = s.split(" ")[0];
+					if (cmd.equals("pay")) {
 						new Pay(s);
-					}else if(cmd.equals("mining")) {
-						if(mining) {
-							mining=false;
+					} else if (cmd.equals("mining")) {
+						if (mining) {
+							mining = false;
 							System.out.println("\033[31mMINING STOPPED.");
-						}else {
-							mining=true;
+						} else {
+							mining = true;
 							new Mining();
 							System.out.println("\033[32mMINING STARTED.");
 						}
-					}else if(cmd.equals("stats")){
+					} else if (cmd.equals("stats")) {
 						showStats();
-					}else if(cmd.equals("help")) {
+					} else if (cmd.equals("help")) {
 						System.out.println();
 						System.out.println(man);
 						System.out.println();
-					}else if(cmd.equals("clear")||cmd.equals("cls")){
+					} else if (cmd.equals("clear") || cmd.equals("cls")) {
 						console_clear();
-					}else if(cmd.equals("exit")){
+					} else if (cmd.equals("exit")) {
 						System.exit(0);
-					}else {
-						System.out.println("execute→"+s);
+					} else {
+						System.out.println("execute→" + s);
 						try {
 							if (System.getProperty("os.name").contains("Windows")) {
-								new ProcessBuilder("cmd","/c",s).inheritIO().start().waitFor();
-							}else {
+								new ProcessBuilder("cmd", "/c", s).inheritIO().start().waitFor();
+							} else {
 								new ProcessBuilder(s.split(" ")).inheritIO().start().waitFor();
 							}
-						} catch (IOException | InterruptedException ex) {}
+						} catch (IOException | InterruptedException ex) {
+						}
 					}
 				}
 			}
@@ -199,27 +198,29 @@ public class Main {
 		showStats();
 		th_.start();
 	}
+
 	public static void showStats() {
 		System.out.println("\033[32m==========↓Stats↓==========");
-		System.out.println("[\033[34mYOUR WALLET BALANCE\033[37m]: "+utxo.get(w.pub[0].toString(16)));
-		System.out.println("[\033[34mIS WAITING PROCESS IS DONE\033[37m]: "+mati);
-		System.out.println("[\033[34mBLOCK SIZE\033[37m]: "+getBlockSize());
+		System.out.println("[\033[34mYOUR WALLET BALANCE\033[37m]: " + utxo.get(w.pub[0].toString(16)));
+		System.out.println("[\033[34mIS WAITING PROCESS IS DONE\033[37m]: " + mati);
+		System.out.println("[\033[34mBLOCK SIZE\033[37m]: " + getBlockSize());
 
-		char hugo=(min.compareTo(shoki)>=0?'+':'-');
-		System.out.println("[\033[34mdifficulty\033[37m]:"+hugo+min.subtract(shoki).abs().toString(16));
+		char hugo = (diff.compareTo(shoki) >= 0 ? '+' : '-');
+		System.out.println("[\033[34mdifficulty\033[37m]:" + hugo + diff.subtract(shoki).abs().toString(16));
 		//gui_check();
 
-		for(Entry<String,BigDecimal> set:utxo.entrySet()) {
-			System.out.printf("[\033[34mADDR\033[37m:\033[34m%s\033[37m]: \033[42m%s\033[49m \r\n",set.getKey(),set.getValue().toString());
+		for (Entry<String, BigDecimal> set : utxo.entrySet()) {
+			System.out.printf("[\033[34mADDR\033[37m:\033[34m%s\033[37m]: \033[42m%s\033[49m \r\n", set.getKey(),
+					set.getValue().toString());
 		}
-		System.out.println("\033[34mYOUR ADDRESS \033[37m: "+w.address_0x0a);
-		for(Entry<String,String> ent:console.entrySet()) {
-			System.out.println("[\033[31m"+ent.getKey()+"\033[37m]"+ent.getValue()+"\033[37m");
+		System.out.println("\033[34mYOUR ADDRESS \033[37m: " + w.address_0x0a);
+		for (Entry<String, String> ent : console.entrySet()) {
+			System.out.println("[\033[31m" + ent.getKey() + "\033[37m]" + ent.getValue() + "\033[37m");
 		}
 		System.out.println("\033[32m==========↑Stats↑==========\033[37m");
 	}
 
-	public static void console_clear(){
+	public static void console_clear() {
 
 		/*for(int i=0;i<console.size();i++) {
 			System.out.print("\033[1A");
@@ -228,129 +229,150 @@ public class Main {
 		//System.out.print("\033[2J");
 		//Clears Screen in java
 
-
 		try {
 			if (System.getProperty("os.name").contains("Windows"))
 				new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
 			else
 				new ProcessBuilder("/bin/clear").inheritIO().start().waitFor();
-		} catch (IOException | InterruptedException ex) {}
+		} catch (IOException | InterruptedException ex) {
+		}
 	}
+
 	/**ジェネシスブロックがあるため、チェックを行わない。*/
-	static Entry<BigInteger,HashMap<String,BigDecimal>> readhash(int leng){
-		boolean shuryo=false;
-		BigInteger diff=shoki;
-		HashMap<String,BigDecimal> result=new HashMap<String,BigDecimal>();
-		for(int a=1;!shuryo;a++) {
-			File file=new File("Blocks"+File.separator+"Block-"+a);
-			FileReader is=null;
-			BufferedReader bs=null;
+	static Entry<BigInteger, HashMap<String, BigDecimal>> readhash(int leng) {
+		boolean shuryo = false;
+		BigInteger diff = shoki;
+		HashMap<String, BigDecimal> result = new HashMap<String, BigDecimal>();
+		for (int a = 1; !shuryo; a++) {
+			File file = new File("Blocks" + File.separator + "Block-" + a);
+			FileReader is = null;
+			BufferedReader bs = null;
 			try {
-				is=new FileReader(file);
-				bs=new BufferedReader(is);
-			} catch (FileNotFoundException e) {console.put("MAINE-00","File Not Found");}
-			if(file.exists()) {
-				for(int i=1;i<=10000;i++) {
-					if(leng<i+(a-1)*10000) {
-						shuryo=true;
+				is = new FileReader(file);
+				bs = new BufferedReader(is);
+			} catch (FileNotFoundException e) {
+				console.put("MAINE-00", "File Not Found");
+			}
+			if (file.exists()) {
+				for (int i = 1; i <= 10000; i++) {
+					if (leng < i + (a - 1) * 10000) {
+						shuryo = true;
 						break;
 					}
 					try {
 						String line = bs.readLine();
-						Block b=new Block(line,diff,result,i+(a-1)*10000<=4);
-						for(Transaction t:b.ts) {
-							BigDecimal bal=checkNullAndGetValue(result, t.input);
-							result.put(t.input,bal.subtract(t.sum_minus));
-							for(Output o:t.out) {
+						Block b = new Block(line, diff, result, i + (a - 1) * 10000 <= 4);
+						for (Transaction t : b.ts) {
+							BigDecimal bal = checkNullAndGetValue(result, t.input);
+							result.put(t.input, bal.subtract(t.sum_minus));
+							for (Output o : t.out) {
 								result.put(o.address[0].toString(16),
-										checkNullAndGetValue(result,o.address[0].toString(16)).add(o.amount)
-										);
+										checkNullAndGetValue(result, o.address[0].toString(16)).add(o.amount));
 							}
+							savedTransaction.add(t);
 						}
-						BigDecimal m_balance=checkNullAndGetValue(result,b.miner);
-						result.put(b.miner,m_balance.add(new BigDecimal(50.0)));
-						if(i+(a-1)*10000>4) {
-							SimpleEntry<BigInteger,BigInteger> time=new SimpleEntry<BigInteger,BigInteger>(BigInteger.valueOf(b.time),BigInteger.valueOf(getBlock(b.number-1).time));
-							diff=getMin(diff,time);
+						BigDecimal m_balance = checkNullAndGetValue(result, b.miner);
+						result.put(b.miner, m_balance.add(new BigDecimal(50.0)));
+						if (i + (a - 1) * 10000 > 4) {
+							SimpleEntry<BigInteger, BigInteger> time = new SimpleEntry<BigInteger, BigInteger>(
+									BigInteger.valueOf(b.time), BigInteger.valueOf(getBlock(b.number - 1).time));
+							diff = getMin(diff, time);
 						}
-					}catch(Exception e) {return null;}
+					} catch (Exception e) {
+						return null;
+					}
 				}
 			}
 		}
-		return new SimpleEntry<BigInteger,HashMap<String,BigDecimal>>(diff,result);
+		return new SimpleEntry<BigInteger, HashMap<String, BigDecimal>>(diff, result);
 	}
+
 	/**4ブロック以降はチェックを行う<br>一番最初に呼んで*/
 	static void readHash() {
-		mati=false;
-		boolean shuryo=false;
-		pool=new ArrayList<Transaction>();
+		boolean shuryo = false;
+		pool = new ArrayList<Transaction>();
+		savedTransaction = new ArrayList<Transaction>();
 		utxo.clear();
-		min=shoki;
-		for(int a=1;!shuryo;a++) {
-			File file=new File("Blocks"+File.separator+"Block-"+a);
+		diff = shoki;
+		for (int a = 1; !shuryo; a++) {
+			File file = new File("Blocks" + File.separator + "Block-" + a);
 			try {
-				FileReader is=new FileReader(file);
-				BufferedReader bs=new BufferedReader(is);
-				if(file.exists()) {
-					for(int i=1;i<=10000;i++) {
+				FileReader is = new FileReader(file);
+				BufferedReader bs = new BufferedReader(is);
+				if (file.exists()) {
+					for (int i = 1; i <= 10000; i++) {
 						try {
 							String line = bs.readLine();
-							if(line==null) {bs.close();return;}
-							Block b=new Block(line,min,utxo,i+(a-1)*10000<=4);
-							if(i+(a-1)*10000>4) {
-								if(b.ok) {
+							if (line == null) {
+								bs.close();
+								return;
+							}
+							Block b = new Block(line, diff, utxo, i + (a - 1) * 10000 <= 4);
+							if (i + (a - 1) * 10000 > 4) {
+								if (b.ok) {
 									b.give_utxo(false);
-									for(Transaction t:b.ts) {
+									for (Transaction t : b.ts) {
 										t.doTrade();
+										savedTransaction.add(t);
 									}
 									try {
-										SimpleEntry<BigInteger,BigInteger> time= new SimpleEntry<BigInteger,BigInteger>(BigInteger.valueOf(b.time),BigInteger.valueOf(getBlock(b.number-1).time));
-										size=i;
-										min=getMin(min,time);
-									}catch(Exception e) {
-										console.put("MAINE-02","[ブロック]minの計算中にエラーが発生しました");
+										SimpleEntry<BigInteger, BigInteger> time = new SimpleEntry<BigInteger, BigInteger>(
+												BigInteger.valueOf(b.time),
+												BigInteger.valueOf(getBlock(b.number - 1).time));
+										size = i;
+										diff = getMin(diff, time);
+									} catch (Exception e) {
+										console.put("MAINE-02", "[ブロック]minの計算中にエラーが発生しました");
 										System.exit(1);
 									}
-								}else {
-									mining=false;
-									console.put("MAINE-01","Block "+i+" invalid");
+								} else {
+									mining = false;
+									console.put("MAINE-01", "Block " + i + " invalid");
 									System.exit(1);
 								}
 							}
-							latestHash=Mining.hash(b.sum);
-						} catch (IOException e) {int r=0;for(StackTraceElement ste:e.getStackTrace())Main.console.put("MAINE-2-"+r++,ste.toString());break;}
-						size=i+(a-1)*10000;
+							latestHash = Mining.hash(b.sum);
+						} catch (IOException e) {
+							int r = 0;
+							for (StackTraceElement ste : e.getStackTrace())
+								Main.console.put("MAINE-2-" + r++, ste.toString());
+							break;
+						}
+						size = i + (a - 1) * 10000;
 						//if(i>=6) {
 
 						//}
 
 					}
-				}else {
+				} else {
 					break;
 				}
-			} catch (FileNotFoundException e) {console.put("MAINE-00","can't access to file"+file.getAbsolutePath());}
+			} catch (FileNotFoundException e) {
+				console.put("MAINE-00", "can't access to file" + file.getAbsolutePath());
+			}
 		}
-		reflesh=2;
-		mati=false;
 	}
-	static int getBockSizeFrom(int i){
-		return getBlockSize()-i;
+
+	static int getBockSizeFrom(int i) {
+		return getBlockSize() - i;
 	}
+
 	static int getBlockSize() {
 		return size;
 	}
+
 	static String getHash(int number) {
-		File file=new File("Blocks"+File.separator+"Block-"+((number/10000)+1));
-		if(!file.exists()) {
+		File file = new File("Blocks" + File.separator + "Block-" + ((number / 10000) + 1));
+		if (!file.exists()) {
 			return null;
-		}else {
+		} else {
 			String s = null;
 			BufferedReader br = null;
 			try {
-				int count=1;
+				int count = 1;
 				br = new BufferedReader(new FileReader(file));
 				while ((s = br.readLine()) != null) {
-					if (number%10000 == count++) {
+					if (number % 10000 == count++) {
 						br.close();
 						return Mining.hash(s);
 					}
@@ -359,139 +381,166 @@ public class Main {
 			} catch (FileNotFoundException e) {
 				return null;
 			} catch (IOException e) {
-				console.put("MAINE-03","br.readLine()でエラーが起きた.");
+				console.put("MAINE-03", "br.readLine()でエラーが起きた.");
 				return null;
-			}finally {
-				try {br.close();} catch (IOException e) {e.printStackTrace();}
+			} finally {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
+
 	static void addBlock(String block) {
-		Block blo=new Block(block,min,utxo,true);
-		int numb=blo.number;
-		console.put("MAIN04","このブロックのナンバー: "+numb);
-		console.put("MAIN05","セーブされたブロックの数: "+getBlockSize());
-			delfrom(numb);
-			saveBlock(block);
+		Block blo = new Block(block, diff, utxo, true);
+		int numb = blo.number;
+		console.put("MAIN04", "このブロックのナンバー: " + numb);
+		console.put("MAIN05", "セーブされたブロックの数: " + getBlockSize());
+		delfrom(numb);
+		saveBlock(block);
 	}
+
 	/**GETBLOCKは保存された後のブロックを利用するため、チェックを行わない。*/
 	static Block getBlock(int numb) {
-		if(numb>0) {
-			File file=new File("Blocks"+File.separator+"Block-"+((numb/10000)+1));
+		if (numb > 0) {
+			File file = new File("Blocks" + File.separator + "Block-" + ((numb / 10000) + 1));
 			String s;
-			int count=1;
-			Block b=null;
+			int count = 1;
+			Block b = null;
 			try {
-				BufferedReader br=new BufferedReader(new FileReader(file));
+				BufferedReader br = new BufferedReader(new FileReader(file));
 				while ((s = br.readLine()) != null) {
-					if (numb%10000 == count++) {
+					if (numb % 10000 == count++) {
 						br.close();
-						b=new Block(s,BigInteger.ZERO,utxo,true);
+						b = new Block(s, BigInteger.ZERO, utxo, true);
 						return b;
 					}
 				}
-				Main.console.put("見つからない", "です"+numb);
+				Main.console.put("見つからない", "です" + numb);
 				br.close();
 				return null;
-			}catch(Exception e) {e.printStackTrace();}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		return null;
 
 	}
+
 	/**セーブすることが目的なので、チェックを行いません*/
 	private static void saveBlock(String arg) {
-		Block b=new Block(arg,BigInteger.ZERO,new HashMap<String,BigDecimal>(),true);
-		File file=new File("Blocks"+File.separator+"Block-"+((b.number/10000)+1));
+		Block b = new Block(arg, BigInteger.ZERO, new HashMap<String, BigDecimal>(), true);
+		File file = new File("Blocks" + File.separator + "Block-" + ((b.number / 10000) + 1));
 		try {
 			file.createNewFile();
-			FileWriter fw=new FileWriter(file,true);
-			fw.write(arg+System.getProperty("line.separator"));
+			FileWriter fw = new FileWriter(file, true);
+			fw.write(arg + System.getProperty("line.separator"));
 			fw.flush();
 			fw.close();
-			for(Transaction t :b.ts) {
+			for (Transaction t : b.ts) {
 				t.doTrade();//取引完了させる
+				savedTransaction.add(t);
 			}
-			for(Transaction t:b.ts) {
+			for (Transaction t : b.ts) {
 				pool.remove(t);
 			}
 			b.give_utxo(false);
 		} catch (IOException e) {
-			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		}
-		latestHash=Mining.hash(b.sum);
-		size=b.number;
+		latestHash = Mining.hash(b.sum);
+		size = b.number;
 		try {
-			if(b.number>4) {
-				SimpleEntry<BigInteger,BigInteger> time=new SimpleEntry<BigInteger,BigInteger>(BigInteger.valueOf(b.time),BigInteger.valueOf(getBlock(b.number-1).time));
-				min=getMin(min,time);
+			if (b.number > 4) {
+				SimpleEntry<BigInteger, BigInteger> time = new SimpleEntry<BigInteger, BigInteger>(
+						BigInteger.valueOf(b.time), BigInteger.valueOf(getBlock(b.number - 1).time));
+				diff = getMin(diff, time);
 			}
-		}catch(Exception e) {console.put("MAINE-06","minの計算中にエラーが発生しました");}
-
+		} catch (Exception e) {
+			console.put("MAINE-06", "minの計算中にエラーが発生しました");
+		}
 
 	}
+
 	static String getlatesthash() {
 		return latestHash;
 	}
+
+	/**このメソッドの実行後にreadhashを呼んでください。<br>savedTransactionから削除するブロック内に含まれるトランザクションを削除しません。あと、
+	 * TODO:１万ブロックを超えるブロック数に対応していません*/
 	static void delfrom(int from) {
 		try {
-			File file=new File("Blocks"+File.separator+"Block-"+((from/10000)+1));
-			FileReader is=null;
-			BufferedReader bs=null;
-			is=new FileReader(file);
-			bs=new BufferedReader(is);
-			ArrayList<String> line=new ArrayList<String>();
-			for(int i=1;i<from;i++) {
+			File file = new File("Blocks" + File.separator + "Block-" + ((from / 10000) + 1));
+			FileReader is = null;
+			BufferedReader bs = null;
+			is = new FileReader(file);
+			bs = new BufferedReader(is);
+			ArrayList<String> line = new ArrayList<String>();
+			for (int i = 1; i < from; i++) {
 				line.add(bs.readLine());
 			}
 			bs.close();
-			FileWriter fw=new FileWriter(file);
-			for(String s:line) {
-				fw.append(s+System.getProperty("line.separator"));
+			FileWriter fw = new FileWriter(file);
+			for (String s : line) {
+				fw.append(s + System.getProperty("line.separator"));
 			}
 			fw.close();
-		}catch(Exception e) {int da=0;for(StackTraceElement ste:e.getStackTrace())Main.console.put("MainE-4-"+da++,ste.toString());}
+		} catch (Exception e) {
+			int da = 0;
+			for (StackTraceElement ste : e.getStackTrace())
+				Main.console.put("MainE-4-" + da++, ste.toString());
+		}
 	}
+
 	/**最初の４つでは呼ばないでぇ*/
-	static BigInteger getMin(BigInteger base,SimpleEntry<BigInteger,BigInteger> arg){
-		BigInteger sa=arg.getKey().subtract(arg.getValue());
-		if(sa.compareTo(BigInteger.valueOf(60000))>0) {
+	static BigInteger getMin(BigInteger base, SimpleEntry<BigInteger, BigInteger> arg) {
+		BigInteger sa = arg.getKey().subtract(arg.getValue());
+		if (sa.compareTo(BigInteger.valueOf(60000)) > 0) {
 			//時間が60秒オーバー：もっとかんたんに：数値にプラス
-			BigInteger i=new BigInteger("2910A562CF81F8A20CB31817F4350CA75ECF1CB59BED6E75AB6AEB1F4",16);
+			BigInteger i = new BigInteger("2910A562CF81F8A20CB31817F4350CA75ECF1CB59BED6E75AB6AEB1F4", 16);
 			return base.add(i);
-		}else {
+		} else {
 			//６０秒以下：もっと難しく:数値にマイナス
-			BigInteger i=new BigInteger("2910A562CF81F8A20CB31817F4350CA75ECF1CB59BED6E75AB6AEB1F4",16);
+			BigInteger i = new BigInteger("2910A562CF81F8A20CB31817F4350CA75ECF1CB59BED6E75AB6AEB1F4", 16);
 			return base.subtract(i);
 		}
 	}
+
 	private static void addManuals() {
-		// TODO 自動生成されたメソッド・スタブ
-		File file=new File("Commands.txt");
-		if(!file.exists()) {
+		File file = new File("Commands.txt");
+		if (!file.exists()) {
 			console.put("MAINE-08", "コマンドリストファイルがありません。");
-		}else {
+		} else {
 			String s = "";
 			BufferedReader br = null;
 			try {
-				br = new BufferedReader(new FileReader(file,Charset.forName("utf-8")));
+				br = new BufferedReader(new FileReader(file, Charset.forName("utf-8")));
 				char c = 0;
-				while((c=(char)br.read())!=(char)-1)s+=c;
+				while ((c = (char) br.read()) != (char) -1)
+					s += c;
 				br.close();
-				man=s;
+				man = s;
 			} catch (FileNotFoundException e) {
 				console.put("MAINE-09", "コマンドリストファイルがありません。");
 			} catch (IOException e) {
-				console.put("MAINE-10","br.readLine()でエラーが起きた.");
-			}finally {
-				try {br.close();} catch (IOException e) {e.printStackTrace();}
+				console.put("MAINE-10", "br.readLine()でエラーが起きた.");
+			} finally {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 
 	}
-	public static BigDecimal checkNullAndGetValue(Map<String,BigDecimal> map,String key) {
-		BigDecimal bal2=map.get(key);
-		if(bal2==null)bal2=new BigDecimal(0);
+
+	public static BigDecimal checkNullAndGetValue(Map<String, BigDecimal> map, String key) {
+		BigDecimal bal2 = map.get(key);
+		if (bal2 == null)
+			bal2 = new BigDecimal(0);
 		return bal2;
 	}
 }

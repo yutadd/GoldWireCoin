@@ -1,6 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>jp.sugoi</groupId>
 	<artifactId>GoldWireCoin</artifactId>
@@ -8,17 +6,21 @@
 	<name>GoldWireCoin</name>
 	<description>The virtual money</description>
 	<properties>
-     <maven.compiler.source>9</maven.compiler.source>
-     <maven.compiler.target>9</maven.compiler.target>
-</properties>
-<dependencies>
-<dependency>
-    <groupId>net.java.dev.jna</groupId>
-    <artifactId>jna-platform</artifactId>
-    <version>5.12.1</version>
-</dependency>
-
-
+		<maven.compiler.source>9</maven.compiler.source>
+		<maven.compiler.target>9</maven.compiler.target>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>net.java.dev.jna</groupId>
+			<artifactId>jna-platform</artifactId>
+			<version>5.12.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.jcuda/jcuda -->
+		<dependency>
+			<groupId>org.jcuda</groupId>
+			<artifactId>jcuda</artifactId>
+			<version>11.6.1</version>
+		</dependency>
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bctls-jdk15on</artifactId>
@@ -42,9 +44,9 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	 <build>
-        <plugins>
-            <plugin>
+	<build>
+		<plugins>
+			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
 					<execution>
@@ -65,7 +67,6 @@
 					</descriptorRefs>
 				</configuration>
 			</plugin>
-        </plugins>
-    </build>
-	
+		</plugins>
+	</build>
 </project>
