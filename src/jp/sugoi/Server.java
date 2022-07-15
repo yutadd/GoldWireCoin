@@ -5,7 +5,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server extends Main implements Runnable {
-	@SuppressWarnings("resource")
 	@Override
 	public void run() {
 		ServerSocket ss = null;
