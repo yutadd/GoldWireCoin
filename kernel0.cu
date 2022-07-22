@@ -60,44 +60,49 @@ char* print_sha(BYTE* buff);
 extern __device__ void sha256_init(SHA256_CTX* ctx);
 extern __device__ void sha256_update(SHA256_CTX* ctx, const BYTE data[], size_t len);
 extern __device__ void sha256_final(SHA256_CTX* ctx, BYTE hash[]);
-__global__ void sha256_cuda(char** data, unsigned size) {
+__global__ void sha256_cuda(char* data, int len, long long int* result_nans, BYTE* result){
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 	char* mae = "";
 	int conma = 0;
 	int index_ = 0;
-	for (index_ = 0; index_ < sizeof(data[i]) / sizeof(char); index_++) {
-		mae += data[i][index_];
-		if (data[i][index_] == ',') {
-			conma++;
-			if (conma == 2)break;
+	for (index_ = 0; index_ < len; index_++)
+	{
+		mae[index_] = (char)data[index_];
+		if (data[index_] == ',')
+		{
+			conma += 1;
+			if (conma == 2)
+				break;
 		}
 	}
 	curandState s;
-	curand_init(0, i, 0, &s);
-	char* buf;
-	char* str = (char*)malloc(sizeof(char) * 32);
-	int rand = curand_uniform(&s);
-	while (rand != 0)
+
+	curand_init((unsigned long long)clock64() + i, 0, 0, &s);
+
+	char* str = (char*)malloc(32);
+	int rand = curand_uniform(&s) * 1000000000;
+	result_nans[i] = rand;
+	int da = 0;
+	for (da = 0; rand != 0; da++)
 	{
 		int rem = rand % 10;
-		str[i++] = (rem > 9) ? (rem - 10) + 'a' : rem + '0';
+		str[da] = (char)(rem + '0');
 		rand = rand / 10;
 	}
 	int srclen = 0;
-	for (srclen = 0; str[srclen] != 0; srclen++);
-	for (int a = 0; a < srclen; a++) {
-		mae += str[a];
+	for (srclen = 0; str[srclen] != '\0'; srclen++);
+	for (int a = 0; a < srclen; a++)
+	{ 
+		mae[index_ + a] = str[a];
 	}
-	for (index_ += srclen; index_ < sizeof(data[i]) / sizeof(char); index_++) {
-		mae += data[i][index_];
+	for (index_ += srclen; index_ < sizeof(data[i]) / sizeof(char); index_++)
+	{
+		mae[index_ + srclen] = data[index_];
 	}
-	data[i] = mae;
-
-	//help!!!!!
 
 	SHA256_CTX ctx;
 	sha256_init(&ctx);
-	sha256_update(&ctx, (unsigned char*)data[i], 256);
+	sha256_update(&ctx, (unsigned char*)mae, len + srclen);
 	BYTE* digest = (BYTE*)malloc(64 * sizeof(BYTE));
 	for (int a = 0; a < 64; a++)
 	{
@@ -105,5 +110,15 @@ __global__ void sha256_cuda(char** data, unsigned size) {
 	}
 
 	sha256_final(&ctx, (digest));
-	data[i] = (char*)digest;
+	char* string = (char*)malloc(70);
+	int k;
+	for (int a = 0, k = 0; a < 32; a++, k += 2)
+	{
+		string[k] = (char)digest[a];
+	}
+
+	
+	for (int a = 0; a<70;a++) {
+		result[a] = string[a];
+	}
 }
