@@ -21,45 +21,7 @@
 #define SIG0(x) (ROTRIGHT(x,7) ^ ROTRIGHT(x,18) ^ ((x) >> 3))
 #define SIG1(x) (ROTRIGHT(x,17) ^ ROTRIGHT(x,19) ^ ((x) >> 10))
 
-#define checkCudaErrors(x) \
-{ \
-    cudaGetLastError(); \
-    x; \
-    cudaError_t err = cudaGetLastError(); \
-    if (err != cudaSuccess) \
-        printf("GPU: cudaError %d (%s)\n", err, cudaGetErrorString(err)); \
-}
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <cuda.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <stdio.h>
-#include <vector>
-#define SHA256_BLOCK_SIZE 32            // SHA256 outputs a 32 byte digest
 
-#define ROTLEFT(a,b) (((a) << (b)) | ((a) >> (32-(b))))
-#define ROTRIGHT(a,b) (((a) >> (b)) | ((a) << (32-(b))))
-
-#define CH(x,y,z) (((x) & (y)) ^ (~(x) & (z)))
-#define MAJ(x,y,z) (((x) & (y)) ^ ((x) & (z)) ^ ((y) & (z)))
-#define EP0(x) (ROTRIGHT(x,2) ^ ROTRIGHT(x,13) ^ ROTRIGHT(x,22))
-#define EP1(x) (ROTRIGHT(x,6) ^ ROTRIGHT(x,11) ^ ROTRIGHT(x,25))
-#define SIG0(x) (ROTRIGHT(x,7) ^ ROTRIGHT(x,18) ^ ((x) >> 3))
-#define SIG1(x) (ROTRIGHT(x,17) ^ ROTRIGHT(x,19) ^ ((x) >> 10))
-
-#define checkCudaErrors(x) \
-{ \
-    cudaGetLastError(); \
-    x; \
-    cudaError_t err = cudaGetLastError(); \
-    if (err != cudaSuccess) \
-        printf("GPU: cudaError %d (%s)\n", err, cudaGetErrorString(err)); \
-}
 /**************************** DATA TYPES ****************************/
 typedef unsigned char BYTE;             // 8-bit byte
 typedef uint32_t  WORD;             // 32-bit word, change to "long" for 16-bit machines
@@ -90,7 +52,9 @@ static const WORD host_k[64] = {
 	0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
 	0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2
 };
- __device__ void sha256_init(SHA256_CTX* ctx)
+
+/*********************** FUNCTION DECLARATIONS **********************/
+__device__ void sha256_init(SHA256_CTX* ctx)
 {
 	ctx->datalen = 0;
 	ctx->bitlen = 0;

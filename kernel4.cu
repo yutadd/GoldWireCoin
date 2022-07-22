@@ -21,14 +21,7 @@
 #define SIG0(x) (ROTRIGHT(x,7) ^ ROTRIGHT(x,18) ^ ((x) >> 3))
 #define SIG1(x) (ROTRIGHT(x,17) ^ ROTRIGHT(x,19) ^ ((x) >> 10))
 
-#define checkCudaErrors(x) \
-{ \
-    cudaGetLastError(); \
-    x; \
-    cudaError_t err = cudaGetLastError(); \
-    if (err != cudaSuccess) \
-        printf("GPU: cudaError %d (%s)\n", err, cudaGetErrorString(err)); \
-}
+
 /**************************** DATA TYPES ****************************/
 typedef unsigned char BYTE;             // 8-bit byte
 typedef uint32_t  WORD;             // 32-bit word, change to "long" for 16-bit machines
@@ -61,9 +54,6 @@ static const WORD host_k[64] = {
 };
 
 /*********************** FUNCTION DECLARATIONS **********************/
-char* print_sha(BYTE* buff);
-extern __device__ void sha256_init(SHA256_CTX* ctx);
-extern __device__ void sha256_update(SHA256_CTX* ctx, const BYTE data[], size_t len);
 extern __device__ void sha256_transform(SHA256_CTX* ctx, const BYTE data[]);
 __device__ void sha256_final(SHA256_CTX* ctx, BYTE hash[])
 {

@@ -3,6 +3,8 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <curand_kernel.h>
+#include <curand.h>
 #include <cuda.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,14 +23,7 @@
 #define SIG0(x) (ROTRIGHT(x,7) ^ ROTRIGHT(x,18) ^ ((x) >> 3))
 #define SIG1(x) (ROTRIGHT(x,17) ^ ROTRIGHT(x,19) ^ ((x) >> 10))
 
-#define checkCudaErrors(x) \
-{ \
-    cudaGetLastError(); \
-    x; \
-    cudaError_t err = cudaGetLastError(); \
-    if (err != cudaSuccess) \
-        printf("GPU: cudaError %d (%s)\n", err, cudaGetErrorString(err)); \
-}
+
 /**************************** DATA TYPES ****************************/
 typedef unsigned char BYTE;             // 8-bit byte
 typedef uint32_t  WORD;             // 32-bit word, change to "long" for 16-bit machines
@@ -65,26 +60,50 @@ char* print_sha(BYTE* buff);
 extern __device__ void sha256_init(SHA256_CTX* ctx);
 extern __device__ void sha256_update(SHA256_CTX* ctx, const BYTE data[], size_t len);
 extern __device__ void sha256_final(SHA256_CTX* ctx, BYTE hash[]);
-__global__ void sha256_cuda(char** data,unsigned long long* size)
-{
+__global__ void sha256_cuda(char** data, unsigned size) {
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
-	JOB* tmp;
-	cudaMalloc(&tmp, sizeof(JOB*));
-	tmp->data = (unsigned char*)data;
-	for (int a = 0; a < 64; a++)
-	{
-		tmp->digest[a] = 0xff;
+	char* mae = "";
+	int conma = 0;
+	int index_ = 0;
+	for (index_ = 0; index_ < sizeof(data[i]) / sizeof(char); index_++) {
+		mae += data[i][index_];
+		if (data[i][index_] == ',') {
+			conma++;
+			if (conma == 2)break;
+		}
 	}
+	curandState s;
+	curand_init(0, i, 0, &s);
+	char* buf;
+	char* str = (char*)malloc(sizeof(char) * 32);
+	int rand = curand_uniform(&s);
+	while (rand != 0)
+	{
+		int rem = rand % 10;
+		str[i++] = (rem > 9) ? (rem - 10) + 'a' : rem + '0';
+		rand = rand / 10;
+	}
+	int srclen = 0;
+	for (srclen = 0; str[srclen] != 0; srclen++);
+	for (int a = 0; a < srclen; a++) {
+		mae += str[a];
+	}
+	for (index_ += srclen; index_ < sizeof(data[i]) / sizeof(char); index_++) {
+		mae += data[i][index_];
+	}
+	data[i] = mae;
 
-	tmp->size = size[i];
+	//help!!!!!
 
-
-	// perform sha256 calculation here
 	SHA256_CTX ctx;
 	sha256_init(&ctx);
+	sha256_update(&ctx, (unsigned char*)data[i], 256);
+	BYTE* digest = (BYTE*)malloc(64 * sizeof(BYTE));
+	for (int a = 0; a < 64; a++)
+	{
+		digest[a] = 0xff;
+	}
 
-	sha256_update(&ctx, tmp->data, tmp->size);
-
-	sha256_final(&ctx, (tmp->digest));
-	data[i] = (char*)tmp->digest;
+	sha256_final(&ctx, (digest));
+	data[i] = (char*)digest;
 }
