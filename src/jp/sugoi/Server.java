@@ -21,7 +21,8 @@ public class Server extends Main implements Runnable {
 				u.start();
 			}
 		} catch (IOException e) {
-			console.put("SERVICE-BIND", "Already binded port 0xfeed?");
+			e.printStackTrace();
+			console.put("SERVICE-BIND", "Already binded port 321?");
 		}
 	}
 }
