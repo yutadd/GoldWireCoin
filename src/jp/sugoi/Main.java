@@ -34,6 +34,7 @@ import com.sun.jna.platform.win32.WinNT.HANDLE;
  * マイニングしているかどうかをメインに表示。(nonceも表示してみる)
  * ステータスの表示に時間を加える。
  * TODO:１万ブロックを超えるブロック数に対応していません。ブロック記述・削除システムを作り直す。
+ * TODO : error segment-1ブロックまでしか読み込まれてない！
  * @author yutadd
  */
 class TreeMap2<K, V> extends ConcurrentHashMap<K, V> {
@@ -67,7 +68,7 @@ public class Main {
 	static ArrayList<Transaction> pool = new ArrayList<Transaction>();
 	static Wallet w;
 
-static int segmentation=10;
+	static int segmentation=10;
 	//manual
 	static String man = "";
 
@@ -148,8 +149,8 @@ static int segmentation=10;
 		th.start();
 		showStats();
 		new ReceiveCommand();
-		
-	
+
+
 	}
 
 	public static void showStats() {
@@ -177,26 +178,26 @@ static int segmentation=10;
 				new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
 			}else {
 				new ProcessBuilder("/bin/clear").inheritIO().start().waitFor();
-				}
+			}
 		} catch (IOException | InterruptedException ex) {
 		}
 	}
 
 	/**ジェネシスブロックがあるため、チェックを行わない。*/
 	static Entry<BigInteger, HashMap<String, BigDecimal>> readhash(int leng) {
-		boolean shuryo = false;
+		boolean syuryo = false;
 		BigInteger diff = shoki;
 		HashMap<String, BigDecimal> result = new HashMap<String, BigDecimal>();
-		for (int a = 1; !shuryo; a++) {
+		for (int a = 1; !syuryo; a++) {
 			File file = new File("Blocks" + File.separator + "Block-" + a);
 			try {
 				BufferedReader bs = new BufferedReader(new FileReader(file));
 				if (file.exists()) {
-					for (int i = 1; i <= segmentation; i++) {
+					for (int i = 1; i < segmentation; i++) {
 						if (leng >= i + (a - 1) * segmentation) {
 							try {
 								String line = bs.readLine();
-								line=decode64(line);
+								if(i+((a-1)*segmentation)!=1)line=decode64(line);
 								Block b = new Block(line, diff, result, i + (a - 1) * segmentation <= 4);
 								for (Transaction t : b.ts) {
 									BigDecimal bal = checkNullAndGetValue(result, t.input);
@@ -212,18 +213,19 @@ static int segmentation=10;
 									diff = getMin(diff,b.time,getBlock(b.number-1).time);
 								}
 							} catch (Exception e) {
-								return null;
+								syuryo=true;
+								break;
 							}
 						}else {
-							shuryo = true;
+							syuryo = true;
 							break;
 						}
 					}
 				}
 				bs.close();
 			} catch (Exception e) {
-				e.printStackTrace();
-				console.put("MAINE-00", "File Not Found");
+				syuryo=true;
+				break;
 			}
 		}
 		return new SimpleEntry<BigInteger, HashMap<String, BigDecimal>>(diff, result);
@@ -242,55 +244,47 @@ static int segmentation=10;
 			try {
 				BufferedReader bs = new BufferedReader(new FileReader(file));
 				if (file.exists()) {
-					for (int i = 1; i <= segmentation; i++) {
-						try {
-							String line = bs.readLine();
-							if (line != null) {
-								if(i+(a-1)*segmentation!=1)line=decode64(line);
-								size = i + (a - 1) * segmentation;
-								Block b = new Block(line, diff, utxo, size< 2);
-								latestHash = Mining.hash(b.fullText);
-								if (size !=1) {
-									if (b.ok) {
-										b.give_utxo();
-										for (Transaction t : b.ts) {
-											t.doTrade();
-											savedTransaction.add(t);
-										}
-										try {
-											diff = getMin(diff, b.time,getBlock(b.number-1).time);
-										} catch (Exception e) {
-											console.put("MAINE-01", "[ブロック]minの計算中にエラーが発生しました");
-											System.exit(1);
-										}
-									} else {
-										mining = false;
-										console.put("MAINE-02", "Block " + i + " invalid");
+					for (int i = 1; i < segmentation; i++) {
+						String line = bs.readLine();
+						if (line != null) {
+							if(i+(a-1)*segmentation!=1)line=decode64(line);
+							size = i + (a - 1) * segmentation;
+							Block b = new Block(line, diff, utxo, size< 2);
+							latestHash = Mining.hash(b.fullText);
+							if (size !=1) {
+								if (b.ok) {
+									b.give_utxo();
+									for (Transaction t : b.ts) {
+										t.doTrade();
+										savedTransaction.add(t);
+									}
+									try {
+										diff = getMin(diff, b.time,getBlock(b.number-1).time);
+									} catch (Exception e) {
+										console.put("MAINE-01", "[ブロック]minの計算中にエラーが発生しました");
 										System.exit(1);
 									}
+								} else {
+									mining = false;
+									console.put("MAINE-02", "Block " + i + " invalid");
+									System.exit(1);
 								}
-							}else {
-								console.put("MAIN05", "ブロックを読み切りました");
-								syuryo=true;
-								break;
 							}
-						} catch (IOException e) {
-							e.printStackTrace();
-							console.put("MAINE-03", "ファイルの読み込みに失敗しました。");
+						}else {
+							console.put("MAIN05", "ブロックを読み切りました");
+							syuryo=true;
+							bs.close();
+							break;
 						}
 					}
 				} else {
-					try {
-						bs.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+					bs.close();
 					syuryo=true;
 					return;
 				}
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-				console.put("MAINE-00", "can't access to file" + file.getAbsolutePath());
+			} catch (Exception e) {
+				syuryo=true;
+				return;
 			}
 		}
 	}
@@ -304,7 +298,7 @@ static int segmentation=10;
 	}
 
 	static String getHash(int number) {
-		File file = new File("Blocks" + File.separator + "Block-" + ((number / segmentation) + 1));
+		File file = new File("Blocks" + File.separator + "Block-" +(((number -1) / segmentation) + 1));
 		if (!file.exists()) {
 			return null;
 		} else {
@@ -316,7 +310,7 @@ static int segmentation=10;
 				while ((s = br.readLine()) != null) {
 					if (number % segmentation == count++) {//目的の行まで読む
 						br.close();
-						s=decode64(s);
+						if(number>1)s=decode64(s);
 						return Mining.hash(s);
 					}
 				}
@@ -350,22 +344,26 @@ static int segmentation=10;
 		saveBlock(block);
 	}
 
-	/**GETBLOCKは保存された後のブロックを利用するため、チェックを行わない。*/
+	/**GETBLOCKは保存された後のブロックを利用するため、チェックを行わない。
+	 * 10以降が取得できない
+	 * */
 	static Block getBlock(int numb) {
 		if (numb > 0) {
-			File file = new File("Blocks" + File.separator + "Block-" + ((numb / segmentation) + 1));
+			int fileNum= (((numb -1) / segmentation) + 1);
+			File file = new File("Blocks" + File.separator + "Block-" + fileNum);
 			String s;
-			int count = 0;
+			int count =1;
 			Block b = null;
 			try {
 				BufferedReader br = new BufferedReader(new FileReader(file));
 				while ((s = br.readLine()) != null) {
-					if (numb % segmentation == count++) {
+					if (numb%segmentation== count%segmentation) {
 						br.close();
 						if(numb>1)s=decode64(s);
 						b = new Block(s, BigInteger.ZERO, utxo, true);
 						return b;
 					}
+					count++;
 				}
 				Main.console.put("見つからない", "です" + numb);
 				br.close();
@@ -381,7 +379,7 @@ static int segmentation=10;
 	/**ブロックをファイルに記述することのみを行う*/
 	private static void saveBlock(String fullText) {
 		Block b = new Block(fullText, BigInteger.ZERO, new HashMap<String, BigDecimal>(), true);
-		File file = new File("Blocks" + File.separator + "Block-" + ((b.number / segmentation) + 1));
+		File file = new File("Blocks" + File.separator + "Block-" + (((b.number-1) / segmentation) + 1));
 		try {
 			file.createNewFile();
 			FileWriter fw = new FileWriter(file, true);
