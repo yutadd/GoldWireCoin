@@ -42,8 +42,8 @@ public class DNS {
 						s.connect(target,1024);
 						User u=new User(s, Main.BANGO);
 						u.start();
+						Main.u.add(u);
 						Main.BANGO++;
-
 					} catch (IOException e) {
 						//There are some unconnectable nodes.It's not needed to show.
 					}

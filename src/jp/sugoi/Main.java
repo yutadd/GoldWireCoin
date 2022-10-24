@@ -355,7 +355,7 @@ static int segmentation=10;
 		if (numb > 0) {
 			File file = new File("Blocks" + File.separator + "Block-" + ((numb / segmentation) + 1));
 			String s;
-			int count = 1;
+			int count = 0;
 			Block b = null;
 			try {
 				BufferedReader br = new BufferedReader(new FileReader(file));
