@@ -9,7 +9,7 @@ public class Server extends Main implements Runnable {
 	public void run() {
 		ServerSocket ss = null;
 		try {
-			ss = new ServerSocket(0xfeed);
+			ss = new ServerSocket(321);
 			for (;;) {
 				Socket so = null;
 				//65261

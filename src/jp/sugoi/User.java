@@ -50,14 +50,14 @@ public class User extends Thread{
 		try {
 			String[] args=line.split("~");
 			Block receivedBlock=new Block(args[1],BigInteger.ZERO,new HashMap<String,BigDecimal>(),true);
-			String ReceivedHash=Mining.hash(receivedBlock.sum);
+			String ReceivedHash=Mining.hash(receivedBlock.fullText);
 			int receivedNumber=receivedBlock.number;
 			String localHash=Main.getHash(receivedNumber);
 			if(localHash!=null&&localHash.equals(ReceivedHash)) {
-				s.getOutputStream().write(("getfrom~"+Main.getBlock(receivedNumber).sum+"\r\n").getBytes());
+				s.getOutputStream().write(("getfrom~"+Main.getBlock(receivedNumber).fullText+"\r\n").getBytes());
 				Main.console.put("[User]","getfrom "+receivedNumber+"is already writed.\r\n so getfrom "+receivedNumber+" has sent.");
 			}else {
-				s.getOutputStream().write(("getfrom~"+Main.getBlock(receivedNumber-1).sum+"\r\n").getBytes());
+				s.getOutputStream().write(("getfrom~"+Main.getBlock(receivedNumber-1).fullText+"\r\n").getBytes());
 				Main.console.put("[User]","getfrom "+receivedNumber+" has sent.");
 			}
 		}catch(Exception e) {e.printStackTrace();}

@@ -14,7 +14,7 @@ public class SendBlocks {
 			int receivedNumber=receivedBlock.number;
 			String localHash=Main.getHash(receivedNumber);
 			Main.console.put("[SENDBLOCK-RECE]",String.valueOf(receivedNumber));
-			if(localHash!=null&&localHash.equals(Mining.hash(receivedBlock.sum))) {
+			if(localHash!=null&&localHash.equals(Mining.hash(receivedBlock.fullText))) {
 				receivedNumber+=1;
 				ArrayList<Block> list=new ArrayList<Block>();
 				boolean ok=true;
@@ -34,9 +34,9 @@ public class SendBlocks {
 					StringBuilder sb=new StringBuilder();
 					for(Block b:list) {
 						if(i==0) {
-							sb.append(b.sum);
+							sb.append(b.fullText);
 						}else {
-							sb.append("0x0f"+b.sum);
+							sb.append("0x0f"+b.fullText);
 						}
 						i++;
 					}
@@ -47,7 +47,7 @@ public class SendBlocks {
 				//receivenumberはifブロック内で増えるので、-1でいい。
 				Block b=Main.getBlock(receivedNumber-1);
 				if(b!=null) {
-					s.getOutputStream().write(("isSame~"+(b.sum)+"\r\n").getBytes());
+					s.getOutputStream().write(("isSame~"+(b.fullText)+"\r\n").getBytes());
 					Main.console.put("[SENDBLOCK-ISAME]",String.valueOf(receivedNumber-1));
 				}else {
 					Main.console.put("[SENDBLOCK-NSC]","Not Same Chain");

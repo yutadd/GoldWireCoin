@@ -49,14 +49,14 @@ public  class ReceiveBlocks {
 			}
 			if(ok) {
 				if(!Main.mati) {
-					if(blocks[0].previous_hash.equals(Mining.hash( Main.getBlock(blocks[0].number-1).sum))) {
+					if(blocks[0].previousHash.equals(Mining.hash( Main.getBlock(blocks[0].number-1).fullText))) {
 						if(blocks[blocks.length-1].number>Main.getBlockSize()) {
 							Main.mati=false;
 							Main.delfrom(blocks[0].number);
 							Main.readHash();
 							Main.console.put("RECEIVEBLOCKS-SAVE","書き込み開始");
 							for(Block b:blocks) {
-								Main.addBlock(b.sum);
+								Main.addBlock(b.fullText);
 							}
 							Main.mati=false;
 							

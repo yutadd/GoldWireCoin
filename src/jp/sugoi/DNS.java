@@ -3,89 +3,59 @@ package jp.sugoi;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.Random;
+
+import com.google.common.net.InetAddresses;
 
 public class DNS extends Main {
-	static Socket s;
+	/* 
+	 * DNSシードより、アドレスのリストを取得する。
+	 * seed.bitcoinstats.comと同じ仕組み。
+	 */
 	DNS(){
-		//デプロイ時に内容の優先度を入れ替える。
 		try {
-			console.put("DNS00","localhost - timeout1024ms");
-			s=new Socket();
-			InetSocketAddress endpoint= new InetSocketAddress("localhost",  25565);
-			
-			s.connect(endpoint,1024);
-			console.put("DNS01","connect complete");
-		} catch (Exception e) {
-			try {
-				console.put("DNS00","164.70.64.125 - timeout1024ms");
-				s=new Socket();
-				InetSocketAddress endpoint= new InetSocketAddress("164.70.64.125",  25565);
-				s.connect(endpoint,1024);
-				console.put("DNS01","connect complete");
-			}catch (IOException e1) {
-				try {
-					System.out.println("localhost - timeout1024ms");
-					s=new Socket();
-					InetSocketAddress endpoint= new InetSocketAddress("yutadd.com",25565);
-					s.connect(endpoint,1024);
-					console.put("DNS00","connect complete");
-				}catch(Exception ep) {
-					console.put("DNS01","faild to connect");
-				}
+			InetAddress[] ina=InetAddress.getAllByName("yutadd.com");
+			for(InetAddress s:ina) {
+				addressList.add(s.getHostAddress());
 			}
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
 		}
-			if(s!=null){
-				try {
-					s.getOutputStream().write("get\r\n".getBytes());
-					console.put("DNS-3","Writed GET");
-				} catch (IOException e1) {
-					console.put("DNSE-3",e1.getMessage());
+		Thread th=new Thread() {
+			@Override
+			public void run() {
+				Random random=new Random();
+				boolean bigNetwork=addressList.size()>50;
+				int offset=0;
+				int tried=0;
+				do {
+					tried++;
+				if(bigNetwork) {
+					offset=random.nextInt(addressList.size()-5);
 				}
-				Thread th_in=new Thread(){
-					public void run() {
-							try {
-								BufferedReader br=new BufferedReader(new InputStreamReader(s.getInputStream()));
-								while(!s.isClosed()) {
-									String cmd=br.readLine();
-									if(cmd.equals("no_users")) {
-										console.put("DNS02","[DNS]返答：no users");
-									}else {
-										boolean already=false;
-										for(User u:Main.u) {
-											if(u.s.getInetAddress().getHostAddress().equals(cmd)) {
-												already=true;
-											}
-										}
-										if(!already) {
-											console.put("DNS02","[DNS]返答："+cmd);
-											try {//65261
-												Socket s=new Socket(cmd,0xfeed);
-												console.put("DNS-CON","CONNECTED TO RECEIVED ADDRESS!");
-												User user = new User(s,Main.BANGO);
-												Main.BANGO++;
-												Main.u.add(user);
-												user.start();
-												
-											}catch(Exception e) {console.put("DNSE-KEN","CONNOT CONNECT TO RECEIVED ADDRESS;;");}
-										}else {
-											console.put("DNSE-ALR","ALREADY CONNECTED");
-										}
-									}
-								}
-								console.put("DNSE-ALR","Shutdowning input stream.");
-							} catch (Exception e) {
-								e.printStackTrace();
-								try {
-									s.close();
-								} catch (IOException e1) {
-									e1.printStackTrace();
-								}
-							}
-						}
-				};
-				th_in.start();
+				for(int i=offset;i<addressList.size();i++) {
+					Socket s=new Socket();
+					InetSocketAddress target=new InetSocketAddress(addressList.get(i),321);
+					try {
+						s.connect(target,1024);
+						User u=new User(s, BANGO);
+						u.start();
+						BANGO++;
+
+					} catch (IOException e) {
+						//There are some unconnectable nodes.It's not needed to show.
+					}
+				}
+				console.put("DNS", BANGO+"/"+addressList.size()+" nodes has connected successfully.");
+				if(BANGO==0)console.put("DNS2", BANGO+"/"+addressList.size()+" I'll retry after 5 sec");
+				try{Thread.sleep(5000);}catch(Exception e) {}
+				}while(BANGO==0&&tried>2);
 			}
+		};
+		th.start();
 		}
 }

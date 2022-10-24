@@ -9,10 +9,10 @@ public class ReceiveBlock {
 			Main.console.put("RECEIVEBLOCK00", "一つのブロックを受信");
 			String blocks=line.split("~")[1];
 			Block b=new Block(blocks,Main.diff,Main.utxo,false);
-			if(b.previous_hash.equals(Main.getlatesthash())) {
+			if(b.previousHash.equals(Main.getlatesthash())) {
 				if(b.ok) {
-					Main.addBlock(b.sum);
-					Network.shareToNodes("block~"+ b.sum);
+					Main.addBlock(b.fullText);
+					Network.shareToNodes("block~"+ b.fullText);
 					//System.out.println("[ユーザー]書き込みました。");
 				}else {
 					Main.console.put("RECEIVEBLOCKE-01", "受信したブロックが不正");
@@ -20,7 +20,7 @@ public class ReceiveBlock {
 			}else {
 				if(b.number>Main.getBlockSize()) {
 					try {
-						s.getOutputStream().write(("getfrom~"+Main.getBlock(Main.getBlockSize()).sum+"\r\n").getBytes());
+						s.getOutputStream().write(("getfrom~"+Main.getBlock(Main.getBlockSize()).fullText+"\r\n").getBytes());
 					} catch (IOException e) {
 						Main.console.put("RECEIVEBLOCKE-02", "getfromを送信できない");
 						e.printStackTrace();

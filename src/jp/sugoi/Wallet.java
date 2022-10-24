@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Base64;
 import java.util.Random;
 
 import priv.key.Bouncycastle_Secp256k1;
@@ -17,6 +18,7 @@ public class Wallet {
 	public   byte[]		priv;
 	public BigInteger[]	pub 	= new BigInteger[2];
 	public String address_0x0a;
+	public String encodedSection;
 	public Wallet() {
 		File wallet=new File("wallet.enc");
 		if(wallet.exists()) {
@@ -55,6 +57,7 @@ public class Wallet {
 			}
 		}
 		address_0x0a=pub[0].toString(16)+"0x0a"+pub[1].toString(16);
+		encodedSection=new String(Base64.getEncoder().encode(pub[0].toByteArray()))+"§"+new String(Base64.getEncoder().encode(pub[1].toByteArray()));
 	}
 
 

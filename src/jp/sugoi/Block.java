@@ -8,8 +8,8 @@ import java.util.Map;
 public class Block {
 
 	ArrayList<Transaction> ts=new ArrayList<Transaction>();
-	public String sum="";
-	public String  previous_hash;
+	public String fullText="";
+	public String  previousHash;
 	public int number=0;
 	boolean ok=false;
 	String miner;
@@ -29,7 +29,7 @@ public class Block {
 			Main.console.put("BLOCK04", args[3]);
 			Main.console.put("BLOCK05", args[4]);
 			Main.console.put("BLOCK06","\t\t============");
-			sum=string;
+			fullText=string;
 			String[] he_tr=string.split(",");
 			miner=he_tr[1];
 			number=Integer.parseInt(he_tr[3]);
@@ -39,8 +39,8 @@ public class Block {
 			}
 			this.diff=diff;
 			this.he_tr=he_tr;
-			previous_hash=he_tr[0];
-			BigInteger result=new BigInteger(Mining.hash(sum),16);
+			previousHash=he_tr[0];
+			BigInteger result=new BigInteger(Mining.hash(fullText),16);
 			if(!PassCheck) {
 				boolean ts_check=true;
 				for(Transaction t:ts) {
@@ -63,7 +63,7 @@ public class Block {
 				}
 			}
 		}catch(Exception e) {
-			Main.console.put("BLOCKE-ERROR",e.getMessage());
+			e.printStackTrace();
 		}
 	}
 	boolean give_utxo(boolean check){
@@ -71,7 +71,7 @@ public class Block {
 			//System.out.print("=====↓エラー発生↓=====\r\nhe_tr : ");
 			Main.console.put("BLOCK13-E","全配列: "+he_tr);
 			//BigInteger result=new BigInteger(Mining.hash(sum),16);
-			Main.console.put("BLOCK14-E","原文: "+sum);
+			Main.console.put("BLOCK14-E","原文: "+fullText);
 			//if(!check)System.out.println("難易度比較:\r\nこのブロック→\t"+result.toString(10)+"\r\n現在の難易度→\t"+Main.shoki.toString(10));
 			//System.out.print("=====↑エラー発生↑=====\r\nhe_tr : ");
 			throw new NullPointerException();

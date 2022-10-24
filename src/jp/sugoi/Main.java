@@ -12,12 +12,15 @@ import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
+
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
+
 
 import com.sun.jna.Function;
 import com.sun.jna.platform.win32.WinDef.BOOL;
@@ -25,10 +28,12 @@ import com.sun.jna.platform.win32.WinDef.DWORD;
 import com.sun.jna.platform.win32.WinDef.DWORDByReference;
 import com.sun.jna.platform.win32.WinNT.HANDLE;
 
+
 //
 /**
  * マイニングしているかどうかをメインに表示。(nonceも表示してみる)
  * ステータスの表示に時間を加える。
+ * TODO:１万ブロックを超えるブロック数に対応していません。ブロック記述・削除システムを作り直す。
  * @author yutadd
  */
 class TreeMap2<K, V> extends ConcurrentHashMap<K, V> {
@@ -39,7 +44,6 @@ class TreeMap2<K, V> extends ConcurrentHashMap<K, V> {
 				key = (K) ((String) key + " " + new SimpleDateFormat("HH時mm分ss秒").format(new Date()));
 		}
 		if (((String) key).matches(".*E-.*")) {
-
 			System.out.println("[\033[31m" + ((String) key) + "\033[37m]" + ((String) value) + "\033[37m");
 			return super.put(key, value);
 		} else if (((String) key).matches(".*I-.*")) {
@@ -53,15 +57,18 @@ class TreeMap2<K, V> extends ConcurrentHashMap<K, V> {
 }
 
 public class Main {
+
 	static ArrayList<Transaction> savedTransaction = new ArrayList<Transaction>();
 	static int ERROR = 0;
-	static boolean haikei_nashi = false;
 	static Map<String, BigDecimal> utxo = new HashMap<String, BigDecimal>();
 	static boolean mati = false;
 	static String latestHash = null;
 	static String name = "XGW";
 	static ArrayList<Transaction> pool = new ArrayList<Transaction>();
 	static Wallet w;
+
+
+	//manual
 	static String man = "";
 
 	/**
@@ -71,21 +78,9 @@ public class Main {
 	static int BANGO = 0;
 
 	static ArrayList<User> u = new ArrayList<User>();
-
-	/**]
-	 * (ServerSocket)サーバーソケットからIPフィールドを取得するためのもの
-	 */
-	//static HashMap<User,JTextField> ssock=new HashMap<>();
-	/*
-	 * (ClientSocket)ClientソケットからIPフィールドを取得するためのもの
-	 */
-	//static HashMap<User,JTextField> csock=new HashMap<>();
-
-	/**
-	 * ソケットとそれに対応するIPTextFieldを記憶する。
-	 */
-	//static HashMap<User,Integer> debug_lab=new HashMap<>();
 	static boolean mining = false;
+	//ネットワークに参加しているIPのリスト
+	static ArrayList<String> addressList=new ArrayList<String>();
 	static Mining m;
 	static int size = 0;
 	static BigInteger diff = new BigInteger("26611349253966442813730644663330183884399686815584447189708332380985641",
@@ -94,6 +89,9 @@ public class Main {
 			10);
 
 	public static void main(String[] args) {
+
+		new DNS();
+
 		if (System.getProperty("os.name").startsWith("Windows")) {
 			// Set output mode to handle virtual terminal s	equences
 			Function GetStdHandleFunc = Function.getFunction("kernel32", "GetStdHandle");
@@ -109,7 +107,6 @@ public class Main {
 			SetConsoleModeFunc.invoke(BOOL.class, new Object[] { hOut, dwMode });
 		}
 		/* 
-
 
 
 		以前生成した公開鍵x,yがあり、このxから同じyを導き出したい。	
@@ -194,7 +191,7 @@ public class Main {
 				}
 			}
 		};
-		new DNS();
+
 		showStats();
 		th_.start();
 	}
@@ -213,7 +210,7 @@ public class Main {
 			System.out.printf("[\033[34mADDR\033[37m:\033[34m%s\033[37m]: \033[42m%s\033[49m \r\n", set.getKey(),
 					set.getValue().toString());
 		}
-		System.out.println("\033[34mYOUR ADDRESS \033[37m: " + w.address_0x0a);
+		System.out.println("\033[34mYOUR ADDRESS \033[37m: " + w.encodedSection);
 		for (Entry<String, String> ent : console.entrySet()) {
 			System.out.println("[\033[31m" + ent.getKey() + "\033[37m]" + ent.getValue() + "\033[37m");
 		}
@@ -261,6 +258,18 @@ public class Main {
 					}
 					try {
 						String line = bs.readLine();
+						String[] ls=line.split(",");
+						ls[1]=new BigInteger(Base64.getDecoder().decode(ls[1])).toString(16);
+						line="";
+						int f=0;
+						for(String s:ls) {
+							if(f==0) {
+								line+=s;
+							}else {
+								line+=","+s;
+							}
+							f++;
+						}
 						Block b = new Block(line, diff, result, i + (a - 1) * 10000 <= 4);
 						for (Transaction t : b.ts) {
 							BigDecimal bal = checkNullAndGetValue(result, t.input);
@@ -307,6 +316,19 @@ public class Main {
 								bs.close();
 								return;
 							}
+							String[] ls=line.split(",");
+							System.out.println(i);
+							if (i + (a - 1) * 10000 !=1)ls[1]=new BigInteger(Base64.getDecoder().decode(ls[1])).toString(16);
+							line="";
+							int f=0;
+							for(String s:ls) {
+								if(f==0) {
+									line+=s;
+								}else {
+									line+=","+s;
+								}
+								f++;
+							}
 							Block b = new Block(line, diff, utxo, i + (a - 1) * 10000 <= 4);
 							if (i + (a - 1) * 10000 > 4) {
 								if (b.ok) {
@@ -331,7 +353,7 @@ public class Main {
 									System.exit(1);
 								}
 							}
-							latestHash = Mining.hash(b.sum);
+							latestHash = Mining.hash(b.fullText);
 						} catch (IOException e) {
 							int r = 0;
 							for (StackTraceElement ste : e.getStackTrace())
@@ -372,8 +394,20 @@ public class Main {
 				int count = 1;
 				br = new BufferedReader(new FileReader(file));
 				while ((s = br.readLine()) != null) {
-					if (number % 10000 == count++) {
+					if (number % 10000 == count++) {//目的の行まで読む
 						br.close();
+						String[] ls=s.split(",");
+						ls[1]=new BigInteger(Base64.getDecoder().decode(ls[1])).toString(16);
+						s="";
+						int f=0;
+						for(String w:ls) {
+							if(f==0) {
+								s+=w;
+							}else {
+								s+=","+w;
+							}
+							f++;
+						}
 						return Mining.hash(s);
 					}
 				}
@@ -398,7 +432,6 @@ public class Main {
 		int numb = blo.number;
 		console.put("MAIN04", "このブロックのナンバー: " + numb);
 		console.put("MAIN05", "セーブされたブロックの数: " + getBlockSize());
-		delfrom(numb);
 		saveBlock(block);
 	}
 
@@ -414,6 +447,18 @@ public class Main {
 				while ((s = br.readLine()) != null) {
 					if (numb % 10000 == count++) {
 						br.close();
+						String[] ls=s.split(",");
+						ls[1]=new BigInteger(Base64.getDecoder().decode(ls[1])).toString(16);
+						s="";
+						int f=0;
+						for(String w:ls) {
+							if(f==0) {
+								s+=w;
+							}else {
+								s+=","+w;
+							}
+							f++;
+						}
 						b = new Block(s, BigInteger.ZERO, utxo, true);
 						return b;
 					}
@@ -430,13 +475,25 @@ public class Main {
 	}
 
 	/**セーブすることが目的なので、チェックを行いません*/
-	private static void saveBlock(String arg) {
-		Block b = new Block(arg, BigInteger.ZERO, new HashMap<String, BigDecimal>(), true);
+	private static void saveBlock(String fillText) {
+		Block b = new Block(fillText, BigInteger.ZERO, new HashMap<String, BigDecimal>(), true);
 		File file = new File("Blocks" + File.separator + "Block-" + ((b.number / 10000) + 1));
 		try {
 			file.createNewFile();
 			FileWriter fw = new FileWriter(file, true);
-			fw.write(arg + System.getProperty("line.separator"));
+			String[] ls=fillText.split(",");
+			ls[1]=new String(Base64.getEncoder().encode(new BigInteger(ls[1],16).toByteArray()));
+			fillText="";
+			int f=0;
+			for(String s:ls) {
+				if(f==0) {
+					fillText+=s;
+				}else {
+					fillText+=","+s;
+				}
+				f++;
+			}
+			fw.write(fillText + System.getProperty("line.separator"));
 			fw.flush();
 			fw.close();
 			for (Transaction t : b.ts) {
@@ -450,7 +507,7 @@ public class Main {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		latestHash = Mining.hash(b.sum);
+		latestHash = Mining.hash(b.fullText);
 		size = b.number;
 		try {
 			if (b.number > 4) {
@@ -469,29 +526,33 @@ public class Main {
 	}
 
 	/**このメソッドの実行後にreadhashを呼んでください。<br>savedTransactionから削除するブロック内に含まれるトランザクションを削除しません。あと、
-	 * TODO:１万ブロックを超えるブロック数に対応していません*/
+	 * TODO:１万ブロックを超えるブロック数に対応していません。ブロック記述・削除システムを作り直す。
+	 * */
 	static void delfrom(int from) {
 		try {
-			File file = new File("Blocks" + File.separator + "Block-" + ((from / 10000) + 1));
-			FileReader is = null;
-			BufferedReader bs = null;
-			is = new FileReader(file);
-			bs = new BufferedReader(is);
-			ArrayList<String> line = new ArrayList<String>();
-			for (int i = 1; i < from; i++) {
-				line.add(bs.readLine());
+			for(int a=(from/10000)+1;a<(size/10000)+1;a++) {
+				File file = new File("Blocks" + File.separator + "Block-" + ((from / 10000) + 1));
+				FileReader is = null;
+				BufferedReader bs = null;
+				is = new FileReader(file);
+				bs = new BufferedReader(is);
+				ArrayList<String> line = new ArrayList<String>();
+				for (int i = 1; i < from; i++) {
+					line.add(bs.readLine());
+				}
+				bs.close();
+				FileWriter fw = new FileWriter(file);
+				for (String s : line) {
+					fw.append(s + System.getProperty("line.separator"));
+				}
+				fw.close();
 			}
-			bs.close();
-			FileWriter fw = new FileWriter(file);
-			for (String s : line) {
-				fw.append(s + System.getProperty("line.separator"));
-			}
-			fw.close();
 		} catch (Exception e) {
 			int da = 0;
 			for (StackTraceElement ste : e.getStackTrace())
 				Main.console.put("MainE-4-" + da++, ste.toString());
 		}
+
 	}
 
 	/**最初の４つでは呼ばないでぇ*/

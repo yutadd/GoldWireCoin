@@ -1,4 +1,10 @@
-<div style="padding-top:2%;padding-left:7%">
-<h1 >RECENTRY UPDATE！：</h1>
-<ul style=" padding-left: 1%;"><li><strong>ブロックを圧縮できるようにした。</strong></li><li><strong>さまざまなリファクタリング</strong></li><li><strong>いろいろ！</strong></li></ul>
-<image style="width:840px;height=auto;" src="image/scr.png"/></div>
+# RECENTRY UPDATE！：
+ base64のお陰でアドレスが短くなった！<br />
+ 
+```
+ex. diDlHSAnRbhW0W/ZgaxIy3NMZotIfmvprv9knHdaYt0=§QLfieDPDeAJ8jUs3y02CrdtDd2AnSXqONb9HQiEskbQ=
+```
+
+ ブロックを圧縮できるようにした。<br />
+ DNSシードからランダムにアドレスを取得するようになった(ネットワークの偏りをなくす)<br />
+<image style="width:840px;height=auto;" src="image/scr.png"/>

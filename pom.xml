@@ -17,11 +17,6 @@
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.jcuda/jcuda -->
 		<dependency>
-			<groupId>org.jcuda</groupId>
-			<artifactId>jcuda</artifactId>
-			<version>11.6.1</version>
-		</dependency>
-		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bctls-jdk15on</artifactId>
 		</dependency>
