@@ -39,7 +39,8 @@ public  class ReceiveBlocks {
 						}
 					}
 					blocks[i]=b;
-					kiso_diff=Main.getMin(kiso_diff,new SimpleEntry<BigInteger,BigInteger>(BigInteger.valueOf(b.time),BigInteger.valueOf((i==0)?Main.getBlock(b.number-1).time:blocks[i-1].time)));
+					//iは受け取ったブロックのインデックスを表すため、0だったら、ローカルのブロックからtimeを持ってくる。
+					kiso_diff=Main.getMin(kiso_diff,b.time,(i==0)?Main.getBlock(b.number-1).time:blocks[i-1].time);
 				}else {
 					Main.console.put("RECEIVEBLOCKSE-INV","BLOCK "+i+"INVALID");
 					ok=false;
@@ -53,11 +54,11 @@ public  class ReceiveBlocks {
 						if(blocks[blocks.length-1].number>Main.getBlockSize()) {
 							Main.mati=false;
 							Main.delfrom(blocks[0].number);
-							Main.readHash();
 							Main.console.put("RECEIVEBLOCKS-SAVE","書き込み開始");
 							for(Block b:blocks) {
 								Main.addBlock(b.fullText);
 							}
+							Main.readHash();
 							Main.mati=false;
 							
 						}

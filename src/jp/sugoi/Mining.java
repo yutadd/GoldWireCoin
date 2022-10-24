@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
 
-public class Mining extends Thread {
+public class Mining {
 
 	// previous_hash,miner_address,nans,block_number,transaction,transaction,...
 	//min:66611349253966442813730644663330183884399686815584447189708332380985641
@@ -22,14 +22,8 @@ public class Mining extends Thread {
 		Thread th = new Thread() {
 			@Override
 			public void run() {
-				String rem = "";
-				for (String s : Main.console.keySet()) {
-					if (s.startsWith("MININGE-00")) {
-						rem = s;
-					}
-				}
-				Main.console.remove(rem);
-				Main.console.put("MINING", "Now, I started mining!");
+				Main.console.remove("MININGE-00");
+				Main.console.put("MINING", "マイニング実行中");
 				Random ran = new Random();
 				String before;
 				while (Main.mining) {
@@ -40,7 +34,7 @@ public class Mining extends Thread {
 					}
 					BigInteger result = new BigInteger(hash(before), 16);
 					if (result.compareTo(Main.diff) < 0) {
-						Main.console.put("MINING", "mining完了 Hash: " + hash(before));
+						Main.console.put("MINING", "マイニング成功 Hash: " + hash(before)+"\r\nネットワークに更に長いチェーンが存在した場合、無効になる場合があります。");
 						Network.shareToNodes("block~" + before);
 						if (!Main.mati) {
 							Main.addBlock(before);
@@ -49,7 +43,7 @@ public class Mining extends Thread {
 					}
 				}
 				Main.console.remove("MINING");
-				Main.console.put("MININGE-00", "Now, I stopped mining!");
+				Main.console.put("MININGE-00", "マイニング停止中");
 			}
 		};
 		th.start();
