@@ -14,7 +14,9 @@ public class SendBlocks {
 			int receivedNumber=receivedBlock.number;
 			String localHash=Main.getHash(receivedNumber);
 			Main.console.put("[SENDBLOCK-RECE]",String.valueOf(receivedNumber));
-			if(localHash!=null&&localHash.equals(Mining.hash(receivedBlock.fullText))) {
+			if(localHash!=null) {
+				if(localHash.equals(Mining.hash(receivedBlock.fullText))) {
+
 				receivedNumber+=1;
 				ArrayList<Block> list=new ArrayList<Block>();
 				boolean ok=true;
@@ -43,8 +45,8 @@ public class SendBlocks {
 					s.getOutputStream().write(("blocks~"+sb.toString()+"\r\n").getBytes());
 					Main.console.put("[SENDBLOCK-RET]","Returned blocks");
 				}
-			}else {
-				//receivenumberはifブロック内で増えるので、-1でいい。
+				}else{
+					//receivenumberはifブロック内で増えるので、-1でいい。
 				Block b=Main.getBlock(receivedNumber-1);
 				if(b!=null) {
 					s.getOutputStream().write(("isSame~"+(b.fullText)+"\r\n").getBytes());
@@ -52,6 +54,37 @@ public class SendBlocks {
 				}else {
 					Main.console.put("[SENDBLOCK-NSC]","Not Same Chain");
 				}
+				}
+			}else {
+				Main.console.put("MainE-","受け取ったブロックから番号を推測しました（"+receivedNumber+"）が、ローカルにその番号のブロックが見つかりませんでした。");
+				/*[NETWORK00]Last Output String:block~0000034f
+[MAIN04]このブロックのナンバー: 39
+[MAIN05]セーブされたブロックの数: 39
+[USER-LAST]Last input String:getfrom~000000
+[[SENDBLOCK-RECE]]19
+[[SENDBLOCK-ISAME]]18
+[USER-LAST]Last input String:getfrom~000002
+[[SENDBLOCK-RECE]]18
+[[SENDBLOCK-ISAME]]17
+[USER-LAST]Last input String:getfrom~000000
+[[SENDBLOCK-RECE]]17
+[[SENDBLOCK-ISAME]]16
+[USER-LAST]Last input String:getfrom~000002
+[[SENDBLOCK-RECE]]16
+[[SENDBLOCK-ISAME]]15
+[USER-LAST]Last input String:getfrom~000001
+[[SENDBLOCK-RECE]]15
+[[SENDBLOCK-ISAME]]14
+[USER-LAST]Last input String:getfrom~000001
+[[SENDBLOCK-RECE]]13
+[[SENDBLOCK-ISAME]]12
+[USER-LAST]Last input String:getfrom~000002
+[[SENDBLOCK-RECE]]11
+[[SENDBLOCK-ISAME]]10
+[USER-LAST]Last input String:getfrom~000000
+[[SENDBLOCK-RECE]]9
+[見つからない]です20
+[[SENDBLOCKE-NUL] 03時15分17秒]b is null*/
 			}
 		}catch(Exception e) {e.printStackTrace();}
 	}
