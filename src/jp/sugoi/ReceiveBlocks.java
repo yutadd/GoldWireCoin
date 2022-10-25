@@ -23,6 +23,7 @@ public  class ReceiveBlocks {
 			Map<String,BigDecimal> kiso_utxo=kiso.getValue();
 			for(String s:args) {
 				Block b=new Block(s,kiso_diff,kiso_utxo,false);
+				System.out.println("diff : "+b.diff.toString(16));
 				if(b.ok) {
 					for(Transaction t:b.ts) {
 						if(t.ok) {

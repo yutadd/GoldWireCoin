@@ -15,18 +15,9 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
-
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
-
-
-import com.sun.jna.Function;
-import com.sun.jna.platform.win32.WinDef.BOOL;
-import com.sun.jna.platform.win32.WinDef.DWORD;
-import com.sun.jna.platform.win32.WinDef.DWORDByReference;
-import com.sun.jna.platform.win32.WinNT.HANDLE;
 
 
 //
@@ -162,7 +153,7 @@ public class Main {
 		System.out.println("[\033[34mdifficulty\033[37m]:" + hugo + diff.subtract(shoki).abs().toString(16));
 		//gui_check();
 		for (Entry<String, BigDecimal> set : utxo.entrySet()) {
-			System.out.printf("[\033[34mADDR\033[37m:\033[34m%s\033[37m]: \033[42m%s\033[49m \r\n", set.getKey(),
+			System.out.printf("[\033[34mADDR\033[37m:\033[34m%s\033[37m]: \033[42m%s\033[49m \r\n", new String(Base64.getEncoder().encode(new BigInteger(set.getKey(),16).toByteArray())),
 					set.getValue().toString());
 		}
 		System.out.println("\033[34mYOUR ADDRESS \033[37m: " + w.encodedSection);
