@@ -2,7 +2,6 @@ package jp.sugoi;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -10,7 +9,7 @@ import java.util.Map.Entry;
 public  class ReceiveBlocks {
 	public static void exec(String line) {
 		try {
-			Main.mati=true;
+			
 			System.out.println("ブロックス！："+line);
 			String st=line.split("~")[1];
 			String[] args=st.split("0x0f");
@@ -50,6 +49,7 @@ public  class ReceiveBlocks {
 			}
 			if(ok) {
 				if(!Main.mati) {
+					Main.mati=true;
 					if(blocks[0].previousHash.equals(Mining.hash( Main.getBlock(blocks[0].number-1).fullText))) {
 						if(blocks[blocks.length-1].number>Main.getBlockSize()) {
 							Main.mati=false;
