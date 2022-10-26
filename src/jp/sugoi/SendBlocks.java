@@ -16,10 +16,11 @@ public class SendBlocks {
 			Main.console.put("[SENDBLOCK-RECE]",String.valueOf(receivedNumber));
 			if(localHash!=null) {
 				if(localHash.equals(Mining.hash(receivedBlock.fullText))) {
-
+					//一致したブロック以降のブロックを送信する
 					receivedNumber+=1;
 					ArrayList<Block> list=new ArrayList<Block>();
 					boolean ok=true;
+					//
 					for(;receivedNumber<=Main.getBlockSize();receivedNumber++) {
 						Block b=Main.getBlock(receivedNumber);
 						if(b!=null) {
