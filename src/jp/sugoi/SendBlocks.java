@@ -17,43 +17,43 @@ public class SendBlocks {
 			if(localHash!=null) {
 				if(localHash.equals(Mining.hash(receivedBlock.fullText))) {
 
-				receivedNumber+=1;
-				ArrayList<Block> list=new ArrayList<Block>();
-				boolean ok=true;
-				for(;receivedNumber<=Main.getBlockSize();receivedNumber++) {
-					Block b=Main.getBlock(receivedNumber);
-					if(b!=null) {
-						list.add(b);
-					}else {
-						Main.console.put("[SENDBLOCKE-NUL]","b is null");
-						ok=false;
-						break;
-					}
-				}
-				if(ok) {
-					Main.console.put("[SENDBLOCK-READY]","Created blocks is okay ready to send");
-					int i=0;
-					StringBuilder sb=new StringBuilder();
-					for(Block b:list) {
-						if(i==0) {
-							sb.append(b.fullText);
+					receivedNumber+=1;
+					ArrayList<Block> list=new ArrayList<Block>();
+					boolean ok=true;
+					for(;receivedNumber<=Main.getBlockSize();receivedNumber++) {
+						Block b=Main.getBlock(receivedNumber);
+						if(b!=null) {
+							list.add(b);
 						}else {
-							sb.append("0x0f"+b.fullText);
+							Main.console.put("[SENDBLOCKE-NUL]","b is null");
+							ok=false;
+							break;
 						}
-						i++;
 					}
-					s.getOutputStream().write(("blocks~"+sb.toString()+"\r\n").getBytes());
-					Main.console.put("[SENDBLOCK-RET]","Returned blocks");
-				}
+					if(ok) {
+						Main.console.put("[SENDBLOCK-READY]","Created blocks is okay ready to send");
+						int i=0;
+						StringBuilder sb=new StringBuilder();
+						for(Block b:list) {
+							if(i==0) {
+								sb.append(b.fullText);
+							}else {
+								sb.append("0x0f"+b.fullText);
+							}
+							i++;
+						}
+						s.getOutputStream().write(("blocks~"+sb.toString()+"\r\n").getBytes());
+						Main.console.put("[SENDBLOCK-RET]","Returned blocks");
+					}
 				}else{
 					//receivenumberはifブロック内で増えるので、-1でいい。
-				Block b=Main.getBlock(receivedNumber-1);
-				if(b!=null) {
-					s.getOutputStream().write(("isSame~"+(b.fullText)+"\r\n").getBytes());
-					Main.console.put("[SENDBLOCK-ISAME]",String.valueOf(receivedNumber-1));
-				}else {
-					Main.console.put("[SENDBLOCK-NSC]","Not Same Chain");
-				}
+					Block b=Main.getBlock(receivedNumber-1);
+					if(b!=null) {
+						s.getOutputStream().write(("isSame~"+(b.fullText)+"\r\n").getBytes());
+						Main.console.put("[SENDBLOCK-ISAME]",String.valueOf(receivedNumber-1));
+					}else {
+						Main.console.put("[SENDBLOCK-NSC]","Not Same Chain");
+					}
 				}
 			}else {
 				Main.console.put("MainE-","受け取ったブロックから番号を推測しました（"+receivedNumber+"）が、ローカルにその番号のブロックが見つかりませんでした。");
