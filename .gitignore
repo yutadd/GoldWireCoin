@@ -1,5 +1,8 @@
 /wallet.enc
-/Blocks/Block-[0-9][0-9]
+/Blocks/Block-[2-9]
+/Blocks/Block-[1-9][1-9]
+env/Blocks/Block-[1-9][1-9]
+env/Blocks/Block-[2-9]
 /target/archive-tmp/
 target/generated-sources/
 target/maven-archiver/
