@@ -58,34 +58,6 @@ public class SendBlocks {
 				}
 			}else {
 				Main.console.put("MainE-","受け取ったブロックから番号を推測しました（"+receivedNumber+"）が、ローカルにその番号のブロックが見つかりませんでした。");
-				/*[NETWORK00]Last Output String:block~0000034f
-[MAIN04]このブロックのナンバー: 39
-[MAIN05]セーブされたブロックの数: 39
-[USER-LAST]Last input String:getfrom~000000
-[[SENDBLOCK-RECE]]19
-[[SENDBLOCK-ISAME]]18
-[USER-LAST]Last input String:getfrom~000002
-[[SENDBLOCK-RECE]]18
-[[SENDBLOCK-ISAME]]17
-[USER-LAST]Last input String:getfrom~000000
-[[SENDBLOCK-RECE]]17
-[[SENDBLOCK-ISAME]]16
-[USER-LAST]Last input String:getfrom~000002
-[[SENDBLOCK-RECE]]16
-[[SENDBLOCK-ISAME]]15
-[USER-LAST]Last input String:getfrom~000001
-[[SENDBLOCK-RECE]]15
-[[SENDBLOCK-ISAME]]14
-[USER-LAST]Last input String:getfrom~000001
-[[SENDBLOCK-RECE]]13
-[[SENDBLOCK-ISAME]]12
-[USER-LAST]Last input String:getfrom~000002
-[[SENDBLOCK-RECE]]11
-[[SENDBLOCK-ISAME]]10
-[USER-LAST]Last input String:getfrom~000000
-[[SENDBLOCK-RECE]]9
-[見つからない]です20
-[[SENDBLOCKE-NUL] 03時15分17秒]b is null*/
 			}
 		}catch(Exception e) {e.printStackTrace();}
 	}

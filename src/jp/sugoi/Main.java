@@ -184,12 +184,12 @@ public class Main {
 			try {
 				BufferedReader bs = new BufferedReader(new FileReader(file));
 				if (file.exists()) {
-					for (int i = 1; i < segmentation; i++) {
+					for (int i = 1; i <= segmentation; i++) {
 						if (leng >= i + (a - 1) * segmentation) {
 							try {
 								String line = bs.readLine();
 								if(i+((a-1)*segmentation)!=1)line=decode64(line);
-								Block b = new Block(line, diff, result, i + (a - 1) * segmentation <= 4);
+								Block b = new Block(line, diff, result, i + ((a - 1) * segmentation) <= 1);
 								for (Transaction t : b.ts) {
 									BigDecimal bal = checkNullAndGetValue(result, t.input);
 									result.put(t.input, bal.subtract(t.sum_minus));
@@ -235,7 +235,7 @@ public class Main {
 			try {
 				BufferedReader bs = new BufferedReader(new FileReader(file));
 				if (file.exists()) {
-					for (int i = 1; i < segmentation; i++) {
+					for (int i = 1; i <= segmentation; i++) {
 						String line = bs.readLine();
 						if (line != null) {
 							if(i+(a-1)*segmentation!=1)line=decode64(line);
@@ -392,8 +392,8 @@ public class Main {
 	 * */
 	static void delfrom(int from) {
 		try {
-			int begin=(from/segmentation)+1;
-			int end=(size/segmentation)+1;
+			int begin=(int)(Math.ceil((from-1)/segmentation))+1;
+			int end=(int)(Math.ceil((size-1)/segmentation))+1;
 			for(int a=begin;a<end;a++) {
 				File file = new File("Blocks" + File.separator + "Block-" + a);
 				if(a==begin) {
@@ -419,7 +419,7 @@ public class Main {
 	}
 	static BigInteger getMin(BigInteger base,long l1,long l2) {
 		BigInteger sa =BigInteger.valueOf(l1-l2);
-		if (sa.compareTo(BigInteger.valueOf(60000)) > 0) {
+		if (sa.compareTo(BigInteger.valueOf(25000)) > 0) {//テストのために短めに
 			//時間が60秒オーバー：もっとかんたんに：数値にプラス
 			BigInteger i = new BigInteger("2910A562CF81F8A20CB31817F4350CA75ECF1CB59BED6E75AB6AEB1F4", 16);
 			return base.add(i);
