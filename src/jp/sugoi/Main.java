@@ -481,6 +481,7 @@ public class Main {
 		return line;
 	}
 	public static String decode64(String line) {
+		System.out.println("I'll decode "+line);
 		String[] ls=line.split(",");
 		ls[1]=new BigInteger(Base64.getDecoder().decode(ls[1])).toString(16);
 		line="";
