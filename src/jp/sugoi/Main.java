@@ -404,18 +404,26 @@ public class Main {
 
 	/**
 	 * このメソッドの呼出後、残額のズレを治すため初期化用readhash()を呼び出してください。
+	 * ここにエラーあり
+	 * 4
+	 * 5//消せてない
+	 * 6//消せてない
+	 * 5//受け取った追加分のブロック
+	 * 6//受け取った追加分のブロック
+	 * 
 	 * */
-	static void delfrom(int from) {
+	public static void delfrom(int from) {
 		System.out.println("deleting from :"+from);
 		try {
 			int begin=(int)(Math.ceil((from-1)/segmentation))+1;
 			int end=(int)(Math.ceil((size-1)/segmentation))+1;
-			for(int a=begin;a<end;a++) {
+			System.out.println(end);
+			for(int a=begin;a<=end;a++) {
 				File file = new File("Blocks" + File.separator + "Block-" + a);
 				if(a==begin) {
 					BufferedReader bs = new BufferedReader(new FileReader(file));
 					ArrayList<String> line = new ArrayList<String>();
-					for (int i = 1; i < from; i++) {
+					for (int i = 1; i < segmentation-(segmentation-from); i++) {
 						line.add(bs.readLine());
 					}
 					bs.close();
@@ -431,7 +439,6 @@ public class Main {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 	static BigInteger getMin(BigInteger base,long l1,long l2) {
 		BigInteger sa =BigInteger.valueOf(l1-l2);
