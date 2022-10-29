@@ -35,11 +35,11 @@ public class Mining {
 					BigInteger result = new BigInteger(hash(before), 16);
 					if (result.compareTo(Main.diff) < 0) {
 						Main.console.put("MINING", "マイニング成功 Hash: " + hash(before)+"\r\nネットワークに更に長いチェーンが存在した場合、無効になる場合があります。");
-						Network.shareToNodes("block~" + before);
 						if (!Main.mati) {
 							Main.addBlock(before);
 							Main.pool.clear();
 						}
+						Network.shareToNodes("block~" + before);
 					}
 				}
 				Main.console.remove("MINING");
