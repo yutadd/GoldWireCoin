@@ -184,9 +184,10 @@ public class Main {
 		diff = shoki;
 		for (int a = 1; !syuryo; a++) {
 			File file = new File("Blocks" + File.separator + "Block-" + a);
-			try {
-				BufferedReader bs = new BufferedReader(new FileReader(file));
-				if (file.exists()) {
+			if (file.exists()) {
+				try {
+					BufferedReader bs = new BufferedReader(new FileReader(file));
+
 					for (int i = 1; i <= segmentation; i++) {
 						String line = bs.readLine();
 						if (line != null) {
@@ -222,13 +223,14 @@ public class Main {
 							break;
 						}
 					}
-				} else {
-					bs.close();
+
+				} catch (Exception e) {
+					e.printStackTrace();
 					syuryo=true;
 					return;
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
+			} else {
+				console.put("MAIN05", "ブロックを読み切りました");
 				syuryo=true;
 				return;
 			}
@@ -332,7 +334,7 @@ public class Main {
 	}
 
 	//番号とハッシュを更新し、書き込みの関数を呼び出します。
-	static void addBlock(String block) {
+	public static void addBlock(String block) {
 		Block blo = new Block(block, diff, utxo, true);
 		blo.give_utxo();
 		for(Transaction t:blo.ts) {
@@ -340,8 +342,8 @@ public class Main {
 		}
 		size= blo.number;
 		latestHash=Mining.hash(blo.fullText);
-		/*		console.put("MAIN04", "このブロックのナンバー: " + size);
-		console.put("MAIN05", "セーブされたブロックの数: " + getBlockSize());*/
+		console.put("MAIN04", "このブロックのナンバー: " + size);
+		console.put("MAIN05", "セーブされたブロックの数: " + getBlockSize());
 		saveBlock(block);
 	}
 
@@ -381,7 +383,7 @@ public class Main {
 	}
 
 	/**ブロックをファイルに記述することのみを行う*/
-	private static void saveBlock(String fullText) {
+	public static void saveBlock(String fullText) {
 		Block b = new Block(fullText, BigInteger.ZERO, new HashMap<String, BigDecimal>(), true);
 		File file = new File("Blocks" + File.separator + "Block-" + (((b.number-1) / segmentation) + 1));
 		try {
@@ -404,6 +406,7 @@ public class Main {
 	 * このメソッドの呼出後、残額のズレを治すため初期化用readhash()を呼び出してください。
 	 * */
 	static void delfrom(int from) {
+		System.out.println("deleting from :"+from);
 		try {
 			int begin=(int)(Math.ceil((from-1)/segmentation))+1;
 			int end=(int)(Math.ceil((size-1)/segmentation))+1;

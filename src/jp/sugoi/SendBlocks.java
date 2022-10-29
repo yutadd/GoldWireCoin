@@ -30,6 +30,7 @@ public class SendBlocks {
 							ok=false;
 							break;
 						}
+						System.out.println(b.number);
 					}
 					if(ok) {
 						Main.console.put("[SENDBLOCK-READY]","Created blocks is okay ready to send");
