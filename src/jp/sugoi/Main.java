@@ -308,7 +308,7 @@ public class Main {
 				br = new BufferedReader(new FileReader(file));
 				while ((s = br.readLine()) != null) {
 					if(!s.equals("")) {
-						if (number % segmentation == count++) {//目的の行まで読む
+						if (segmentation-(segmentation-number) == count++) {//目的の行まで読む
 							br.close();
 							s=decode64(s);
 							return Mining.hash(s);

@@ -58,7 +58,7 @@ public class SendBlocks {
 					}
 				}
 			}else {
-				Main.console.put("MainE-","受け取ったブロックから番号を推測しました（"+receivedNumber+"）が、ローカルにその番号のブロックが見つかりませんでした。");
+				Main.console.put("SendBlocksE-","受け取ったブロックから番号を推測しました（"+receivedNumber+"）が、ローカルにその番号のブロックが見つかりませんでした。");
 			}
 		}catch(Exception e) {e.printStackTrace();}
 	}
