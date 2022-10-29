@@ -174,54 +174,6 @@ public class Main {
 		}
 	}
 
-	/**ジェネシスブロックがあるため、チェックを行わない。*/
-	static Entry<BigInteger, HashMap<String, BigDecimal>> readhash(int leng) {
-		boolean syuryo = false;
-		BigInteger diff = shoki;
-		HashMap<String, BigDecimal> result = new HashMap<String, BigDecimal>();
-		for (int a = 1; !syuryo; a++) {
-			File file = new File("Blocks" + File.separator + "Block-" + a);
-			try {
-				BufferedReader bs = new BufferedReader(new FileReader(file));
-				if (file.exists()) {
-					for (int i = 1; i <= segmentation; i++) {
-						if (leng >= i + (a - 1) * segmentation) {
-							try {
-								String line = bs.readLine();
-								if(i+((a-1)*segmentation)!=1)line=decode64(line);
-								Block b = new Block(line, diff, result, i + ((a - 1) * segmentation) <= 1);
-								for (Transaction t : b.ts) {
-									BigDecimal bal = checkNullAndGetValue(result, t.input);
-									result.put(t.input, bal.subtract(t.sum_minus));
-									for (Output o : t.out) {
-										result.put(o.address[0].toString(16),
-												checkNullAndGetValue(result, o.address[0].toString(16)).add(o.amount));
-									}
-								}
-								BigDecimal m_balance = checkNullAndGetValue(result, b.miner);
-								result.put(b.miner, m_balance.add(new BigDecimal(50.0)));
-								if (i + (a - 1) * segmentation > 4) {
-									diff = getMin(diff,b.time,getBlock(b.number-1).time);
-								}
-							} catch (Exception e) {
-								syuryo=true;
-								break;
-							}
-						}else {
-							syuryo = true;
-							break;
-						}
-					}
-				}
-				bs.close();
-			} catch (Exception e) {
-				syuryo=true;
-				break;
-			}
-		}
-		return new SimpleEntry<BigInteger, HashMap<String, BigDecimal>>(diff, result);
-	}
-
 	/**2ブロック以降はチェックを行う<br>一番最初に呼んで*/
 	static void readHash() {
 		size=0;
@@ -238,7 +190,12 @@ public class Main {
 					for (int i = 1; i <= segmentation; i++) {
 						String line = bs.readLine();
 						if (line != null) {
-							if(i+(a-1)*segmentation!=1)line=decode64(line);
+							
+							if((i+((a-1)*segmentation))!=1) {
+								System.out.println("[getblock]number going to decode is "+(i+((a-1)*segmentation)));
+								System.out.println("[getblock]string going to decode is "+line);
+								line=decode64(line);
+							}
 							size = i + (a - 1) * segmentation;
 							Block b = new Block(line, diff, utxo, size< 2);
 							latestHash = Mining.hash(b.fullText);
@@ -280,6 +237,57 @@ public class Main {
 		}
 	}
 
+	
+	/**ジェネシスブロックがあるため、チェックを行わない。*/
+	static Entry<BigInteger, HashMap<String, BigDecimal>> readhash(int leng) {
+		boolean syuryo = false;
+		BigInteger diff = shoki;
+		HashMap<String, BigDecimal> result = new HashMap<String, BigDecimal>();
+		for (int a = 1; !syuryo; a++) {
+			File file = new File("Blocks" + File.separator + "Block-" + a);
+			try {
+				BufferedReader bs = new BufferedReader(new FileReader(file));
+				if (file.exists()) {
+					for (int i = 1; i <= segmentation; i++) {
+						if (leng >= i + (a - 1) * segmentation) {
+							try {
+								String line = bs.readLine();
+								if(i+((a-1)*segmentation)!=1)line=decode64(line);
+								Block b = new Block(line, diff, result, i + ((a - 1) * segmentation) <= 1);
+								for (Transaction t : b.ts) {
+									BigDecimal bal = checkNullAndGetValue(result, t.input);
+									result.put(t.input, bal.subtract(t.sum_minus));
+									for (Output o : t.out) {
+										result.put(o.address[0].toString(16),
+												checkNullAndGetValue(result, o.address[0].toString(16)).add(o.amount));
+									}
+								}
+								BigDecimal m_balance = checkNullAndGetValue(result, b.miner);
+								result.put(b.miner, m_balance.add(new BigDecimal(50.0)));
+								if (i + (a - 1) * segmentation > 4) {
+									diff = getMin(diff,b.time,getBlock(b.number-1).time);
+								}
+							} catch (Exception e) {
+								e.printStackTrace();
+								syuryo=true;
+								break;
+							}
+						}else {
+							syuryo = true;
+							break;
+						}
+					}
+				}
+				bs.close();
+			} catch (Exception e) {
+				syuryo=true;
+				break;
+			}
+		}
+		return new SimpleEntry<BigInteger, HashMap<String, BigDecimal>>(diff, result);
+	}
+
+	
 	static int getBockSizeFrom(int i) {
 		return getBlockSize() - i;
 	}
@@ -350,6 +358,8 @@ public class Main {
 				while ((s = br.readLine()) != null) {
 					if (numb%segmentation== count%segmentation) {
 						br.close();
+						System.out.println("[getblock]number going to decode is "+numb);
+						System.out.println("[getblock]string going to decode is "+s);
 						if(numb>1)s=decode64(s);
 						b = new Block(s, BigInteger.ZERO, utxo, true);
 						return b;
