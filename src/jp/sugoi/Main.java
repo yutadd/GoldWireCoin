@@ -348,6 +348,7 @@ public class Main {
 	 * 10以降が取得できない
 	 * */
 	static Block getBlock(int numb) {
+		System.out.println("getblock->"+numb);
 		if (numb > 0) {
 			int fileNum= (((numb -1) / segmentation) + 1);
 			File file = new File("Blocks" + File.separator + "Block-" + fileNum);

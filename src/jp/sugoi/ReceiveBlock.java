@@ -21,7 +21,7 @@ public class ReceiveBlock {
 			}else {
 				if(b.number>Main.getBlockSize()) {
 					try {
-						s.getOutputStream().write(("getfrom~"+Main.getBlock(Main.getBlockSize()-1).fullText+"\r\n").getBytes());
+						s.getOutputStream().write(("getfrom~"+Main.getBlock(Main.getBlockSize()).fullText+"\r\n").getBytes());
 					} catch (IOException e) {
 						Main.console.put("RECEIVEBLOCKE-02", "getfromを送信できない");
 						e.printStackTrace();
