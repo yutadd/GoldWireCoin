@@ -310,8 +310,6 @@ public class Main {
 					if(!s.equals("")) {
 						if (number % segmentation == count++) {//目的の行まで読む
 							br.close();
-							System.out.println("[getblock]number going to decode is "+number);
-							System.out.println("[getblock]string going to decode is "+s);
 							s=decode64(s);
 							return Mining.hash(s);
 						}
@@ -342,8 +340,8 @@ public class Main {
 		}
 		size= blo.number;
 		latestHash=Mining.hash(blo.fullText);
-		console.put("MAIN04", "このブロックのナンバー: " + size);
-		console.put("MAIN05", "セーブされたブロックの数: " + getBlockSize());
+		/*console.put("MAIN04", "このブロックのナンバー: " + size);
+		console.put("MAIN05", "セーブされたブロックの数: " + getBlockSize());*/
 		saveBlock(block);
 	}
 
@@ -351,7 +349,6 @@ public class Main {
 	 * 10以降が取得できない
 	 * */
 	static Block getBlock(int numb) {
-		System.out.println("getblock->"+numb);
 		if (numb > 0) {
 			int fileNum= (((numb -1) / segmentation) + 1);
 			File file = new File("Blocks" + File.separator + "Block-" + fileNum);
@@ -505,7 +502,6 @@ public class Main {
 	}
 	public static String decode64(String line) {
 		if(!line.equals("1,1,1,1,1")) {
-			System.out.println("I'll decode "+line);
 			String[] ls=line.split(",");
 			ls[1]=new BigInteger(Base64.getDecoder().decode(ls[1])).toString(16);
 			line="";
