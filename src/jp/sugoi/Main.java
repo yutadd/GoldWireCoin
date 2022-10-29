@@ -192,8 +192,8 @@ public class Main {
 						if (line != null) {
 							
 							if((i+((a-1)*segmentation))!=1) {
-								System.out.println("[getblock]number going to decode is "+(i+((a-1)*segmentation)));
-								System.out.println("[getblock]string going to decode is "+line);
+								System.out.println("[readhash]number going to decode is "+(i+((a-1)*segmentation)));
+								System.out.println("[readhash]string going to decode is "+line);
 								line=decode64(line);
 							}
 							size = i + (a - 1) * segmentation;
