@@ -304,12 +304,14 @@ public class Main {
 				int count = 1;
 				br = new BufferedReader(new FileReader(file));
 				while ((s = br.readLine()) != null) {
-					if (number % segmentation == count++) {//目的の行まで読む
-						br.close();
-						System.out.println("[getblock]number going to decode is "+number);
-						System.out.println("[getblock]string going to decode is "+s);
-						s=decode64(s);
-						return Mining.hash(s);
+					if(!s.equals("")) {
+						if (number % segmentation == count++) {//目的の行まで読む
+							br.close();
+							System.out.println("[getblock]number going to decode is "+number);
+							System.out.println("[getblock]string going to decode is "+s);
+							s=decode64(s);
+							return Mining.hash(s);
+						}
 					}
 				}
 				return null;
