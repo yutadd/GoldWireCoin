@@ -57,6 +57,7 @@ public  class ReceiveBlocks {
 							Main.delfrom(blocks[0].number);
 							Main.console.put("RECEIVEBLOCKS-SAVE","書き込み開始");
 							for(Block b:blocks) {
+								Main.console.put("ReceiveBlocks", b.number+"");
 								Main.addBlock(b.fullText);
 							}
 							Main.readHash();

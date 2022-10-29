@@ -330,8 +330,8 @@ public class Main {
 		}
 		size= blo.number;
 		latestHash=Mining.hash(blo.fullText);
-		console.put("MAIN04", "このブロックのナンバー: " + size);
-		console.put("MAIN05", "セーブされたブロックの数: " + getBlockSize());
+/*		console.put("MAIN04", "このブロックのナンバー: " + size);
+		console.put("MAIN05", "セーブされたブロックの数: " + getBlockSize());*/
 		saveBlock(block);
 	}
 
