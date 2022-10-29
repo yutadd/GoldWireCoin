@@ -8,8 +8,9 @@ public class ReceiveBlock {
 		if(!Main.mati) {
 			Main.console.put("RECEIVEBLOCK00", "一つのブロックを受信");
 			String blocks=line.split("~")[1];
-			Block b=new Block(blocks,Main.diff,Main.utxo,false);
+			Block b=new Block(blocks,Main.diff,Main.utxo,true);//difficultエラーが出力されてしまうため、ここではpass-checkをtrueにする
 			if(b.previousHash.equals(Main.getlatesthash())) {
+				b=new Block(blocks,Main.diff,Main.utxo,false);
 				if(b.ok) {
 					Main.addBlock(b.fullText);
 					Network.shareToNodes("block~"+ b.fullText);
@@ -20,7 +21,7 @@ public class ReceiveBlock {
 			}else {
 				if(b.number>Main.getBlockSize()) {
 					try {
-						s.getOutputStream().write(("getfrom~"+Main.getBlock(Main.getBlockSize()).fullText+"\r\n").getBytes());
+						s.getOutputStream().write(("getfrom~"+Main.getBlock(Main.getBlockSize()-1).fullText+"\r\n").getBytes());
 					} catch (IOException e) {
 						Main.console.put("RECEIVEBLOCKE-02", "getfromを送信できない");
 						e.printStackTrace();

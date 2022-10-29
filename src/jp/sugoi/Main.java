@@ -190,12 +190,9 @@ public class Main {
 					for (int i = 1; i <= segmentation; i++) {
 						String line = bs.readLine();
 						if (line != null) {
-							
-							if((i+((a-1)*segmentation))!=1) {
-								System.out.println("[readhash]number going to decode is "+(i+((a-1)*segmentation)));
-								System.out.println("[readhash]string going to decode is "+line);
-								line=decode64(line);
-							}
+							System.out.println("[readhash]number going to decode is "+(i+((a-1)*segmentation)));
+							System.out.println("[readhash]string going to decode is "+line);
+							line=decode64(line);
 							size = i + (a - 1) * segmentation;
 							Block b = new Block(line, diff, utxo, size< 2);
 							latestHash = Mining.hash(b.fullText);
@@ -237,7 +234,7 @@ public class Main {
 		}
 	}
 
-	
+
 	/**ジェネシスブロックがあるため、チェックを行わない。*/
 	static Entry<BigInteger, HashMap<String, BigDecimal>> readhash(int leng) {
 		boolean syuryo = false;
@@ -252,7 +249,7 @@ public class Main {
 						if (leng >= i + (a - 1) * segmentation) {
 							try {
 								String line = bs.readLine();
-								if(i+((a-1)*segmentation)!=1)line=decode64(line);
+								line=decode64(line);
 								Block b = new Block(line, diff, result, i + ((a - 1) * segmentation) <= 1);
 								for (Transaction t : b.ts) {
 									BigDecimal bal = checkNullAndGetValue(result, t.input);
@@ -287,7 +284,7 @@ public class Main {
 		return new SimpleEntry<BigInteger, HashMap<String, BigDecimal>>(diff, result);
 	}
 
-	
+
 	static int getBockSizeFrom(int i) {
 		return getBlockSize() - i;
 	}
@@ -311,7 +308,7 @@ public class Main {
 						br.close();
 						System.out.println("[getblock]number going to decode is "+number);
 						System.out.println("[getblock]string going to decode is "+s);
-						if(number>1)s=decode64(s);
+						s=decode64(s);
 						return Mining.hash(s);
 					}
 				}
@@ -340,7 +337,7 @@ public class Main {
 		}
 		size= blo.number;
 		latestHash=Mining.hash(blo.fullText);
-/*		console.put("MAIN04", "このブロックのナンバー: " + size);
+		/*		console.put("MAIN04", "このブロックのナンバー: " + size);
 		console.put("MAIN05", "セーブされたブロックの数: " + getBlockSize());*/
 		saveBlock(block);
 	}
@@ -362,7 +359,7 @@ public class Main {
 						br.close();
 						System.out.println("[getblock]number going to decode is "+numb);
 						System.out.println("[getblock]string going to decode is "+s);
-						if(numb>1)s=decode64(s);
+						s=decode64(s);
 						b = new Block(s, BigInteger.ZERO, utxo, true);
 						return b;
 					}
@@ -493,19 +490,22 @@ public class Main {
 		return line;
 	}
 	public static String decode64(String line) {
-		System.out.println("I'll decode "+line);
-		String[] ls=line.split(",");
-		ls[1]=new BigInteger(Base64.getDecoder().decode(ls[1])).toString(16);
-		line="";
-		int f=0;
-		for(String s:ls) {
-			if(f==0) {
-				line+=s;
-			}else {
-				line+=","+s;
+		if(!line.equals("0,1,2,3,4")) {
+			System.out.println("I'll decode "+line);
+			String[] ls=line.split(",");
+			ls[1]=new BigInteger(Base64.getDecoder().decode(ls[1])).toString(16);
+			line="";
+			int f=0;
+			for(String s:ls) {
+				if(f==0) {
+					line+=s;
+				}else {
+					line+=","+s;
+				}
+				f++;
 			}
-			f++;
 		}
 		return line;
+
 	}
 }
