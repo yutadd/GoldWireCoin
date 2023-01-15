@@ -1,4 +1,4 @@
-#GoldWireCoin
+# GoldWireCoin
 コンセンサスアルゴリズム:POW<br />
 目標ポーリングレート:1分<br />
 残額証明方式:アカウント型<br />
