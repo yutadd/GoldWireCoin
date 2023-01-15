@@ -24,8 +24,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * マイニングしているかどうかをメインに表示。(nonceも表示してみる)
  * ステータスの表示に時間を加える。
- * TODO:１万ブロックを超えるブロック数に対応していません。ブロック記述・削除システムを作り直す。
- * TODO : error segment-1ブロックまでしか読み込まれてない！
+ * TODO: 23/01/15 readhashにて検証を行う開始ブロック数が統一されていない
+ * 難易度の計算が4ブロック目で開始されるのに対し、引数なしの方では0ブロックから開始される。
  * @author yutadd
  */
 class TreeMap2<K, V> extends ConcurrentHashMap<K, V> {
@@ -99,35 +99,6 @@ public class Main {
 			Function SetConsoleModeFunc = Function.getFunction("kernel32", "SetConsoleMode");
 			SetConsoleModeFunc.invoke(BOOL.class, new Object[] { hOut, dwMode });*/
 		}
-		/* 
-
-
-		以前生成した公開鍵x,yがあり、このxから同じyを導き出したい。	
-		BigInteger x=new BigInteger("f7723c38398cef511bc83c70dd8733efb401e60563245ca9969997e2e93c5db9",16);
-		BigInteger y=new BigInteger("b90c7a7fcabdd98291b2df5d3488a930413f7d0399ab449dafd95e556f1ea0a3",16);
-
-
-		//そもそも、https://qiita.com/ryo0301/items/0bc9ccfb3291cabd50d5 で紹介されている y^2=x^3+7 が以前生成した鍵のでは成り立たない。
-		//というか公開鍵って曲線上じゃないもしや？
-		System.out.println(x.pow(3).add(new BigInteger("7")).toString(16));
-		System.out.println(y.pow(2));
-		//x^3+7   e72fc307743260d1b4b184bb2968c3797bf9ccb026306004c9b83cc550afc27239274041a0ab935c0b27a356edd0b1ca0ca2b7fc4abaf3e93998f708a24eef9ca651b6ec9661e5d1ad9e16192bd6e2a795fcb41997c316667c29c8b2a94b83f0
-		//y^2     7005677379887140445805822117143064195372430554416381098174919741378312732591761318729693609592313066632967724110040127402969407546304486671992055318718409
-		//等式が成り立たない
-
-
-		//両辺をmod(p)すると等式が成り立つ。
-		BigInteger p=new BigInteger("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F",16);
-		System.out.println(x.pow(3).add(new BigInteger("7")).remainder(p).toString(16));
-		System.out.println(y.pow(2).remainder(p).toString(16));
-		//f0283dece25386b67bdcfd53ea48e4130d8bda1667aa70f433f85046f64371f9
-		//f0283dece25386b67bdcfd53ea48e4130d8bda1667aa70f433f85046f64371f9
-
-		//ちなみに、y=sqrt(x^3+7)だと
-		System.out.println(x.pow(3).add(new BigInteger("7")).sqrt().toString(16));
-		//f346f1f8bf7282a7110365a58e3f355d7af24666b0c11aedc68700c334dd5dcd4b3258aef06b91365ae8f9c6224824c4
-
-		 */
 
 		System.out.println(System.getProperty("file.encoding"));
 		w = new Wallet();
@@ -238,7 +209,8 @@ public class Main {
 	}
 
 
-	/**ジェネシスブロックがあるため、チェックを行わない。*/
+	/**指定された長さまでブロックを読み込む。<br />
+	 * ジェネシスブロックがあるため、チェックを行わない。*/
 	static Entry<BigInteger, HashMap<String, BigDecimal>> readhash(int leng) {
 		boolean syuryo = false;
 		BigInteger diff = shoki;
