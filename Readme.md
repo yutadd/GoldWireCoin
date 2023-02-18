@@ -2,8 +2,8 @@
 
 ![wip](https://img.shields.io/badge/out%20of%20service-out%20of%20service-red)
 
-Releaseを2年間程度更新し忘れていました！すみません！
-最新版はこのリポジトリをクローンしてスクリプトを実行することでインストール及び起動されます！
+
+
 
 ### Install
 
