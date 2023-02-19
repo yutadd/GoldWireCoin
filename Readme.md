@@ -2,12 +2,13 @@
 
 ![wip](https://img.shields.io/badge/out%20of%20service-out%20of%20service-red)
 
+現在[後継のブロックチェーン](https://github.com/yutadd/Carlito)を開発しており、対してこのリポジトリはアーカイブ状態となります。  
 
 
 
 ### Install
 
- 1.Clone this repo  
+ 1.Clone this repository  
  
 `git clone https://github.com/yutadd/GoldWireCoin.git`  
 
